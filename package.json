@@ -1,0 +1,21 @@
+{
+  "name": "portaldocs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docs:dev": "node scripts/fetch-sdk-version.mjs && vitepress dev",
+    "docs:build": "node scripts/update-sdk-reference.mjs && vitepress build",
+    "docs:build:sdk": "node scripts/update-sdk-reference.mjs && vitepress build",
+    "sdk:update": "node scripts/update-sdk-reference.mjs",
+    "docs:preview": "vitepress preview"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "vitepress": "^1.6.4"
+  }
+}

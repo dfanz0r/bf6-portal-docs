@@ -1,0 +1,66 @@
+:root {
+  --vp-layout-max-width: 1680px;
+  interpolate-size: allow-keywords;
+}
+
+/* Give docs pages more room, especially the generated API reference. */
+.VPDoc .container {
+  max-width: 1520px !important;
+}
+
+.VPDoc .content {
+  max-width: 100% !important;
+}
+
+.VPDoc .content-container {
+  max-width: 1080px !important;
+}
+
+/* Long TypeScript signatures are easier to scan with a little more code width. */
+.vp-doc div[class*='language-'] {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.api-filter {
+  position: sticky;
+  top: 64px;
+  z-index: 10;
+  display: grid;
+  gap: 8px;
+  margin: 24px 0;
+  padding: 16px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  background: var(--vp-c-bg-soft);
+}
+
+.api-filter label {
+  font-weight: 600;
+}
+
+.api-filter input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  color: var(--vp-c-text-1);
+  background: var(--vp-c-bg);
+}
+
+.vp-doc details.custom-block.details {
+  margin: 24px 0;
+}
+
+.vp-doc details.custom-block.details > summary {
+  cursor: pointer;
+  user-select: none;
+}
+
+.vp-doc details.custom-block.details.api-animating {
+  overflow: hidden;
+}
+
+.api-filter-hidden {
+  display: none !important;
+}
