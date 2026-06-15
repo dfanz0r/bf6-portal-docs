@@ -4547,7 +4547,7 @@ Wait(n: number): Promise<void>
 
 ## Event Handlers
 
-### OnAIMoveToFailed
+#### OnAIMoveToFailed
 
 This will trigger when an AI Soldier stops trying to reach a destination.
 
@@ -4555,7 +4555,7 @@ This will trigger when an AI Soldier stops trying to reach a destination.
 OnAIMoveToFailed(eventPlayer: mod.Player): void
 ```
 
-### OnAIMoveToRunning
+#### OnAIMoveToRunning
 
 This will trigger when an AI Soldier starts moving to a target location.
 
@@ -4563,7 +4563,7 @@ This will trigger when an AI Soldier starts moving to a target location.
 OnAIMoveToRunning(eventPlayer: mod.Player): void
 ```
 
-### OnAIMoveToSucceeded
+#### OnAIMoveToSucceeded
 
 This will trigger when an AI Soldier reaches target location.
 
@@ -4571,7 +4571,7 @@ This will trigger when an AI Soldier reaches target location.
 OnAIMoveToSucceeded(eventPlayer: mod.Player): void
 ```
 
-### OnAIParachuteRunning
+#### OnAIParachuteRunning
 
 This will trigger when an AI Soldier parachute action is running.
 
@@ -4579,7 +4579,7 @@ This will trigger when an AI Soldier parachute action is running.
 OnAIParachuteRunning(eventPlayer: mod.Player): void
 ```
 
-### OnAIParachuteSucceeded
+#### OnAIParachuteSucceeded
 
 This will trigger when an AI Soldier parachute action has succeeded.
 
@@ -4587,7 +4587,7 @@ This will trigger when an AI Soldier parachute action has succeeded.
 OnAIParachuteSucceeded(eventPlayer: mod.Player): void
 ```
 
-### OnAIWaypointIdleFailed
+#### OnAIWaypointIdleFailed
 
 This will trigger when an AI Soldier stops following a waypoint.
 
@@ -4595,7 +4595,7 @@ This will trigger when an AI Soldier stops following a waypoint.
 OnAIWaypointIdleFailed(eventPlayer: mod.Player): void
 ```
 
-### OnAIWaypointIdleRunning
+#### OnAIWaypointIdleRunning
 
 This will trigger when an AI Soldier starts following a waypoint.
 
@@ -4603,7 +4603,7 @@ This will trigger when an AI Soldier starts following a waypoint.
 OnAIWaypointIdleRunning(eventPlayer: mod.Player): void
 ```
 
-### OnAIWaypointIdleSucceeded
+#### OnAIWaypointIdleSucceeded
 
 This will trigger when an AI Soldier finishes following a waypoint.
 
@@ -4611,7 +4611,7 @@ This will trigger when an AI Soldier finishes following a waypoint.
 OnAIWaypointIdleSucceeded(eventPlayer: mod.Player): void
 ```
 
-### OnCapturePointCaptured
+#### OnCapturePointCaptured
 
 This will trigger when a team takes control of a CapturePoint.
 
@@ -4619,7 +4619,7 @@ This will trigger when a team takes control of a CapturePoint.
 OnCapturePointCaptured(eventCapturePoint: mod.CapturePoint): void
 ```
 
-### OnCapturePointCapturing
+#### OnCapturePointCapturing
 
 This will trigger when a team begins capturing a CapturePoint.
 
@@ -4627,7 +4627,7 @@ This will trigger when a team begins capturing a CapturePoint.
 OnCapturePointCapturing(eventCapturePoint: mod.CapturePoint): void
 ```
 
-### OnCapturePointLost
+#### OnCapturePointLost
 
 This will trigger when a team loses control of a CapturePoint.
 
@@ -4635,7 +4635,7 @@ This will trigger when a team loses control of a CapturePoint.
 OnCapturePointLost(eventCapturePoint: mod.CapturePoint): void
 ```
 
-### OnGameModeEnding
+#### OnGameModeEnding
 
 This will trigger when the gamemode ends.
 
@@ -4643,7 +4643,7 @@ This will trigger when the gamemode ends.
 OnGameModeEnding(): void
 ```
 
-### OnGameModeStarted
+#### OnGameModeStarted
 
 This will trigger at the start of the gamemode.
 
@@ -4651,115 +4651,115 @@ This will trigger at the start of the gamemode.
 OnGameModeStarted(): void
 ```
 
-### OngoingAreaTrigger
+#### OngoingAreaTrigger
 
 ```ts
 OngoingAreaTrigger(eventAreaTrigger: mod.AreaTrigger): void
 ```
 
-### OngoingCapturePoint
+#### OngoingCapturePoint
 
 ```ts
 OngoingCapturePoint(eventCapturePoint: mod.CapturePoint): void
 ```
 
-### OngoingEmplacementSpawner
+#### OngoingEmplacementSpawner
 
 ```ts
 OngoingEmplacementSpawner(eventEmplacementSpawner: mod.EmplacementSpawner): void
 ```
 
-### OngoingGlobal
+#### OngoingGlobal
 
 ```ts
 OngoingGlobal(): void
 ```
 
-### OngoingHQ
+#### OngoingHQ
 
 ```ts
 OngoingHQ(eventHQ: mod.HQ): void
 ```
 
-### OngoingInteractPoint
+#### OngoingInteractPoint
 
 ```ts
 OngoingInteractPoint(eventInteractPoint: mod.InteractPoint): void
 ```
 
-### OngoingLootSpawner
+#### OngoingLootSpawner
 
 ```ts
 OngoingLootSpawner(eventLootSpawner: mod.LootSpawner): void
 ```
 
-### OngoingMCOM
+#### OngoingMCOM
 
 ```ts
 OngoingMCOM(eventMCOM: mod.MCOM): void
 ```
 
-### OngoingPlayer
+#### OngoingPlayer
 
 ```ts
 OngoingPlayer(eventPlayer: mod.Player): void
 ```
 
-### OngoingRingOfFire
+#### OngoingRingOfFire
 
 ```ts
 OngoingRingOfFire(eventRingOfFire: mod.RingOfFire): void
 ```
 
-### OngoingSector
+#### OngoingSector
 
 ```ts
 OngoingSector(eventSector: mod.Sector): void
 ```
 
-### OngoingSpawner
+#### OngoingSpawner
 
 ```ts
 OngoingSpawner(eventSpawner: mod.Spawner): void
 ```
 
-### OngoingSpawnPoint
+#### OngoingSpawnPoint
 
 ```ts
 OngoingSpawnPoint(eventSpawnPoint: mod.SpawnPoint): void
 ```
 
-### OngoingTeam
+#### OngoingTeam
 
 ```ts
 OngoingTeam(eventTeam: mod.Team): void
 ```
 
-### OngoingVehicle
+#### OngoingVehicle
 
 ```ts
 OngoingVehicle(eventVehicle: mod.Vehicle): void
 ```
 
-### OngoingVehicleSpawner
+#### OngoingVehicleSpawner
 
 ```ts
 OngoingVehicleSpawner(eventVehicleSpawner: mod.VehicleSpawner): void
 ```
 
-### OngoingWaypointPath
+#### OngoingWaypointPath
 
 ```ts
 OngoingWaypointPath(eventWaypointPath: mod.WaypointPath): void
 ```
 
-### OngoingWorldIcon
+#### OngoingWorldIcon
 
 ```ts
 OngoingWorldIcon(eventWorldIcon: mod.WorldIcon): void
 ```
 
-### OnGolmudTrainStopped
+#### OnGolmudTrainStopped
 
 This will trigger when the Golmud train stops.
 
@@ -4767,7 +4767,7 @@ This will trigger when the Golmud train stops.
 OnGolmudTrainStopped(eventGolmudTrainStopReason: mod.GolmudTrainStopReason): void
 ```
 
-### OnMandown
+#### OnMandown
 
 This will trigger when a Player is forced into the mandown state.
 
@@ -4775,7 +4775,7 @@ This will trigger when a Player is forced into the mandown state.
 OnMandown(eventPlayer: mod.Player, eventOtherPlayer: mod.Player): void
 ```
 
-### OnMCOMArmed
+#### OnMCOMArmed
 
 This will trigger when a MCOM is armed.
 
@@ -4783,7 +4783,7 @@ This will trigger when a MCOM is armed.
 OnMCOMArmed(eventMCOM: mod.MCOM): void
 ```
 
-### OnMCOMDefused
+#### OnMCOMDefused
 
 This will trigger when a MCOM is defused.
 
@@ -4791,7 +4791,7 @@ This will trigger when a MCOM is defused.
 OnMCOMDefused(eventMCOM: mod.MCOM): void
 ```
 
-### OnMCOMDestroyed
+#### OnMCOMDestroyed
 
 This will trigger when a MCOM detonates.
 
@@ -4799,7 +4799,7 @@ This will trigger when a MCOM detonates.
 OnMCOMDestroyed(eventMCOM: mod.MCOM): void
 ```
 
-### OnPlayerDamaged
+#### OnPlayerDamaged
 
 This will trigger when a Player takes damage.
 
@@ -4812,7 +4812,7 @@ OnPlayerDamaged(
 ): void
 ```
 
-### OnPlayerDeployed
+#### OnPlayerDeployed
 
 This will trigger whenever a Player deploys.
 
@@ -4820,7 +4820,7 @@ This will trigger whenever a Player deploys.
 OnPlayerDeployed(eventPlayer: mod.Player): void
 ```
 
-### OnPlayerDied
+#### OnPlayerDied
 
 This will trigger whenever a Player dies.
 
@@ -4833,7 +4833,7 @@ OnPlayerDied(
 ): void
 ```
 
-### OnPlayerEarnedKill
+#### OnPlayerEarnedKill
 
 This will trigger when a Player earns a kill against another Player.
 
@@ -4846,7 +4846,7 @@ OnPlayerEarnedKill(
 ): void
 ```
 
-### OnPlayerEarnedKillAssist
+#### OnPlayerEarnedKillAssist
 
 This will trigger when a Player earns a kill assist.
 
@@ -4854,7 +4854,7 @@ This will trigger when a Player earns a kill assist.
 OnPlayerEarnedKillAssist(eventPlayer: mod.Player, eventOtherPlayer: mod.Player): void
 ```
 
-### OnPlayerEnterAreaTrigger
+#### OnPlayerEnterAreaTrigger
 
 This will trigger when a Player enters an AreaTrigger.
 
@@ -4862,7 +4862,7 @@ This will trigger when a Player enters an AreaTrigger.
 OnPlayerEnterAreaTrigger(eventPlayer: mod.Player, eventAreaTrigger: mod.AreaTrigger): void
 ```
 
-### OnPlayerEnterCapturePoint
+#### OnPlayerEnterCapturePoint
 
 This will trigger when a Player enters a CapturePoint capturing area.
 
@@ -4870,7 +4870,7 @@ This will trigger when a Player enters a CapturePoint capturing area.
 OnPlayerEnterCapturePoint(eventPlayer: mod.Player, eventCapturePoint: mod.CapturePoint): void
 ```
 
-### OnPlayerEnterVehicle
+#### OnPlayerEnterVehicle
 
 This will trigger when a Player enters a Vehicle seat.
 
@@ -4878,7 +4878,7 @@ This will trigger when a Player enters a Vehicle seat.
 OnPlayerEnterVehicle(eventPlayer: mod.Player, eventVehicle: mod.Vehicle): void
 ```
 
-### OnPlayerEnterVehicleSeat
+#### OnPlayerEnterVehicleSeat
 
 This will trigger when a Player enters a Vehicle seat.
 
@@ -4890,7 +4890,7 @@ OnPlayerEnterVehicleSeat(
 ): void
 ```
 
-### OnPlayerEnterVL7Cloud
+#### OnPlayerEnterVL7Cloud
 
 This will trigger when a Player enters a VL7Cloud volume.
 
@@ -4898,7 +4898,7 @@ This will trigger when a Player enters a VL7Cloud volume.
 OnPlayerEnterVL7Cloud(eventPlayer: mod.Player, eventVL7Cloud: mod.VL7Cloud): void
 ```
 
-### OnPlayerExitAreaTrigger
+#### OnPlayerExitAreaTrigger
 
 This will trigger when a Player exits an AreaTrigger.
 
@@ -4906,7 +4906,7 @@ This will trigger when a Player exits an AreaTrigger.
 OnPlayerExitAreaTrigger(eventPlayer: mod.Player, eventAreaTrigger: mod.AreaTrigger): void
 ```
 
-### OnPlayerExitCapturePoint
+#### OnPlayerExitCapturePoint
 
 This will trigger when a Player exits a CapturePoint capturing area.
 
@@ -4914,7 +4914,7 @@ This will trigger when a Player exits a CapturePoint capturing area.
 OnPlayerExitCapturePoint(eventPlayer: mod.Player, eventCapturePoint: mod.CapturePoint): void
 ```
 
-### OnPlayerExitVehicle
+#### OnPlayerExitVehicle
 
 This will trigger when a Player exits a Vehicle.
 
@@ -4922,7 +4922,7 @@ This will trigger when a Player exits a Vehicle.
 OnPlayerExitVehicle(eventPlayer: mod.Player, eventVehicle: mod.Vehicle): void
 ```
 
-### OnPlayerExitVehicleSeat
+#### OnPlayerExitVehicleSeat
 
 This will trigger when a Player exits a Vehicle seat.
 
@@ -4934,7 +4934,7 @@ OnPlayerExitVehicleSeat(
 ): void
 ```
 
-### OnPlayerExitVL7Cloud
+#### OnPlayerExitVL7Cloud
 
 This will trigger when a Player exits a VL7Cloud volume.
 
@@ -4942,7 +4942,7 @@ This will trigger when a Player exits a VL7Cloud volume.
 OnPlayerExitVL7Cloud(eventPlayer: mod.Player, eventVL7Cloud: mod.VL7Cloud): void
 ```
 
-### OnPlayerInteract
+#### OnPlayerInteract
 
 This will trigger when a Player interacts with InteractPoint.
 
@@ -4950,7 +4950,7 @@ This will trigger when a Player interacts with InteractPoint.
 OnPlayerInteract(eventPlayer: mod.Player, eventInteractPoint: mod.InteractPoint): void
 ```
 
-### OnPlayerJoinGame
+#### OnPlayerJoinGame
 
 This will trigger when a Player joins the game.
 
@@ -4958,7 +4958,7 @@ This will trigger when a Player joins the game.
 OnPlayerJoinGame(eventPlayer: mod.Player): void
 ```
 
-### OnPlayerLeaveGame
+#### OnPlayerLeaveGame
 
 This will trigger when any player leaves the game.
 
@@ -4966,7 +4966,7 @@ This will trigger when any player leaves the game.
 OnPlayerLeaveGame(eventNumber: number): void
 ```
 
-### OnPlayerSwitchTeam
+#### OnPlayerSwitchTeam
 
 This will trigger when a Player changes team.
 
@@ -4974,7 +4974,7 @@ This will trigger when a Player changes team.
 OnPlayerSwitchTeam(eventPlayer: mod.Player, eventTeam: mod.Team): void
 ```
 
-### OnPlayerUIButtonEvent
+#### OnPlayerUIButtonEvent
 
 This will trigger when a Player interacts with an UI button.
 
@@ -4986,7 +4986,7 @@ OnPlayerUIButtonEvent(
 ): void
 ```
 
-### OnPlayerUndeploy
+#### OnPlayerUndeploy
 
 This will trigger when the Player dies and returns to the deploy screen.
 
@@ -4994,7 +4994,7 @@ This will trigger when the Player dies and returns to the deploy screen.
 OnPlayerUndeploy(eventPlayer: mod.Player): void
 ```
 
-### OnPortalGadgetAimStart
+#### OnPortalGadgetAimStart
 
 This will trigger when a Player presses the Zoom button.
 
@@ -5002,7 +5002,7 @@ This will trigger when a Player presses the Zoom button.
 OnPortalGadgetAimStart(eventPlayer: mod.Player): void
 ```
 
-### OnPortalGadgetAimStop
+#### OnPortalGadgetAimStop
 
 This will trigger when a Player releases the Zoom button.
 
@@ -5010,7 +5010,7 @@ This will trigger when a Player releases the Zoom button.
 OnPortalGadgetAimStop(eventPlayer: mod.Player): void
 ```
 
-### OnPortalGadgetFireStart
+#### OnPortalGadgetFireStart
 
 This will trigger when a Player presses the Fire button.
 
@@ -5018,7 +5018,7 @@ This will trigger when a Player presses the Fire button.
 OnPortalGadgetFireStart(eventPlayer: mod.Player): void
 ```
 
-### OnPortalGadgetFireStop
+#### OnPortalGadgetFireStop
 
 This will trigger when a Player releases the Fire button.
 
@@ -5026,7 +5026,7 @@ This will trigger when a Player releases the Fire button.
 OnPortalGadgetFireStop(eventPlayer: mod.Player): void
 ```
 
-### OnPortalGadgetLaserToggle
+#### OnPortalGadgetLaserToggle
 
 This will trigger when a Player presses the Tactical Device button.
 
@@ -5034,7 +5034,7 @@ This will trigger when a Player presses the Tactical Device button.
 OnPortalGadgetLaserToggle(eventPlayer: mod.Player, eventBoolean: boolean): void
 ```
 
-### OnRayCastHit
+#### OnRayCastHit
 
 This will trigger when a Raycast hits a target.
 
@@ -5042,7 +5042,7 @@ This will trigger when a Raycast hits a target.
 OnRayCastHit(eventPlayer: mod.Player, eventPoint: mod.Vector, eventNormal: mod.Vector): void
 ```
 
-### OnRayCastMissed
+#### OnRayCastMissed
 
 This will trigger when a Raycast is called and doesn't hit any target.
 
@@ -5050,7 +5050,7 @@ This will trigger when a Raycast is called and doesn't hit any target.
 OnRayCastMissed(eventPlayer: mod.Player): void
 ```
 
-### OnRevived
+#### OnRevived
 
 This will trigger when a Player is revived by another Player.
 
@@ -5058,7 +5058,7 @@ This will trigger when a Player is revived by another Player.
 OnRevived(eventPlayer: mod.Player, eventOtherPlayer: mod.Player): void
 ```
 
-### OnRingOfFireZoneSizeChange
+#### OnRingOfFireZoneSizeChange
 
 This will trigger when a RingOfFire changes size.
 
@@ -5066,7 +5066,7 @@ This will trigger when a RingOfFire changes size.
 OnRingOfFireZoneSizeChange(eventRingOfFire: mod.RingOfFire, eventNumber: number): void
 ```
 
-### OnSpawnerSpawned
+#### OnSpawnerSpawned
 
 This will trigger when an AISpawner spawns an AI Soldier.
 
@@ -5074,7 +5074,7 @@ This will trigger when an AISpawner spawns an AI Soldier.
 OnSpawnerSpawned(eventPlayer: mod.Player, eventSpawner: mod.Spawner): void
 ```
 
-### OnTimeLimitReached
+#### OnTimeLimitReached
 
 This will trigger when the gamemode time limit has been reached.
 
@@ -5082,7 +5082,7 @@ This will trigger when the gamemode time limit has been reached.
 OnTimeLimitReached(): void
 ```
 
-### OnVehicleDestroyed
+#### OnVehicleDestroyed
 
 This will trigger when a Vehicle is destroyed.
 
@@ -5090,7 +5090,7 @@ This will trigger when a Vehicle is destroyed.
 OnVehicleDestroyed(eventVehicle: mod.Vehicle): void
 ```
 
-### OnVehicleSpawned
+#### OnVehicleSpawned
 
 This will trigger when a Vehicle is called into the map.
 
@@ -8430,13 +8430,13 @@ enum WorldIconImages {
 
 ## Modlib Functions
 
-### And
+#### And
 
 ```ts
 And(...rest: boolean[]): boolean
 ```
 
-### AndFn
+#### AndFn
 
 ```ts
 AndFn(...rest: ConditionFunction[]): boolean
@@ -8448,19 +8448,19 @@ AndFn(...rest: ConditionFunction[]): boolean
 ```ts
 type ConditionFunction = () => boolean
 ```
-### ClearAllCustomNotificationMessages
+#### ClearAllCustomNotificationMessages
 
 ```ts
 ClearAllCustomNotificationMessages(target: mod.Player)
 ```
 
-### ClearCustomNotificationMessage
+#### ClearCustomNotificationMessage
 
 ```ts
 ClearCustomNotificationMessage(custom: mod.CustomNotificationSlots, target?: mod.Player | mod.Team)
 ```
 
-### Concat
+#### Concat
 
 export * from './store';
 
@@ -8468,13 +8468,13 @@ export * from './store';
 Concat(s1: string, s2: string)
 ```
 
-### ConvertArray
+#### ConvertArray
 
 ```ts
 ConvertArray(array: mod.Array): any[]
 ```
 
-### DisplayCustomNotificationMessage
+#### DisplayCustomNotificationMessage
 
 ```ts
 DisplayCustomNotificationMessage(
@@ -8485,97 +8485,97 @@ DisplayCustomNotificationMessage(
 )
 ```
 
-### Equals
+#### Equals
 
 ```ts
 Equals(a: any, b: any)
 ```
 
-### FilteredArray
+#### FilteredArray
 
 ```ts
 FilteredArray(array: mod.Array, cond: (currentElement: any) => boolean): mod.Array
 ```
 
-### getCapturePointCondition
+#### getCapturePointCondition
 
 ```ts
 getCapturePointCondition(obj: mod.CapturePoint, n: number)
 ```
 
-### getGlobalCondition
+#### getGlobalCondition
 
 ```ts
 getGlobalCondition(n: number)
 ```
 
-### getHQCondition
+#### getHQCondition
 
 ```ts
 getHQCondition(obj: mod.HQ, n: number)
 ```
 
-### getMCOMCondition
+#### getMCOMCondition
 
 ```ts
 getMCOMCondition(obj: mod.MCOM, n: number)
 ```
 
-### getPlayerCondition
+#### getPlayerCondition
 
 ```ts
 getPlayerCondition(obj: mod.Player, n: number)
 ```
 
-### getPlayerId
+#### getPlayerId
 
 ```ts
 getPlayerId(player: mod.Player): number
 ```
 
-### getPlayersInTeam
+#### getPlayersInTeam
 
 ```ts
 getPlayersInTeam(teamObj: mod.Team)
 ```
 
-### getSectorCondition
+#### getSectorCondition
 
 ```ts
 getSectorCondition(obj: mod.Sector, n: number)
 ```
 
-### getSimpleCondition
+#### getSimpleCondition
 
 ```ts
 getSimpleCondition()
 ```
 
-### getTeamCondition
+#### getTeamCondition
 
 ```ts
 getTeamCondition(team: mod.Team, n: number)
 ```
 
-### getTeamId
+#### getTeamId
 
 ```ts
 getTeamId(team: mod.Team): number
 ```
 
-### getVehicleCondition
+#### getVehicleCondition
 
 ```ts
 getVehicleCondition(obj: mod.Vehicle, n: number)
 ```
 
-### getVehicleSpawnerCondition
+#### getVehicleSpawnerCondition
 
 ```ts
 getVehicleSpawnerCondition(obj: mod.VehicleSpawner, n: number)
 ```
 
-### IndexOfFirstTrue
+#### IndexOfFirstTrue
 
 ```ts
 IndexOfFirstTrue(
@@ -8584,19 +8584,19 @@ IndexOfFirstTrue(
 ): number
 ```
 
-### IsTrueForAll
+#### IsTrueForAll
 
 ```ts
 IsTrueForAll(array: mod.Array, condition: (element: any, arg: any) => boolean, arg: any = null)
 ```
 
-### IsTrueForAny
+#### IsTrueForAny
 
 ```ts
 IsTrueForAny(array: mod.Array, condition: (element: any, arg: any) => boolean, arg: any = null)
 ```
 
-### ParseUI
+#### ParseUI
 
 ```ts
 ParseUI(...params: any[])
@@ -8642,31 +8642,31 @@ interface UIParams {
     buttonAlphaFocused: number
 }
 ```
-### ShowEventGameModeMessage
+#### ShowEventGameModeMessage
 
 ```ts
 ShowEventGameModeMessage(event: mod.Message, target?: mod.Player | mod.Team)
 ```
 
-### ShowHighlightedGameModeMessage
+#### ShowHighlightedGameModeMessage
 
 ```ts
 ShowHighlightedGameModeMessage(event: mod.Message, target?: mod.Player | mod.Team)
 ```
 
-### ShowNotificationMessage
+#### ShowNotificationMessage
 
 ```ts
 ShowNotificationMessage(msg: mod.Message, target?: mod.Player | mod.Team)
 ```
 
-### SortedArray
+#### SortedArray
 
 ```ts
 SortedArray(array: any[], compare: (a: any, b: any) => number)
 ```
 
-### WaitUntil
+#### WaitUntil
 
 Waits for a provided number of seconds or if the provided condition evaluates to true during that interval.
 
@@ -8677,7 +8677,7 @@ async WaitUntil(delay: number, cond: () => boolean)
 
 ## Modlib Classes
 
-### ConditionState
+#### ConditionState
 
 ```ts
 class ConditionState {
@@ -8689,7 +8689,7 @@ class ConditionState {
 
 Source: `code/modlib/index.ts`
 
-### SimpleConditionState
+#### SimpleConditionState
 
 ```ts
 class SimpleConditionState {

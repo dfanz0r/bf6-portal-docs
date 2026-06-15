@@ -497,11 +497,11 @@ function renderCategorizedFunctionReference (title, entries) {
     .join('\n\n')}`
 }
 
-function renderFunctionReference (title, entries) {
+function renderFunctionReference (title, entries, headingLevel = 3) {
   const groups = Object.entries(groupByName(entries)).sort(([a], [b]) => a.localeCompare(b))
   if (!groups.length) return `## ${title}\n\nNo exported functions found.\n`
 
-  return `## ${title}\n\n${groups.map((group) => renderFunctionEntry(group)).join('\n')}`
+  return `## ${title}\n\n${groups.map((group) => renderFunctionEntry(group, headingLevel)).join('\n')}`
 }
 
 function renderModlibFunctionReference (title, entries, typeLookup) {
@@ -525,7 +525,7 @@ function renderModlibFunctionReference (title, entries, typeLookup) {
       }).join('\n\n')
     }
 
-    return renderFunctionEntry([name, overloads]) + extra
+    return renderFunctionEntry([name, overloads], 4) + extra
   }).join('\n')}`
 }
 
@@ -590,7 +590,7 @@ function renderClassReference (entries) {
 
       const fullSig = entry.signature + members
 
-      return `### ${entry.name}\n\n${entry.description ? `${entry.description}\n\n` : ''}\`\`\`ts\n${fullSig}\n\`\`\`\n\nSource: \`${entry.source}\``
+      return `#### ${entry.name}\n\n${entry.description ? `${entry.description}\n\n` : ''}\`\`\`ts\n${fullSig}\n\`\`\`\n\nSource: \`${entry.source}\``
     })
     .join('\n\n')}\n`
 }
@@ -625,7 +625,7 @@ async function generateApiReference (zipPath, release) {
   const body = [
     `## Summary\n\n| Category | Count |\n| --- | ---: |\n| event handlers | ${Object.keys(groupByName(eventHandlers)).length} |\n| mod functions | ${Object.keys(groupByName(modFunctions)).length} |\n| mod function overloads | ${modFunctions.length} |\n| mod types | ${modTypesList.length} |\n| mod enums | ${modEnums.length} |\n| modlib functions | ${modlibFunctions.length} |\n| modlib classes | ${modlibClasses.length} |`,
     renderCategorizedFunctionReference('mod Functions', modFunctions),
-    renderFunctionReference('Event Handlers', eventHandlers),
+    renderFunctionReference('Event Handlers', eventHandlers, 4),
     renderTypesReference(modTypesList),
     renderEnumReference(modEnums),
     renderModlibFunctionReference('Modlib Functions', modlibFunctions, modlibTypeLookup),

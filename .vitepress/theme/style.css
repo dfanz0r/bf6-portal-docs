@@ -1,6 +1,38 @@
 :root {
   --vp-layout-max-width: 1680px;
   interpolate-size: allow-keywords;
+
+  /* Brand colors - orange from logo for buttons, muted amber for links */
+  --vp-c-brand-1: #D97706;
+  --vp-c-brand-2: #B45309;
+  --vp-c-brand-3: #FF3B00;
+  --vp-c-brand-soft: rgba(255, 59, 0, 0.14);
+}
+
+/* TikTok Sans for body text */
+body, .vp-doc p, .vp-doc li, .vp-doc table, .vp-doc blockquote,
+.vp-doc .header-anchor, .vp-doc .custom-block,
+.VPContent, .VPDoc, .VPNavBar, .VPSidebar {
+  font-family: 'TikTok Sans', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings: 'slnt' 0, 'wdth' 100;
+}
+
+/* Battlefield-style headings using Bebas Neue */
+h1, h2, h3,
+.vp-doc h1, .vp-doc h2, .vp-doc h3 {
+  font-family: 'Bebas Neue', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+/* API function names and sub-headings use body font for readability */
+h4, h5, h6,
+.vp-doc h4, .vp-doc h5, .vp-doc h6 {
+  font-family: 'TikTok Sans', sans-serif;
+  font-weight: 600;
 }
 
 /* Give docs pages more room, especially the generated API reference. */

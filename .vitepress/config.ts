@@ -4,7 +4,16 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: "Portal Docs",
   description: "Battlefield 6 Portal Docs",
+
+  head: [
+    ['link', { rel: 'icon', type: 'image/png', href: '/icon.png' }],
+    ['link', { rel: 'preconnect', href: 'https://fonts.googleapis.com' }],
+    ['link', { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' }],
+    ['link', { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=TikTok+Sans:opsz,wght@12..36,300..900&display=swap' }]
+  ],
+
   themeConfig: {
+    siteTitle: false,
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: 'Home', link: '/' },
