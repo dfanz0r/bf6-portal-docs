@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import { useData } from 'vitepress'
-import rawLogoSvg from '../../public/bfportaldocs-logo.svg?raw'
+import rawLogoSvg from '../../src/bfportaldocs-logo.svg?raw'
 
 const logoSvg = rawLogoSvg
   .replace(/<\?xml[\s\S]*?\?>\s*/, '')
