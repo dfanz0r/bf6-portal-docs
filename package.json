@@ -5,10 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "docs:dev": "node scripts/fetch-sdk-version.mjs && vitepress dev",
-    "docs:build": "node scripts/update-sdk-reference.mjs && vitepress build",
-    "docs:build:sdk": "node scripts/update-sdk-reference.mjs && vitepress build",
+    "docs:dev": "node scripts/fetch-sdk-version.mjs && node scripts/update-block-code-reference.mjs && vitepress dev",
+    "docs:build": "node scripts/update-sdk-reference.mjs && node scripts/update-block-code-reference.mjs && vitepress build",
+    "docs:build:sdk": "node scripts/update-sdk-reference.mjs && node scripts/update-block-code-reference.mjs && vitepress build",
     "sdk:update": "node scripts/update-sdk-reference.mjs",
+    "blocks:update": "node scripts/update-block-code-reference.mjs",
     "docs:preview": "vitepress preview"
   },
   "keywords": [],

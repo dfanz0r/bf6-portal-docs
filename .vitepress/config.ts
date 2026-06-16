@@ -18,7 +18,8 @@ export default defineConfig({
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Introduction', link: '/introduction' },
-      { text: 'API Reference', link: '/api-reference' }
+      { text: 'API Reference', link: '/api-reference' },
+      { text: 'Block Code Reference', link: '/block-code-reference' }
     ],
 
     sidebar: [
@@ -36,7 +37,7 @@ export default defineConfig({
         collapsed: false,
         items: [
           { text: 'Scripting', link: '/scripting' },
-          { text: 'Block Code', link: '/block-code' },
+          { text: 'Block Code Reference', link: '/block-code-reference' },
           { text: 'TypeScript', link: '/typescript' },
           { text: 'Optimization', link: '/optimization' }
         ]
