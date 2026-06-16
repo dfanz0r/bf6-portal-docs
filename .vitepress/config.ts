@@ -37,7 +37,6 @@ export default defineConfig({
         collapsed: false,
         items: [
           { text: 'Scripting', link: '/scripting' },
-          { text: 'Block Code Reference', link: '/block-code-reference' },
           { text: 'TypeScript', link: '/typescript' },
           { text: 'Optimization', link: '/optimization' }
         ]
@@ -46,7 +45,8 @@ export default defineConfig({
         text: 'Reference',
         collapsed: false,
         items: [
-          { text: 'API Reference', link: '/api-reference' }
+          { text: 'API Reference', link: '/api-reference' },
+          { text: 'Block Code Reference', link: '/block-code-reference' }
         ]
       }
     ],

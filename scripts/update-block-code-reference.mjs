@@ -2,6 +2,7 @@ import { readFile, writeFile } from 'node:fs/promises'
 
 const definitionsFile = '.vitepress/block-definitions.json'
 const outFile = 'block-code-reference.md'
+const i18nUrl = 'https://portal.battlefield.com/bf6/13637837/i18n/en-US.json'
 
 function typeToDisplay (type) {
   // Convert PascalCase type names to readable ones
@@ -99,43 +100,30 @@ function typeToDisplay (type) {
   return map[type] || type
 }
 
-function parameterTypesToString (paramTypes, indent = 0) {
-  if (!paramTypes || paramTypes.length === 0) return ''
-  const pad = '  '.repeat(indent)
-  return paramTypes.map(p => {
-    if (p.anyType) return `${pad}any`
-    if (p.parameterTypes) {
-      const inner = p.parameterTypes.join(' | ')
-      const name = p.parameterName ? ` ${p.parameterName}` : ''
-      return `${pad}${inner}${name}`
-    }
-    return `${pad}${p}`
-  }).join(', ')
-}
-
-function signatureToSig (sig, isAction) {
-  const params = sig.parameterTypes || []
-  const paramStr = params.map(p => {
-    if (p.anyType) return 'any'
-    if (p.parameterTypes) {
-      const types = p.parameterTypes.join(' | ')
-      return p.parameterName ? `${p.parameterName}: ${types}` : types
-    }
-    return p
-  }).join(', ')
-
-  if (isAction) return `(${paramStr})`
-  return `(${paramStr}): ${sig.returnType || 'void'}`
-}
-
-function getSummary (item, isAction) {
-  const sigs = item.functionSignatures || []
-  const lines = []
-  for (const sig of sigs) {
-    if (sig.deprecated) continue
-    lines.push(`- \`${signatureToSig(sig, isAction)}\``)
-  }
-  return lines.join('\n')
+// Map JSON parameter names to Blockly editor block names (with Event prefix)
+const eventParamToBlocklyName = {
+  'Player': 'EventPlayer',
+  'OtherPlayer': 'EventOtherPlayer',
+  'DamageType': 'EventDamageType',
+  'WeaponUnlock': 'EventWeapon',
+  'DeathType': 'EventDeathType',
+  'MCOM': 'EventMCOM',
+  'CapturePoint': 'EventCapturePoint',
+  'Vehicle': 'EventVehicle',
+  'Team': 'EventTeam',
+  'AreaTrigger': 'EventAreaTrigger',
+  'Seat': 'EventSeat',
+  'VL7Cloud': 'EventVL7Cloud',
+  'InteractPoint': 'EventInteractPoint',
+  'UIWidget': 'EventUIWidget',
+  'UIButtonEvent': 'EventUIButtonEvent',
+  'Boolean': 'EventBoolean',
+  'Point': 'EventPoint',
+  'Normal': 'EventNormal',
+  'Spawner': 'EventSpawner',
+  'GolmudTrainStopReason': 'EventGolmudTrainStopReason',
+  'RingOfFire': 'EventRingOfFire',
+  'Number': 'EventNumber'
 }
 
 function createTypeDisplay (typeName) {
@@ -143,10 +131,139 @@ function createTypeDisplay (typeName) {
   return typeName
 }
 
+/**
+ * Manual overrides for event names whose auto-converted i18n key doesn't match.
+ */
+const eventNameI18nOverride = {
+  'OnPlayerEarnedKillAssist': 'onplayerearnkillassist'
+}
+
+/**
+ * Convert a PascalCase event name (e.g. "OnPlayerDamaged") to the lowercase
+ * key used in the i18n JSON (e.g. "onplayerdamaged").
+ */
+function eventNameToI18nKey (name) {
+  if (eventNameI18nOverride[name]) return eventNameI18nOverride[name]
+  return name.toLowerCase()
+}
+
+/**
+ * Fetch and parse the i18n JSON to extract event descriptions and payload descriptions.
+ * Returns a Map of eventName -> { description, payloads: Map<blockType, description> }
+ */
+async function fetchI18nEventData () {
+  console.log(`Fetching i18n from ${i18nUrl}...`)
+  const headers = {
+    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+    Accept: 'application/json, text/plain, */*',
+    'Accept-Language': 'en-US,en;q=0.9',
+    Origin: 'https://portal.battlefield.com',
+    Referer: 'https://portal.battlefield.com/bf6/experiences'
+  }
+
+  const res = await fetch(i18nUrl, { headers, cache: 'no-store' })
+  if (!res.ok) {
+    throw new Error(`Failed to fetch i18n: ${res.status} ${res.statusText}`)
+  }
+  const i18n = await res.json()
+  const rule = i18n?.help?.rule
+  if (!rule) {
+    console.warn('i18n JSON has no help.rule section, skipping descriptions')
+    return new Map()
+  }
+
+  const eventData = new Map()
+
+  for (const [key, text] of Object.entries(rule)) {
+    if (key === 'summary' || key === 'typesofrule') continue
+
+    // Extract the description before _Payloads:
+    // For events like ongoing that have no Payloads section
+    const payloadsSplit = text.includes('_Payloads:') ? text.split('_Payloads:') : [text]
+    const description = payloadsSplit[0]
+      .replace(/\*\*/g, '')           // remove markdown bold markers
+      // Replace type tokens with their readable names
+      .replace(/%\{PYRITE_TYPE_PLAYER\}/g, 'Player')
+      .replace(/%\{PYRITE_TYPE_TEAMID\}/g, 'Team')
+      .replace(/%\{PYRITE_TYPE_VEHICLE\}/g, 'Vehicle')
+      .replace(/%\{PYRITE_TYPE_CAPTUREPOINT\}/g, 'CapturePoint')
+      .replace(/%\{PYRITE_TYPE_MCOM\}/g, 'MCOM')
+      .replace(/%\{PYRITE_TYPE_AREATRIGGER\}/g, 'AreaTrigger')
+      .replace(/%\{PYRITE_TYPE_RINGOFFIRE\}/g, 'RingOfFire')
+      .replace(/%\{PYRITE_TYPE_NUMBER\}/g, 'Number')
+      .replace(/%\{PYRITE_TYPE_ARRAY\}/g, 'Array')
+      .replace(/%\{PYRITE_TYPE_STRING\}/g, 'String')
+      .replace(/%\{PYRITE_TYPE_BOOLEAN\}/g, 'Boolean')
+      .replace(/%\{PYRITE_TYPE_VECTOR\}/g, 'Vector')
+      .replace(/%\{PYRITE_TYPE_PLAYER_STATE\}/g, 'PlayerState')
+      .replace(/%\{PYRITE_TYPE_PLAYER_INVENTORY_ITEM\}/g, 'PlayerInventoryItem')
+      .replace(/%\{PYRITE_TYPE_SOLDIERSTATE\}/g, 'SoldierState')
+      .replace(/%\{PYRITE_TYPE_SOLDIER\}/g, 'Soldier')
+      .replace(/%\{PYRITE_TYPE_ANY\}/g, 'any')
+      .replace(/%\{PYRITE_TYPE_[^}]+\}/g, '') // fallback: remove unknown type tokens
+      .replace(/%\{PYRITE_EVENT_ONGOING\}/g, 'Ongoing')
+      .replace(/%\{PYRITE_EVENT\}/g, 'Event')
+      .replace(/%\{PYRITE_CONDITION\}/g, 'Condition')
+      .replace(/%\{PYRITE_ACTIONS\}/g, 'Actions')
+      .replace(/%\{PYRITE_RULE\}/g, 'Rule')
+      .replace(/%\{PYRITE_OBJECT_GLOBAL\}/g, 'Global')
+      .replace(/%\{ID_ARRIVAL_MODBUILDER_OBJECT_PLAYER\}/g, 'Player')
+      .replace(/%\{ID_ARRIVAL_MODBUILDER_OBJECT_TEAM\}/g, 'Team')
+      .replace(/%\{ID_ARRIVAL_MODBUILDER_OBJECT_VEHICLE\}/g, 'Vehicle')
+      .replace(/%\{ID_ARRIVAL_MODBUILDER_OBJECT_CAPTUREPOINT\}/g, 'CapturePoint')
+      .replace(/%\{ID_ARRIVAL_BLOCK_EVENTPLAYER\}/g, 'EventPlayer')
+      .replace(/%\{ID_ARRIVAL_BLOCK_EVENTTEAM\}/g, 'EventTeam')
+      .replace(/%\{ID_ARRIVAL_BLOCK_[^}]+\}/g, '')
+      .replace(/%\{help\.common\.value-true\}/g, 'True')
+      .replace(/%\{help\.common\.value-false\}/g, 'False')
+      .replace(/%\{help\.common\.[^}]+\}/g, '')
+      .replace(/%\{[^}]+\}/g, '')
+      // Collapse horizontal whitespace but preserve newlines
+      .replace(/[ \t]+/g, ' ')
+      .replace(/^\s+|\s+$/gm, '')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim()
+
+    const payloads = new Map()
+    if (payloadsSplit.length > 1) {
+      const payloadsStr = payloadsSplit[1]
+        .replace(/^_/, '')            // remove leading underscore
+        .replace(/_$/, '')            // remove trailing underscore
+        .trim()
+
+      // Parse each %{ID_ARRIVAL_BLOCK_XXX} (description) pair
+      const payloadPattern = /%\{ID_ARRIVAL_BLOCK_([^}]+)\}\s*(?:\(([^)]*)\))?/g
+      let match
+      while ((match = payloadPattern.exec(payloadsStr)) !== null) {
+        const blockType = match[1]
+        const payloadDesc = (match[2] || '').trim()
+        if (payloadDesc) {
+          payloads.set(blockType, payloadDesc)
+        }
+      }
+    }
+
+    eventData.set(key, { description, payloads })
+  }
+
+  console.log(`  Found ${eventData.size} events in i18n`)
+  return eventData
+}
+
 async function main () {
   console.log(`Reading block definitions from ${definitionsFile}...`)
   const raw = await readFile(definitionsFile, 'utf8')
   const data = JSON.parse(raw)
+
+  // Fetch i18n event data
+  let i18nEventData
+  try {
+    i18nEventData = await fetchI18nEventData()
+  } catch (err) {
+    console.warn(`Warning: could not fetch i18n: ${err.message}`)
+    console.warn('Proceeding without i18n descriptions')
+    i18nEventData = new Map()
+  }
 
   const events = data.events || []
   const values = data.values || []
@@ -181,6 +298,22 @@ async function main () {
   lines.push('')
   lines.push('Events trigger when something happens in the game. Each event has a set of parameters (payloads) that provide context about what occurred.')
   lines.push('')
+  lines.push('In the Blocky editor, payload blocks are prefixed with `Event` (e.g. `EventPlayer`, `EventOtherPlayer`, `EventDamageType`).')
+  lines.push('')
+
+  // Add Ongoing event type description from i18n
+  const ongoingI18n = i18nEventData.get('ongoing')
+  if (ongoingI18n?.description) {
+    const ongoingDesc = ongoingI18n.description
+      // The raw text has _Note: which should become **Note:**
+      // Also remove trailing _ italic marker
+      .replace(/_Note:/g, '**Note:**')
+      .replace(/_$/g, '')
+    lines.push('### Ongoing')
+    lines.push('')
+    lines.push(ongoingDesc)
+    lines.push('')
+  }
 
   // Group events by their general category (ongoing, ai, player, etc.)
   const eventCategories = {
@@ -223,16 +356,31 @@ async function main () {
 
     for (const ev of evts) {
       const params = ev.parameters || []
-      const paramStr = params.map(p => `\`${p.name}\``).join(', ')
 
       lines.push(`#### ${ev.name}`)
       lines.push('')
 
-      if (paramStr) {
-        lines.push(`| Payload | Type |`)
-        lines.push(`| --- | --- |`)
+      // Look up i18n description and payload descriptions
+      const i18nKey = eventNameToI18nKey(ev.name)
+      const i18nInfo = i18nEventData.get(i18nKey)
+
+      // Emit description
+      if (i18nInfo?.description) {
+        lines.push(`${i18nInfo.description}`)
+        lines.push('')
+      }
+
+      // Emit payload table
+      if (params.length > 0) {
+        lines.push(`| Payload | Type | Description |`)
+        lines.push(`| --- | --- | --- |`)
         for (const p of params) {
-          lines.push(`| \`${p.name}\` | ${typeToDisplay(p.name)} |`)
+          const blocklyName = eventParamToBlocklyName[p.name] || `Event${p.name}`
+          // Look up payload description from i18n
+          // i18n keys are uppercase blockly names, e.g. EventPlayer -> EVENTPLAYER
+          const i18nPayloadKey = blocklyName.toUpperCase()
+          const desc = i18nInfo?.payloads?.get(i18nPayloadKey) || ''
+          lines.push(`| \`${blocklyName}\` | ${typeToDisplay(p.name)} | ${desc} |`)
         }
         lines.push('')
       } else {

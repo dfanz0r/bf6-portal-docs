@@ -22,275 +22,362 @@ This page documents all available Blocky scripting blocks in Battlefield Portal.
 
 Events trigger when something happens in the game. Each event has a set of parameters (payloads) that provide context about what occurred.
 
+In the Blocky editor, payload blocks are prefixed with `Event` (e.g. `EventPlayer`, `EventOtherPlayer`, `EventDamageType`).
+
+### Ongoing
+
+Ongoing Event types continually check if its Condition has become True. If so, the Actions will be executed once. In order for the Event to execute again, the Condition must become False before becoming True again.
+Ongoing Event types currently exist within the context of:
+- Global
+- Player
+- Team
+- Vehicle
+- CapturePoint
+Within the Player and Team contexts, payload value blocks, such as EventPlayer and EventTeam, can be used to refer to the specific Player or Team within the Event. **Note:** In FFA, Ongoing Team will not execute at all.
+
 ### Player
 
 #### OnPlayerDamaged
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
-| `OtherPlayer` | OtherPlayer |
-| `DamageType` | DamageType |
-| `WeaponUnlock` | WeaponUnlock |
+This will trigger when a Player takes damage.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player | Damaged Player |
+| `EventOtherPlayer` | OtherPlayer | Damager Player |
+| `EventDamageType` | DamageType | Damage Type |
+| `EventWeapon` | WeaponUnlock | Damager Weapon |
 
 #### OnPlayerDeployed
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
+This will trigger whenever a Player deploys.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player | Deployed Player |
 
 #### OnPlayerDied
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
-| `OtherPlayer` | OtherPlayer |
-| `DeathType` | DeathType |
-| `WeaponUnlock` | WeaponUnlock |
+This will trigger whenever a Player dies.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player | Victim |
+| `EventOtherPlayer` | OtherPlayer | Killer |
+| `EventDeathType` | DeathType | Victim Death Type |
+| `EventWeapon` | WeaponUnlock | Killing Weapon |
 
 #### OnPlayerEarnedKill
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
-| `OtherPlayer` | OtherPlayer |
-| `DeathType` | DeathType |
-| `WeaponUnlock` | WeaponUnlock |
+This will trigger when a Player earns a kill against another Player.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player | Killer |
+| `EventOtherPlayer` | OtherPlayer | Victim |
+| `EventDeathType` | DeathType | Victim Death Type |
+| `EventWeapon` | WeaponUnlock | Killing Weapon |
 
 #### OnPlayerEarnedKillAssist
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
-| `OtherPlayer` | OtherPlayer |
+This will trigger when a Player earns a kill assist.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player | Assist Player |
+| `EventOtherPlayer` | OtherPlayer | Victim |
 
 #### OnPlayerEnterAreaTrigger
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
-| `AreaTrigger` | AreaTrigger |
+This will trigger when a Player enters a AreaTrigger
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player |  |
+| `EventAreaTrigger` | AreaTrigger |  |
 
 #### OnPlayerEnterCapturePoint
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
-| `CapturePoint` | CapturePoint |
+This will trigger when a Player enters a CapturePoint capturing area.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player | Player Entering Capture Area |
+| `EventCapturePoint` | CapturePoint | Capture Point Being Entered |
 
 #### OnPlayerEnterVehicle
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
-| `Vehicle` | Vehicle |
+This will trigger when a Player enters a Vehicle.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player | Player Who Enters |
+| `EventVehicle` | Vehicle | Vehicle |
 
 #### OnPlayerEnterVehicleSeat
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
-| `Vehicle` | Vehicle |
-| `Seat` | Seat |
+This will trigger when a Player enters a Vehicle seat.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player | Player Who Enters Seat |
+| `EventVehicle` | Vehicle | Vehicle |
+| `EventSeat` | Seat | Seat Index |
 
 #### OnPlayerEnterVL7Cloud
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
-| `VL7Cloud` | VL7Cloud |
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player |  |
+| `EventVL7Cloud` | VL7Cloud |  |
 
 #### OnPlayerExitAreaTrigger
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
-| `AreaTrigger` | AreaTrigger |
+This will trigger when a Player exits a AreaTrigger
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player |  |
+| `EventAreaTrigger` | AreaTrigger |  |
 
 #### OnPlayerExitCapturePoint
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
-| `CapturePoint` | CapturePoint |
+This will trigger when a Player exits a CapturePoint capturing area.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player | Player Exiting Capture Area |
+| `EventCapturePoint` | CapturePoint | Capture Point Being Exited |
 
 #### OnPlayerExitVehicle
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
-| `Vehicle` | Vehicle |
+This will trigger when a Player exits a Vehicle.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player | Player Who Exits |
+| `EventVehicle` | Vehicle | Vehicle |
 
 #### OnPlayerExitVehicleSeat
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
-| `Vehicle` | Vehicle |
-| `Seat` | Seat |
+This will trigger when a Player exits a Vehicle seat.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player | Player Who Exits Seat |
+| `EventVehicle` | Vehicle | Vehicle |
+| `EventSeat` | Seat | Seat Index |
 
 #### OnPlayerExitVL7Cloud
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
-| `VL7Cloud` | VL7Cloud |
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player |  |
+| `EventVL7Cloud` | VL7Cloud |  |
 
 #### OnPlayerInteract
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
-| `InteractPoint` | InteractPoint |
+This will trigger when a Player starts interacting with an interaction point.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player |  |
+| `EventInteractPoint` | InteractPoint |  |
 
 #### OnPlayerJoinGame
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
+This will trigger when a Player joins the game.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player | Joined Player |
 
 #### OnPlayerLeaveGame
 
-| Payload | Type |
-| --- | --- |
-| `Number` | Number |
+This will trigger when any player leaves the game.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventNumber` | Number |  |
 
 #### OnPlayerSwitchTeam
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
-| `Team` | Team |
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player |  |
+| `EventTeam` | Team |  |
 
 #### OnPlayerUIButtonEvent
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
-| `UIWidget` | UIWidget |
-| `UIButtonEvent` | UIButtonEvent |
+This will trigger when a Player interacts with an UI button.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player |  |
+| `EventUIWidget` | UIWidget |  |
+| `EventUIButtonEvent` | UIButtonEvent |  |
 
 #### OnPlayerUndeploy
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
+This will trigger when the Player dies and returns to the deploy screen.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player | Dead Player |
 
 ### Capture Point
 
 #### OnCapturePointCaptured
 
-| Payload | Type |
-| --- | --- |
-| `CapturePoint` | CapturePoint |
+This will trigger when a team takes control of a CapturePoint.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventCapturePoint` | CapturePoint | Captured Capture Point |
 
 #### OnCapturePointCapturing
 
-| Payload | Type |
-| --- | --- |
-| `CapturePoint` | CapturePoint |
+This will trigger when a team begins capturing a CapturePoint.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventCapturePoint` | CapturePoint | Capture Point Being Captured |
 
 #### OnCapturePointLost
 
-| Payload | Type |
-| --- | --- |
-| `CapturePoint` | CapturePoint |
+This will trigger when a team loses control of a CapturePoint.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventCapturePoint` | CapturePoint | Lost Capture Point |
 
 ### Vehicle
 
 #### OnVehicleDestroyed
 
-| Payload | Type |
-| --- | --- |
-| `Vehicle` | Vehicle |
+This will trigger when a Vehicle is destroyed.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventVehicle` | Vehicle | Destroyed Vehicle |
 
 #### OnVehicleSpawned
 
-| Payload | Type |
-| --- | --- |
-| `Vehicle` | Vehicle |
+This will trigger when a Vehicle is called into the map.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventVehicle` | Vehicle | Spawned Vehicle |
 
 ### MCOM
 
 #### OnMCOMArmed
 
-| Payload | Type |
-| --- | --- |
-| `MCOM` | MCOM |
+This will trigger when a MCOM is armed.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventMCOM` | MCOM |  |
 
 #### OnMCOMDefused
 
-| Payload | Type |
-| --- | --- |
-| `MCOM` | MCOM |
+This will trigger when a MCOM is defused.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventMCOM` | MCOM |  |
 
 #### OnMCOMDestroyed
 
-| Payload | Type |
-| --- | --- |
-| `MCOM` | MCOM |
+This will trigger when a MCOM is destroyed.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventMCOM` | MCOM |  |
 
 ### AI
 
 #### OnAIMoveToFailed
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
+This will trigger when an AI action to move failed.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player |  |
 
 #### OnAIMoveToRunning
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
+This will trigger when an AI action to move is still running.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player |  |
 
 #### OnAIMoveToSucceeded
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
+This will trigger when an AI action to move succeeded.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player |  |
 
 #### OnAIParachuteRunning
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
+This will trigger when an AI parachute action is running.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player |  |
 
 #### OnAIParachuteSucceeded
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
+This will trigger when an AI parachute action has succeeded.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player |  |
 
 #### OnAIWaypointIdleFailed
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
+This will trigger when following a waypoint failed.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player |  |
 
 #### OnAIWaypointIdleRunning
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
+This will trigger when following a waypoint is still running.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player |  |
 
 #### OnAIWaypointIdleSucceeded
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
+This will trigger when following a waypoint succeeded.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player |  |
 
 ### Game Mode
 
 #### OnGameModeEnding
 
+This will trigger when the gamemode ends.
+
 No payload parameters.
 
 #### OnGameModeStarted
 
+This will trigger at the start of the gamemode.
+
 No payload parameters.
 
 #### OnTimeLimitReached
+
+This will trigger when the gamemode time limit has been reached.
 
 No payload parameters.
 
@@ -298,82 +385,94 @@ No payload parameters.
 
 #### OnGolmudTrainStopped
 
-| Payload | Type |
-| --- | --- |
-| `GolmudTrainStopReason` | GolmudTrainStopReason |
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventGolmudTrainStopReason` | GolmudTrainStopReason |  |
 
 #### OnMandown
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
-| `OtherPlayer` | OtherPlayer |
+This will trigger when a Player is forced into the mandown state.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player | Downed Player |
+| `EventOtherPlayer` | OtherPlayer |  |
 
 #### OnPortalGadgetAimStart
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player |  |
 
 #### OnPortalGadgetAimStop
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player |  |
 
 #### OnPortalGadgetFireStart
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player |  |
 
 #### OnPortalGadgetFireStop
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player |  |
 
 #### OnPortalGadgetLaserToggle
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
-| `Boolean` | Boolean |
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player |  |
+| `EventBoolean` | Boolean |  |
 
 #### OnRayCastHit
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
-| `Point` | Point |
-| `Normal` | Normal |
+This will trigger when a Raycast hits a target.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player |  |
+| `EventPoint` | Point |  |
+| `EventNormal` | Normal |  |
 
 #### OnRayCastMissed
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
+This will trigger when a Raycast misses.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player |  |
 
 #### OnRevived
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
-| `OtherPlayer` | OtherPlayer |
+This will trigger when a Player is revived by another Player.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player | Revived Player |
+| `EventOtherPlayer` | OtherPlayer | Reviver Player |
 
 #### OnRingOfFireZoneSizeChange
 
-| Payload | Type |
-| --- | --- |
-| `RingOfFire` | RingOfFire |
-| `Number` | Number |
+This will trigger when a RingOfFire changes size.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventRingOfFire` | RingOfFire |  |
+| `EventNumber` | Number |  |
 
 #### OnSpawnerSpawned
 
-| Payload | Type |
-| --- | --- |
-| `Player` | Player |
-| `Spawner` | Spawner |
+This will trigger when a spawner is spawned in.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| `EventPlayer` | Player |  |
+| `EventSpawner` | Spawner |  |
 
 ## Values
 
