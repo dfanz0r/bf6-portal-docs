@@ -63,6 +63,10 @@ export default defineConfig({
       }
     },
 
+    footer: {
+      message: 'This site is not affiliated with, endorsed by, or sponsored by Electronic Arts, EA, Battlefield Studios, or the Battlefield franchise. All trademarks are the property of their respective owners.'
+    },
+
     socialLinks: [
       { icon: 'github', link: 'https://github.com/dfanz0r/bf6-portal-docs' }
     ]
