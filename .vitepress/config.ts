@@ -64,7 +64,7 @@ export default defineConfig({
     },
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/vuejs/vitepress' }
+      { icon: 'github', link: 'https://github.com/dfanz0r/bf6-portal-docs' }
     ]
   }
 })
