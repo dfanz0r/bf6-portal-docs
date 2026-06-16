@@ -4,7 +4,7 @@ layout: home
 hero:
   name: "Portal Docs"
   text: "Battlefield Portal docs"
-  tagline: Rough notes for map creators, scripting, TypeScript, and optimization.
+  tagline: Rough notes for map creators, scripting, TypeScript, and optimization. Still WIP!
   actions:
     - theme: brand
       text: Start here
