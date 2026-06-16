@@ -13,18 +13,21 @@ This page tracks performance notes and optimization discoveries for Portal.
 ## Main areas
 
 ### Map creation
+
 - Object count
 - Visibility and clutter
 - Spawn density
 - Large connected spaces versus segmented spaces
 
 ### Block code
+
 - Event spam
 - Deep chains of logic
 - Duplicate logic paths
 - Excessive state checks
 
 ### TypeScript
+
 - Update frequency
 - Expensive loops
 - Repeated allocations
@@ -42,5 +45,4 @@ This page tracks performance notes and optimization discoveries for Portal.
 
 - Safe limits and bottlenecks
 - Things that look expensive but are fine
-- Performance wins that show up in real playtests
 - Cases where a simpler solution is better

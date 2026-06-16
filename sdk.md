@@ -20,9 +20,7 @@ This page documents how to get the Portal SDK and shows the latest version avail
 2. Log in or create an account
 3. Click **Download SDK**
 
-Or download it directly here:
-
-- [PortalSDK.zip](https://download.portal.battlefield.com/PortalSDK.zip)
+Or download it directly below
 
 ## Current SDK Version
 
@@ -39,13 +37,3 @@ Version: **{{ sdkVersion.currentVersion || 'unavailable' }}**
   * Newer versions may be available
   </p>
 </small>
-
-## Notes
-
-- The version is baked into the page during the docs build.
-- If the endpoint is unavailable or unauthorized at build time, the page will show `unavailable`.
-- Set `PORTAL_SDK_VERSION` during the build to manually bake in a known version.
-- Set `PORTAL_DOWNLOAD_COOKIE` during the build if the endpoint requires authenticated cookies.
-- `npm run docs:build` checks the current SDK version, downloads it only if it is not already cached, and regenerates the [API Reference](/api-reference).
-- Keep the direct download link here for quick access.
-- Update this page whenever the official install flow changes.
