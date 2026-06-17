@@ -15,8 +15,6 @@ const blockNameToI18nKey = {
   'SetCapturePointNeutralizationTime': 'capturepointneutralizationtime'
 }
 
-// Inline descriptions for blocks that have no i18n entry at all
-
 
 function typeToDisplay (type) {
   // Convert PascalCase type names to readable ones
