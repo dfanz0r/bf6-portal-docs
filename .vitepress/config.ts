@@ -18,7 +18,7 @@ export default defineConfig({
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Introduction', link: '/introduction' },
-      { text: 'API Reference', link: '/api-reference' },
+      { text: 'TypeScript API Reference', link: '/typescript-api-reference' },
       { text: 'Block Code Reference', link: '/block-code-reference' }
     ],
 
@@ -45,7 +45,7 @@ export default defineConfig({
         text: 'Reference',
         collapsed: false,
         items: [
-          { text: 'API Reference', link: '/api-reference' },
+          { text: 'TypeScript API Reference', link: '/typescript-api-reference' },
           { text: 'Block Code Reference', link: '/block-code-reference' }
         ]
       }

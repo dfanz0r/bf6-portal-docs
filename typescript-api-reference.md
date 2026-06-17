@@ -171,7 +171,7 @@ onMounted(() => nextTick(() => {
 watch(apiFilter, () => nextTick(applyApiFilter))
 </script>
 
-# API Reference
+# TypeScript API Reference
 
 SDK version: **1.3.2.0**
 

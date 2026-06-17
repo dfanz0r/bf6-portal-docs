@@ -13,7 +13,7 @@ const versionsUrl = 'https://download.portal.battlefield.com/versions.json'
 const sdkDownloadUrl = 'https://download.portal.battlefield.com/PortalSDK.zip'
 const cacheRoot = '.cache/portal-sdk'
 const sdkVersionOut = '.vitepress/sdk-version.json'
-const apiReferenceOut = 'api-reference.md'
+const apiReferenceOut = 'typescript-api-reference.md'
 
 const scriptDir = dirname(new URL(import.meta.url).pathname)
 
@@ -603,7 +603,7 @@ async function generateApiReference (zipPath, release) {
     modTypes = await readZipFile(zipPath, 'code/types/mod/index.d.ts')
     modlib = await readZipFile(zipPath, 'code/modlib/index.ts')
   } catch (err) {
-    await writeFile(apiReferenceOut, `# API Reference\n\nSDK version: **${release.version}**\n\nCould not inspect the SDK zip. Make sure \`unzip\` is installed.\n\nError: ${err instanceof Error ? err.message : String(err)}\n`, 'utf8')
+    await writeFile(apiReferenceOut, `# TypeScript API Reference\n\nSDK version: **${release.version}**\n\nCould not inspect the SDK zip. Make sure \`unzip\` is installed.\n\nError: ${err instanceof Error ? err.message : String(err)}\n`, 'utf8')
     return
   }
 
@@ -710,7 +710,7 @@ onMounted(() => nextTick(() => {
   setupDetailsAnimations()
   applyApiFilter()
 }))
-watch(apiFilter, () => nextTick(applyApiFilter))\n</script>\n\n# API Reference\n\nSDK version: **${release.version}**\n\nThis page is generated from the SDK's \`code/types/mod/index.d.ts\` and \`code/modlib/index.ts\` files.\n\n<div class=\"api-filter\">\n  <label for=\"api-filter-input\">Filter API</label>\n  <input id=\"api-filter-input\" v-model=\"apiFilter\" type=\"search\" placeholder=\"Search functions, types, comments, signatures...\" />\n</div>\n\n${body}\n`, 'utf8')
+watch(apiFilter, () => nextTick(applyApiFilter))\n</script>\n\n# TypeScript API Reference\n\nSDK version: **${release.version}**\n\nThis page is generated from the SDK's \`code/types/mod/index.d.ts\` and \`code/modlib/index.ts\` files.\n\n<div class=\"api-filter\">\n  <label for=\"api-filter-input\">Filter API</label>\n  <input id=\"api-filter-input\" v-model=\"apiFilter\" type=\"search\" placeholder=\"Search functions, types, comments, signatures...\" />\n</div>\n\n${body}\n`, 'utf8')
 }
 
 async function main () {
