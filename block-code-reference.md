@@ -498,11 +498,16 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### AppendToArray
 
+Returns a copy of an Array with the provided value appended to the end.
+_Note: It is not possible for an array to contain arrays. Attempting to append an array to an array will concatenate them instead._
+
 | Signature | Return Type |
 | --- | --- |
 | `(array: Array, any)` | Array |
 
 ##### ArraySlice
+
+Returns a copy of the specified Array containing only values from a specified index range.
 
 | Signature | Return Type |
 | --- | --- |
@@ -510,11 +515,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### CountOf
 
+Returns the Number of elements in the specified Array.
+
 | Signature | Return Type |
 | --- | --- |
 | `(array: Array)` | Number |
 
 ##### CurrentArrayElement
+
+Returns a reference to the current Array element being evaluated. Only used for FilteredArray, MappedArray, SortedArray, IsTrueForAll, and IsTrueForAny.
 
 | Signature | Return Type |
 | --- | --- |
@@ -522,17 +531,23 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### EmptyArray
 
+Returns an initialized empty Array.
+
 | Signature | Return Type |
 | --- | --- |
 | `()` | Array |
 
 ##### FilteredArray
 
+Returns a filtered version of the specified Array based on the condition provided. This block cycles through the entire array. You can utilize the CurrentArrayElement block to represent the element in the Array for each iteration. For an Array like AllPlayers, CurrentArrayElement would represent each Player in that Array. You can then build your filter condition based on a property of that Player (like score, or some custom player Variable value).
+
 | Signature | Return Type |
 | --- | --- |
 | `(array: Array, any)` | Array |
 
 ##### FirstOf
+
+Returns the first value of the specified Array.
 
 | Signature | Return Type |
 | --- | --- |
@@ -546,11 +561,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### IsTrueForAll
 
+Returns True if the provided condition is True for every element in the provided Array.
+
 | Signature | Return Type |
 | --- | --- |
 | `(array: Array, any)` | Boolean |
 
 ##### IsTrueForAny
+
+Returns True if the provided condition is True for at least one element in the provided Array.
 
 | Signature | Return Type |
 | --- | --- |
@@ -558,11 +577,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### LastOf
 
+Returns the value at the end of the specified Array.
+
 | Signature | Return Type |
 | --- | --- |
 | `(array: Array)` | void |
 
 ##### MappedArray
+
+Returns a copy of the provided Array with the values evaluated using the mapped expression provided. The following example utilizes the AllPlayers Array with GetGameModeScore and CurrentArrayElement to return an Array of Player scores.
 
 | Signature | Return Type |
 | --- | --- |
@@ -570,11 +593,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### RandomizedArray
 
+Returns a copy of the specified Array with the values in a random order.
+
 | Signature | Return Type |
 | --- | --- |
 | `(array: Array)` | Array |
 
 ##### RandomValueInArray
+
+Returns a random value from the specified Array.
 
 | Signature | Return Type |
 | --- | --- |
@@ -582,11 +609,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### SortedArray
 
+Returns a sorted version of the specified Array given a Number value to sort by (ascending). CurrentArrayElement can be utilized to represent each value in the Array. In the following example, CurrentArrayElement is used to represent each Player in AllPlayers. GetGameModeScore is used with CurrentArrayElement to return the score, used as a rank, to sort the Array in ascending order.
+
 | Signature | Return Type |
 | --- | --- |
 | `(array: Array, index: Number)` | Array |
 
 ##### ValueInArray
+
+Returns the value found at a provided index of an Array.
 
 | Signature | Return Type |
 | --- | --- |
@@ -628,11 +659,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### EventAreaTrigger
 
+Returns the AreaTrigger payload from the Event context.
+
 | Signature | Return Type |
 | --- | --- |
 | `()` | AreaTrigger |
 
 ##### EventBoolean
+
+Returns the Boolean value from the Event context.
 
 | Signature | Return Type |
 | --- | --- |
@@ -640,11 +675,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### EventCapturePoint
 
+Returns the CapturePoint payload from the Rule Event context.
+
 | Signature | Return Type |
 | --- | --- |
 | `()` | CapturePoint |
 
 ##### EventDamageType
+
+Returns the DamageType of the victim from the OnPlayerDamaged Event context.
 
 | Signature | Return Type |
 | --- | --- |
@@ -652,11 +691,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### EventDeathType
 
+Returns the DeathType of the victim from the OnPlayerDied or OnPlayerEarnedKill Event context.
+
 | Signature | Return Type |
 | --- | --- |
 | `()` | DeathType |
 
 ##### EventEmplacementSpawner
+
+Returns the EmplacementSpawner payload from the Event context.
 
 | Signature | Return Type |
 | --- | --- |
@@ -664,11 +707,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### EventFixedCamera
 
+Returns the FixedCamera payload from the Event context.
+
 | Signature | Return Type |
 | --- | --- |
 | `()` | FixedCamera |
 
 ##### EventGolmudTrainStopReason
+
+Returns the PortalEnum value from the Event context.
 
 | Signature | Return Type |
 | --- | --- |
@@ -676,11 +723,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### EventHQ
 
+Returns the HQ payload from the Event context.
+
 | Signature | Return Type |
 | --- | --- |
 | `()` | HQ |
 
 ##### EventInteractPoint
+
+Returns the InteractPoint payload from the Event context.
 
 | Signature | Return Type |
 | --- | --- |
@@ -688,11 +739,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### EventMCOM
 
+Returns a MCOM payload from the Rule Event context.
+
 | Signature | Return Type |
 | --- | --- |
 | `()` | MCOM |
 
 ##### EventNormal
+
+Returns the Vector value from the Event context.
 
 | Signature | Return Type |
 | --- | --- |
@@ -700,11 +755,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### EventNumber
 
+Returns the Number value from the Event context.
+
 | Signature | Return Type |
 | --- | --- |
 | `()` | Number |
 
 ##### EventOtherPlayer
+
+Returns the 2nd Player payload from the Rule Event context.
 
 | Signature | Return Type |
 | --- | --- |
@@ -712,11 +771,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### EventPlayer
 
+Returns the 1st Player payload from the Rule Event context.
+
 | Signature | Return Type |
 | --- | --- |
 | `()` | Player |
 
 ##### EventPoint
+
+Returns the Vector value from the Event context.
 
 | Signature | Return Type |
 | --- | --- |
@@ -724,11 +787,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### EventRingOfFire
 
+Returns the RingOfFire payload from the Event context.
+
 | Signature | Return Type |
 | --- | --- |
 | `()` | RingOfFire |
 
 ##### EventSeat
+
+Returns the Number seat index payload of a Vehicle from the Rule Event context.
 
 | Signature | Return Type |
 | --- | --- |
@@ -736,11 +803,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### EventSector
 
+Returns the Sector payload from the Event context.
+
 | Signature | Return Type |
 | --- | --- |
 | `()` | Sector |
 
 ##### EventSpawner
+
+Returns the Spawner payload from the Event context.
 
 | Signature | Return Type |
 | --- | --- |
@@ -748,11 +819,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### EventSpawnPoint
 
+Returns the SpawnPoint payload from the Event context.
+
 | Signature | Return Type |
 | --- | --- |
 | `()` | SpawnPoint |
 
 ##### EventTeam
+
+Returns the Team payload from the Ongoing Team Event context.
 
 | Signature | Return Type |
 | --- | --- |
@@ -760,11 +835,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### EventUIButtonEvent
 
+Returns the PortalEnum value from the Event context.
+
 | Signature | Return Type |
 | --- | --- |
 | `()` | PortalEnum |
 
 ##### EventUIWidget
+
+Returns the UIWidget payload from the Event context.
 
 | Signature | Return Type |
 | --- | --- |
@@ -772,11 +851,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### EventVehicle
 
+Returns the Vehicle payload from the Rule Event context.
+
 | Signature | Return Type |
 | --- | --- |
 | `()` | Vehicle |
 
 ##### EventVehicleSpawner
+
+Returns the VehicleSpawner payload from the Event context.
 
 | Signature | Return Type |
 | --- | --- |
@@ -784,11 +867,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### EventVL7Cloud
 
+Returns the VL7Cloud payload from the Event context.
+
 | Signature | Return Type |
 | --- | --- |
 | `()` | VL7Cloud |
 
 ##### EventWaypointPath
+
+Returns the WaypointPath payload from the Event context.
 
 | Signature | Return Type |
 | --- | --- |
@@ -796,11 +883,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### EventWeapon
 
+Returns the WeaponUnlock of the weapon used to kill the victim from the OnPlayerDied or OnPlayerEarnedKill Event context.
+
 | Signature | Return Type |
 | --- | --- |
 | `()` | WeaponUnlock |
 
 ##### EventWorldIcon
+
+Returns the WorldIcon payload from the Event context.
 
 | Signature | Return Type |
 | --- | --- |
@@ -820,12 +911,16 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### GetGameModeScore
 
+Returns the current gamemode score of the provided Player or Team.
+
 | Signature | Return Type |
 | --- | --- |
 | `(player: Player)` | Number |
 | `(team: Team)` | Number |
 
 ##### GetMatchTimeElapsed
+
+Returns the amount of time left (seconds) in the current gamemode.
 
 | Signature | Return Type |
 | --- | --- |
@@ -845,17 +940,23 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### GetRoundTime
 
+Returns the time limit set for the gamemode (in seconds).
+
 | Signature | Return Type |
 | --- | --- |
 | `()` | Number |
 
 ##### GetTargetScore
 
+Returns the gamemode target score needed for victory.
+
 | Signature | Return Type |
 | --- | --- |
 | `()` | Number |
 
 ##### IsFaction
+
+Returns True if the provided Team is using soldiers from the specified Factions.
 
 | Signature | Return Type |
 | --- | --- |
@@ -923,6 +1024,8 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### IsCurrentMap
 
+Returns True if the provided Maps is the name of the current map.
+
 | Signature | Return Type |
 | --- | --- |
 | `(maps: Enum_Maps)` | Boolean |
@@ -938,11 +1041,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### And
 
+Returns a Boolean value based on whether both of the provided inputs return True.
+
 | Signature | Return Type |
 | --- | --- |
 | `(boolean0: Boolean, boolean1: Boolean)` | Boolean |
 
 ##### Equals
+
+Returns a Boolean indicating if two values are equal to each other.
 
 | Signature | Return Type |
 | --- | --- |
@@ -950,11 +1057,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### GreaterThan
 
+Returns a Boolean indicating if the 1st provided value is greater than the 2nd provided value.
+
 | Signature | Return Type |
 | --- | --- |
 | `(number0: Number, number1: Number)` | Boolean |
 
 ##### GreaterThanEqualTo
+
+Returns a Boolean indicating if the 1st provided value is greater than the 2nd provided value.
 
 | Signature | Return Type |
 | --- | --- |
@@ -962,13 +1073,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### IfThenElse
 
-*ID_ARRIVAL_BLOCK_IFTHENELSE*
+Returns the 1st provided value if the condition is True, otherwise, returns the 2nd provided value.
 
 | Signature | Return Type |
 | --- | --- |
 | `(condition: Boolean, any, any)` | void |
 
 ##### IsType
+
+Returns True if the provided value is equal to the specified Types.
 
 | Signature | Return Type |
 | --- | --- |
@@ -982,11 +1095,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### LessThan
 
+Returns a Boolean indicating if the 1st provided value is less than the 2nd provided value.
+
 | Signature | Return Type |
 | --- | --- |
 | `(left: Number, right: Number)` | Boolean |
 
 ##### LessThanEqualTo
+
+Returns a Boolean indicating if the 1st provided value is less than or equal to the 2nd provided value.
 
 | Signature | Return Type |
 | --- | --- |
@@ -994,11 +1111,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### Not
 
+Return a Boolean of the opposite value of the Boolean input.
+
 | Signature | Return Type |
 | --- | --- |
 | `(boolean: Boolean)` | Boolean |
 
 ##### NotEqualTo
+
+Returns a Boolean indicating if two values are not equal to each other.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1006,11 +1127,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### Or
 
+Returns a Boolean based on whether either of the two inputs are True.
+
 | Signature | Return Type |
 | --- | --- |
 | `(boolean0: Boolean, boolean1: Boolean)` | Boolean |
 
 ##### Xor
+
+Returns True if the provided Boolean inputs return different values.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1028,11 +1153,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### AbsoluteValue
 
+Returns the unsigned value of the provided Number input.
+
 | Signature | Return Type |
 | --- | --- |
 | `(number: Number)` | Number |
 
 ##### Add
+
+Returns the sum of two Number or two Vector values.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1041,11 +1170,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### AngleBetweenVectors
 
+Returns the angle (in degrees) between two provided Vector values.
+
 | Signature | Return Type |
 | --- | --- |
 | `(vector0: Vector, vector1: Vector)` | Number |
 
 ##### AngleDifference
+
+Returns the difference between two angles (in degrees).
 
 | Signature | Return Type |
 | --- | --- |
@@ -1053,11 +1186,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### ArccosineInDegrees
 
+Returns the inverse cosine of a provided Number value in degrees.
+
 | Signature | Return Type |
 | --- | --- |
 | `(number: Number)` | Number |
 
 ##### ArccosineInRadians
+
+Returns the inverse cosine of a provided Number value in radians.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1065,11 +1202,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### ArcsineInDegrees
 
+Returns the inverse sine of a provided Number value in degrees.
+
 | Signature | Return Type |
 | --- | --- |
 | `(number: Number)` | Number |
 
 ##### ArcsineInRadians
+
+Returns the inverse sine of a provided Number value in radians.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1077,11 +1218,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### ArctangentInDegrees
 
+Returns the inverse tangent of a provided Number value in degrees.
+
 | Signature | Return Type |
 | --- | --- |
 | `(number: Number)` | Number |
 
 ##### ArctangentInRadians
+
+Returns the inverse tangent of a provided Number value in radians.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1089,17 +1234,23 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### Ceiling
 
+Returns the value rounded up to the nearest integer.
+
 | Signature | Return Type |
 | --- | --- |
 | `(number: Number)` | Number |
 
 ##### CosineFromDegrees
 
+Returns the cosine value of a specified angle in degrees.
+
 | Signature | Return Type |
 | --- | --- |
 | `(number: Number)` | Number |
 
 ##### CosineFromRadians
+
+Returns the cosine value of a specified angle in radians.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1113,11 +1264,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### CreateVector
 
+Returns a Vector composed of three provided 'X' (left), 'Y' (up), and 'Z' (forward) values.
+
 | Signature | Return Type |
 | --- | --- |
 | `(number0: Number, number1: Number, number2: Number)` | Vector |
 
 ##### CrossProduct
+
+Returns the cross product between two Vector values. If the two Vector inputs are parallel, the result will be zero.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1125,11 +1280,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### DegreesToRadians
 
+Returns a value in radians from a specified value in degrees.
+
 | Signature | Return Type |
 | --- | --- |
 | `(number: Number)` | Number |
 
 ##### DirectionFromAngles
+
+Returns a directional Vector from the provided horizontal (yaw) and vertical (pitch) angles (in degrees).
 
 | Signature | Return Type |
 | --- | --- |
@@ -1137,17 +1296,23 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### DirectionTowards
 
+Returns the direction, or normalized Vector, from a starting position and ending position.
+
 | Signature | Return Type |
 | --- | --- |
 | `(vector0: Vector, vector1: Vector)` | Vector |
 
 ##### DistanceBetween
 
+Returns the distance between a starting position and ending position.
+
 | Signature | Return Type |
 | --- | --- |
 | `(vector0: Vector, vector1: Vector)` | Number |
 
 ##### Divide
+
+Returns the ratio between two Number values or a Vector and Number value. A Vector divided by a Number will yield a scaled Vector.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1156,11 +1321,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### DotProduct
 
+Returns the dot product between two Vector values. If the two values are orthogonal to each other, the result will be zero.
+
 | Signature | Return Type |
 | --- | --- |
 | `(vector0: Vector, vector1: Vector)` | Number |
 
 ##### Floor
+
+Returns the value rounded down to the nearest integer.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1168,17 +1337,23 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### Max
 
+Returns the greater of the two Number values provided.
+
 | Signature | Return Type |
 | --- | --- |
 | `(number0: Number, number1: Number)` | Number |
 
 ##### Modulo
 
+Returns the remainder of the 1st provided value divided by the 2nd provided value.
+
 | Signature | Return Type |
 | --- | --- |
 | `(number0: Number, number1: Number)` | Number |
 
 ##### Multiply
+
+Returns the product of two Number values or the product of a Vector and Number value.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1187,11 +1362,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### Normalize
 
+Returns a unit-length normalization of a Vector.
+
 | Signature | Return Type |
 | --- | --- |
 | `(vector: Vector)` | Vector |
 
 ##### Pi
+
+Returns the constant value 3.14159
 
 | Signature | Return Type |
 | --- | --- |
@@ -1199,11 +1378,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### RadiansToDegrees
 
+Returns a value in degrees from a specified value in radians.
+
 | Signature | Return Type |
 | --- | --- |
 | `(number: Number)` | Number |
 
 ##### RaiseToPower
+
+Returns the 1st provided value raised to the power of the 2nd provided value.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1211,11 +1394,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### RandomReal
 
+Returns a random Number between a specified minimum and maximum value (inclusive).
+
 | Signature | Return Type |
 | --- | --- |
 | `(number0: Number, number1: Number)` | Number |
 
 ##### RoundToInteger
+
+Returns a whole Number rounded from the input value. The value rounds up if the decimal of the Number is greater than or equal to 0.5, and rounds down if it is less than 0.5.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1223,11 +1410,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### SineFromDegrees
 
+Returns the sine value of a specified angle in degrees.
+
 | Signature | Return Type |
 | --- | --- |
 | `(number: Number)` | Number |
 
 ##### SineFromRadians
+
+Returns the sine value of a specified angle in radians.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1235,11 +1426,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### SquareRoot
 
+Returns the square root of a provided Number value.
+
 | Signature | Return Type |
 | --- | --- |
 | `(number: Number)` | Number |
 
 ##### Subtract
+
+Returns the difference between two Number values or two Vector values.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1248,11 +1443,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### TangentFromDegrees
 
+Returns the tangent value of a specified angle in degrees.
+
 | Signature | Return Type |
 | --- | --- |
 | `(number: Number)` | Number |
 
 ##### TangentFromRadians
+
+Returns the tangent value of a specified angle in radians.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1264,11 +1463,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### AllCapturePoints
 
+Returns an Array of all capture points within a game.
+
 | Signature | Return Type |
 | --- | --- |
 | `()` | Array |
 
 ##### GetCapturePoint
+
+Returns the CapturePoint or MCOM corresponding to the provided CapturePoints or MCOMs respectively.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1276,11 +1479,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### GetCaptureProgress
 
+Returns a Number from zero to one corresponding to the capture progress of the provided CapturePoint.
+
 | Signature | Return Type |
 | --- | --- |
 | `(capturePoint: CapturePoint)` | Number |
 
 ##### GetCurrentOwnerTeam
+
+Returns the current owner Team corresponding to the provided CapturePoint.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1288,17 +1495,23 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### GetOwnerProgressTeam
 
+Returns the Team of the team currently capturing the provided CapturePoint.
+
 | Signature | Return Type |
 | --- | --- |
 | `(capturePoint: CapturePoint)` | Team |
 
 ##### GetPlayersOnPoint
 
+Returns a Array of all players within the boundaries of a provided CapturePoint.
+
 | Signature | Return Type |
 | --- | --- |
 | `(capturePoint: CapturePoint)` | Array |
 
 ##### GetPreviousOwnerTeam
+
+Returns the previous owner Team corresponding to the provided CapturePoint.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1354,6 +1567,8 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### FactionsItem
 
+Returns a Factions from the collection of all available factions.
+
 | Signature | Return Type |
 | --- | --- |
 | `(String, String)` | Enum_Factions |
@@ -1366,13 +1581,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### GetArgument
 
+Returns the value of the argument that is passed into the Subroutine. The list of available parameters will populate once this block is placed inside the Subroutine.
+
 | Signature | Return Type |
 | --- | --- |
 | `(subroutineArgIndex: Number)` | void |
 
 ##### GetVariable
 
-*ID_ARRIVAL_BLOCK_GETVARIABLE*
+Returns the value of a Variable.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1398,11 +1615,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### InventorySlotsItem
 
+Returns a InventorySlots from the collection of all available player inventory slots.
+
 | Signature | Return Type |
 | --- | --- |
 | `(String, String)` | Enum_InventorySlots |
 
 ##### MapsItem
+
+Returns a Maps from the collection of all maps.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1434,11 +1655,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### PlayerDamageTypesItem
 
+Returns a PlayerDamageTypes from the collection of all possible damage types.
+
 | Signature | Return Type |
 | --- | --- |
 | `(String, String)` | Enum_PlayerDamageTypes |
 
 ##### PlayerDeathTypesItem
+
+Returns a PlayerDeathTypes from the collection of all possible death types.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1446,11 +1671,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### RestrictedInputsItem
 
+Returns a RestrictedInputs from the collection of all inputs which can be restricted with EnableInputRestriction.
+
 | Signature | Return Type |
 | --- | --- |
 | `(String, String)` | Enum_RestrictedInputs |
 
 ##### ResupplyTypesItem
+
+Returns a ResupplyTypes from the collection of resupply types which can be used with Resupply.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1608,17 +1837,23 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### SoldierStateBoolItem
 
+Returns the SoldierStateBool of the selected Boolean-based player property.
+
 | Signature | Return Type |
 | --- | --- |
 | `(String, String)` | Enum_SoldierStateBool |
 
 ##### SoldierStateNumberItem
 
+Returns the SoldierStateNumber of the selected Number-based player property.
+
 | Signature | Return Type |
 | --- | --- |
 | `(String, String)` | Enum_SoldierStateNumber |
 
 ##### SoldierStateVectorItem
+
+Returns the SoldierStateVector of the selected Vector-based player property.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1655,6 +1890,8 @@ Value blocks return a value and can be used as inputs to other blocks.
 | `(String, String)` | Enum_StationaryEmplacements |
 
 ##### TypesItem
+
+Returns a Types from the collection of all object types.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1704,6 +1941,8 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### VehicleStateVectorItem
 
+Returns the VehicleStateVector of the selected Vector-based vehicle property.
+
 | Signature | Return Type |
 | --- | --- |
 | `(String, String)` | Enum_VehicleStateVector |
@@ -1734,6 +1973,8 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### WorldIconImagesItem
 
+Returns a WorldIconImages from the collection of world icon images.
+
 | Signature | Return Type |
 | --- | --- |
 | `(String, String)` | Enum_WorldIconImages |
@@ -1742,11 +1983,16 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### AllPlayers
 
+Returns an Array of all players within a game.
+
 | Signature | Return Type |
 | --- | --- |
 | `()` | Array |
 
 ##### ClosestPlayerTo
+
+Returns the closest alive Player to a provided position. Can be filtered using a Team.
+_Note: If no players are alive when this block is called, the returned Player will be invalid._
 
 | Signature | Return Type |
 | --- | --- |
@@ -1755,6 +2001,9 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### FarthestPlayerFrom
 
+Returns the farthest alive Player from a provided position. Can be filtered using a Team.
+_Note: If no players are alive when this block is called, the returned Player will be invalid._
+
 | Signature | Return Type |
 | --- | --- |
 | `(vector: Vector)` | Player |
@@ -1762,11 +2011,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### GetPlayerDeaths
 
+Returns the total amount of deaths for the target Player.
+
 | Signature | Return Type |
 | --- | --- |
 | `(player: Player)` | Number |
 
 ##### GetPlayerKills
+
+Returns the total amount of kills for the target Player.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1787,12 +2040,16 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### GetTeam
 
+Returns the Team value of the specified Player OR the corresponding Team of the provided Number.
+
 | Signature | Return Type |
 | --- | --- |
 | `(player: Player)` | Team |
 | `(teamId: Number)` | Team |
 
 ##### IsPlayerValid
+
+Returns True if the provided Player is valid.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1816,17 +2073,23 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### EventDamageTypeCompare
 
+Returns a Boolean indicating if the victim was damaged by the provided DamageType.
+
 | Signature | Return Type |
 | --- | --- |
 | `(damageType: DamageType, playerDamageTypes: Enum_PlayerDamageTypes)` | Boolean |
 
 ##### EventDeathTypeCompare
 
+Returns a Boolean indicating if the victim died by the provided DeathType.
+
 | Signature | Return Type |
 | --- | --- |
 | `(deathType: DeathType, playerDeathTypes: Enum_PlayerDeathTypes)` | Boolean |
 
 ##### EventWeaponCompare
+
+Returns a Boolean indicating if the given WeaponUnlock is equivalent to the provided ability.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1835,17 +2098,23 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### GetInventoryAmmo
 
+Returns the target Player loaded ammo of the provided InventorySlots.
+
 | Signature | Return Type |
 | --- | --- |
 | `(player: Player, inventorySlots: Enum_InventorySlots)` | Number |
 
 ##### GetInventoryMagazineAmmo
 
+Returns the target Player magazine ammo of the provided InventorySlots.
+
 | Signature | Return Type |
 | --- | --- |
 | `(player: Player, inventorySlots: Enum_InventorySlots)` | Number |
 
 ##### GetSoldierState
+
+Returns the value of the target Player state.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1862,6 +2131,8 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### IsInventorySlotActive
 
+Returns True whether or not the active inventory slot of the target Player is the provided InventorySlots.
+
 | Signature | Return Type |
 | --- | --- |
 | `(player: Player, inventorySlots: Enum_InventorySlots)` | Boolean |
@@ -1876,17 +2147,23 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### BackwardVector
 
+Returns the backward directional Vector of (0, 0, 1).
+
 | Signature | Return Type |
 | --- | --- |
 | `()` | Vector |
 
 ##### DownVector
 
+Returns the downward directional Vector of (0, -1, 0).
+
 | Signature | Return Type |
 | --- | --- |
 | `()` | Vector |
 
 ##### ForwardVector
+
+Returns the forward directional Vector of (0, 0, -1).
 
 | Signature | Return Type |
 | --- | --- |
@@ -1924,11 +2201,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### LeftVector
 
+Returns the leftward directional Vector of (-1, 0, 0).
+
 | Signature | Return Type |
 | --- | --- |
 | `()` | Vector |
 
 ##### LocalPositionOf
+
+Converts the provided world position to the corresponding position in local Player space.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1936,11 +2217,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### LocalVectorOf
 
+Converts the provided world vector to the corresponding vector in local Player space.
+
 | Signature | Return Type |
 | --- | --- |
 | `(vector: Vector, player: Player)` | Vector |
 
 ##### RightVector
+
+Returns the rightward directional Vector of (1, 0, 0).
 
 | Signature | Return Type |
 | --- | --- |
@@ -1948,11 +2233,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### UpVector
 
+Returns the upward directional Vector of (0, 1, 0).
+
 | Signature | Return Type |
 | --- | --- |
 | `()` | Vector |
 
 ##### VectorTowards
+
+Returns the displacement Vector from a starting position to an ending position.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1960,11 +2249,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### WorldPositionOf
 
+Converts the provided local Player position to the corresponding position in the world space.
+
 | Signature | Return Type |
 | --- | --- |
 | `(vector: Vector, player: Player)` | Vector |
 
 ##### WorldVectorOf
+
+Converts the provided local Player vector to the corresponding vector in the world space.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1972,17 +2265,23 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### XComponentOf
 
+Returns the 'X' component of a provided Vector.
+
 | Signature | Return Type |
 | --- | --- |
 | `(vector: Vector)` | Number |
 
 ##### YComponentOf
 
+Returns the 'Y' component of a provided Vector.
+
 | Signature | Return Type |
 | --- | --- |
 | `(vector: Vector)` | Number |
 
 ##### ZComponentOf
+
+Returns the 'Z' component of a provided Vector.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1999,6 +2298,10 @@ Value blocks return a value and can be used as inputs to other blocks.
 **Messages**
 
 ##### Message
+
+Returns a constructed Message object which can be used with ShowGameModeMessage, ShowNotificationMessage, ShowHighlightedMessage, and DisplayCustomNotificationMessage. The Message object is created by providing a Number, Player, or format String (which can take up to 3 format items).
+A format String is a String that contains `{}` (called braces) within them, which can be substituted for parameters. For example, the String - `{} gained {} points!` - can be given a Player and Number parameter and could output as `John gained 2 points!`. See the example below for how this can be used with blocks.
+_Note: It's your responsibility to ensure a safe and fair experience for others, violating the EA User Agreement by using offensive or inappropriate text may result in account bans._
 
 | Signature | Return Type |
 | --- | --- |
@@ -2207,11 +2510,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### AllVehicles
 
+Returns an Array of all vehicles within a game.
+
 | Signature | Return Type |
 | --- | --- |
 | `()` | Array |
 
 ##### CompareVehicleName
+
+Returns a Boolean indicating if the target Vehicle has the same name as the provided Vehicles or if it is the same type as the provided VehicleTypes.
 
 | Signature | Return Type |
 | --- | --- |
@@ -2219,11 +2526,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### GetVehicleFromPlayer
 
+Returns the Vehicle used by a Player.
+
 | Signature | Return Type |
 | --- | --- |
 | `(player: Player)` | Vehicle |
 
 ##### GetVehicleSeatCount
+
+Returns the Number of seats in a Vehicle.
 
 | Signature | Return Type |
 | --- | --- |
@@ -2231,11 +2542,16 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### GetVehicleState
 
+Returns the value of the target Vehicle state.
+
 | Signature | Return Type |
 | --- | --- |
 | `(vehicle: Vehicle, vehicleStateVector: Enum_VehicleStateVector)` | Vector |
 
 ##### GetVehicleTeam
+
+Returns the Team of the provided Vehicle.
+_Note: A Vehicle that is not occupied will have a neutral Team._
 
 | Signature | Return Type |
 | --- | --- |
@@ -2243,11 +2559,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### IsVehicleOccupied
 
+Returns a Boolean indicating if the target Vehicle is a occupied by a player.
+
 | Signature | Return Type |
 | --- | --- |
 | `(vehicle: Vehicle)` | Boolean |
 
 ##### IsVehicleSeatOccupied
+
+Returns a Boolean indicating if the target seat index Number of target Vehicle is a occupied by a player.
 
 | Signature | Return Type |
 | --- | --- |
@@ -2257,17 +2577,24 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### GetAllPlayersInVehicle
 
+Returns a Array of all players inside a provided Vehicle
+
 | Signature | Return Type |
 | --- | --- |
 | `(vehicle: Vehicle)` | Array |
 
 ##### GetPlayerFromVehicleSeat
 
+Returns the Player currently occupying the provided seat index Number of the provided Vehicle.
+_Note: If no players are in the vehicle seat when this block is called, the returned Player will be invalid._
+
 | Signature | Return Type |
 | --- | --- |
 | `(vehicle: Vehicle, number: Number)` | Player |
 
 ##### GetPlayerVehicleSeat
+
+Returns the seat index Number for the target Player if they are in a vehicle, otherwise returns -1.
 
 | Signature | Return Type |
 | --- | --- |
@@ -2283,6 +2610,8 @@ Action blocks perform operations and do not return a value.
 
 ##### AIBattlefieldBehavior
 
+Sets a Player to act independently. They will attempt to complete objectives, fire on enemy players, etc. (Only works for AI players)
+
 | Signature |
 | --- |
 | `(player: Player)` |
@@ -2295,6 +2624,8 @@ Action blocks perform operations and do not return a value.
 
 ##### AIIdleBehavior
 
+Sets a Player's current position as idle point. (Only works for AI players)
+
 | Signature |
 | --- |
 | `(player: Player)` |
@@ -2306,6 +2637,8 @@ Action blocks perform operations and do not return a value.
 | `(player: Player, position: Vector)` |
 
 ##### AIMoveToBehavior
+
+Sets a target Player a destination to move to. (Only works for AI players)
 
 | Signature |
 | --- |
@@ -2324,6 +2657,8 @@ Action blocks perform operations and do not return a value.
 | `(player: Player, position: Vector)` |
 
 ##### AIWaypointIdleBehavior
+
+Sets a Player to patrol a waypoint. (Only works for AI players)
 
 | Signature |
 | --- |
@@ -2402,17 +2737,23 @@ Action blocks perform operations and do not return a value.
 
 ##### AISetMoveSpeed
 
+Sets a Player's move speed for MoveTo Behaviors. (Only works for AI players)
+
 | Signature |
 | --- |
 | `(player: Player, moveSpeed: Enum_MoveSpeed)` |
 
 ##### AISetStance
 
+Sets a Player's stance. (Only works for AI players)
+
 | Signature |
 | --- |
 | `(player: Player, stance: Enum_Stance)` |
 
 ##### AISetTarget
+
+Sets a Player's current target. (Only works for AI players)
 
 | Signature |
 | --- |
@@ -2441,6 +2782,9 @@ Action blocks perform operations and do not return a value.
 ### Arrays
 
 ##### SetVariableAtIndex
+
+Finds or initializes an Array on a provided Variable, and stores a provided value in that Array at the specified index.
+_Note: The first value in the array starts at an index of 0._
 
 | Signature |
 | --- |
@@ -2522,6 +2866,8 @@ Action blocks perform operations and do not return a value.
 
 ##### EnableScreenEffect
 
+Enables of disables a player-specific screen effect.
+
 | Signature |
 | --- |
 | `(player: Player, screenEffect: Enum_ScreenEffects, enable: Boolean)` |
@@ -2529,6 +2875,8 @@ Action blocks perform operations and do not return a value.
 **VFX**
 
 ##### EnableVFX
+
+Enables of disables a visual effect.
 
 | Signature |
 | --- |
@@ -2646,6 +2994,9 @@ Action blocks perform operations and do not return a value.
 
 ##### SetRedeployTime
 
+Overrides the time to redeploy for a target Player.
+_Note: The redeploy time must be set to a value between 0 and 60 seconds._
+
 | Signature |
 | --- |
 | `(player: Player, redeployTime: Number)` |
@@ -2697,6 +3048,8 @@ Action blocks perform operations and do not return a value.
 
 ##### SetGameModeScore
 
+Sets the gamemode score of the provided Player or Team.
+
 | Signature |
 | --- |
 | `(team: Team, newScore: Number)` |
@@ -2746,11 +3099,15 @@ Action blocks perform operations and do not return a value.
 
 ##### EnableAreaTrigger
 
+Enables of disables an area trigger. This will prevent the specific Event from being fired.
+
 | Signature |
 | --- |
 | `(areaTrigger: AreaTrigger, enable: Boolean)` |
 
 ##### EnableInteractPoint
+
+Enables of disables an interact point.
 
 | Signature |
 | --- |
@@ -2770,6 +3127,9 @@ Action blocks perform operations and do not return a value.
 | `(start: Vector, stop: Vector)` |
 
 ##### SetTeam
+
+Sets the target Player team using the provided Team. This will force the Player back to the deploy screen.
+_Note: this block is not supported in Free-For-All._
 
 | Signature |
 | --- |
@@ -2820,6 +3180,8 @@ Action blocks perform operations and do not return a value.
 
 ##### ForceRevive
 
+Revives a target Player who is in the mandown state.
+
 | Signature |
 | --- |
 | `(player: Player)` |
@@ -2833,6 +3195,8 @@ Action blocks perform operations and do not return a value.
 | `(vehicle: Vehicle, repairAmount: Number)` |
 
 ##### Kill
+
+Kills a target Player (skips the Mandown state).
 
 | Signature |
 | --- |
@@ -2849,6 +3213,8 @@ Action blocks perform operations and do not return a value.
 
 ##### SpotTarget
 
+Spots a target Player for all players for a specified duration of time (in seconds).
+
 | Signature |
 | --- |
 | `(targetplayer: Player, duration: Number, spotStatus: Enum_SpotStatus)` |
@@ -2861,11 +3227,15 @@ Action blocks perform operations and do not return a value.
 
 ##### Abort
 
+Stops the execution of a list of Actions in a Rule.
+
 | Signature |
 | --- |
 | `()` |
 
 ##### AbortIf
+
+Stops the execution of a list of Actions in a Rule if the provided Boolean is True. Otherwise, the execution continues with the remaining Actions.
 
 | Signature |
 | --- |
@@ -2873,11 +3243,17 @@ Action blocks perform operations and do not return a value.
 
 ##### ChaseVariableAtRate
 
+Gradually modifies the value of a Variable at a specified rate (value/second) until it reaches the provided limit.
+_Note: If the limit is changed later, the Variable will continue to be updated from its previous value. To spot modifying the Variable, use StopChasingVariable._
+
 | Signature |
 | --- |
 | `(variable: Variable, limit: Number, deltaPerSecond: Number)` |
 
 ##### ChaseVariableOverTime
+
+Gradually modifies the value of a Variable over time (in seconds). The variable's value will reach the limit at the end of the interval.
+_Note: If the limit is changed later, the Variable will continue to be updated from its previous value. To spot modifying the Variable, use StopChasingVariable._
 
 | Signature |
 | --- |
@@ -2891,11 +3267,15 @@ Action blocks perform operations and do not return a value.
 
 ##### Skip
 
+Skips a provided number of Actions following this block within this Rule.
+
 | Signature |
 | --- |
 | `(actionCount: Number)` |
 
 ##### SkipIf
+
+Skips a provided number of Actions following this block within this Rule if the condition evaluates to True. If it does not, execution continues with the remaining Actions.
 
 | Signature |
 | --- |
@@ -2903,17 +3283,23 @@ Action blocks perform operations and do not return a value.
 
 ##### StopChasingVariable
 
+Stops an in-progress tracking of a Variable from the ChaseVariableOverTime or ChaseVariableAtRate blocks, leaving it at its current value.
+
 | Signature |
 | --- |
 | `(variable: Variable)` |
 
 ##### Wait
 
+Pauses the execution of Actions in a Rule for a provided Number of seconds.
+
 | Signature |
 | --- |
 | `(seconds: Number)` |
 
 ##### WaitUntil
+
+Pauses the execution of Actions in a Rule for a provided Number of seconds or if the provided condition evaluates to True during that interval.
 
 | Signature |
 | --- |
@@ -2931,11 +3317,15 @@ Action blocks perform operations and do not return a value.
 
 ##### SetCapturePointCapturingTime
 
+Sets the capturing time for target CapturePoint to the provided Number.
+
 | Signature |
 | --- |
 | `(capturePoint: CapturePoint, capturingTime: Number)` |
 
 ##### SetCapturePointNeutralizationTime
+
+Sets the neutralization time for target CapturePoint to the provided Number.
 
 | Signature |
 | --- |
@@ -2943,11 +3333,15 @@ Action blocks perform operations and do not return a value.
 
 ##### SetCapturePointOwner
 
+Claims the provided CapturePoint for the specified Team.
+
 | Signature |
 | --- |
 | `(capturePoint: CapturePoint, team: Team)` |
 
 ##### SetMaxCaptureMultiplier
+
+Sets the capture time multiplier for target CapturePoint to the provided Number.
 
 | Signature |
 | --- |
@@ -2956,6 +3350,8 @@ Action blocks perform operations and do not return a value.
 **Deploy**
 
 ##### EnableHQ
+
+Enables or disables a headquarters.
 
 | Signature |
 | --- |
@@ -2968,6 +3364,8 @@ Action blocks perform operations and do not return a value.
 | `(objective: CapturePoint | HQ | Sector | MCOM, enable: Boolean)` |
 
 ##### SetMCOMFuseTime
+
+Sets the fuse time (in seconds) for target MCOM to the provided Number
 
 | Signature |
 | --- |
@@ -2982,6 +3380,8 @@ Action blocks perform operations and do not return a value.
 ### Other
 
 ##### SetVariable
+
+Sets the value of a Variable.
 
 | Signature |
 | --- |
@@ -3017,6 +3417,8 @@ Action blocks perform operations and do not return a value.
 
 ##### Teleport
 
+Teleports a target to a provided valid position facing a specified angle (in radians).
+
 | Signature |
 | --- |
 | `(player: Player, destination: Vector, orientation: Number)` |
@@ -3026,11 +3428,15 @@ Action blocks perform operations and do not return a value.
 
 ##### EnableAllInputRestrictions
 
+Enables or disables all keyboard and mouse inputs - such as movement, firing, and turning - for a target Player.
+
 | Signature |
 | --- |
 | `(player: Player, restrictInput: Boolean)` |
 
 ##### EnableInputRestriction
+
+Enables or disables a specified RestrictedInputs on a target Player.
 
 | Signature |
 | --- |
@@ -3058,6 +3464,8 @@ Action blocks perform operations and do not return a value.
 
 ##### ForceSwitchInventory
 
+Forces the target Player to switch to the provided InventorySlots.
+
 | Signature |
 | --- |
 | `(player: Player, inventorySlot: Enum_InventorySlots)` |
@@ -3072,11 +3480,15 @@ Action blocks perform operations and do not return a value.
 
 ##### SetInventoryAmmo
 
+Sets the target Player loaded ammo for the provided InventorySlots.
+
 | Signature |
 | --- |
 | `(player: Player, inventorySlots: Enum_InventorySlots, ammo: Number)` |
 
 ##### SetInventoryMagazineAmmo
+
+Sets the target Player magazine ammo for the provided InventorySlots.
 
 | Signature |
 | --- |
@@ -3086,17 +3498,24 @@ Action blocks perform operations and do not return a value.
 
 ##### ForceManDown
 
+Puts the target Player into the mandown state (unless mandown is disabled).
+
 | Signature |
 | --- |
 | `(player: Player)` |
 
 ##### Resupply
 
+Resupplies the target Player using a provided ResupplyTypes.
+
 | Signature |
 | --- |
 | `(player: Player, ressuplyType: Enum_ResupplyTypes)` |
 
 ##### SetPlayerMaxHealth
+
+Sets the max health of a target Player from 0 to 1000.
+_Note: The value will be multiplied by the max health multiplier of the that target._
 
 | Signature |
 | --- |
@@ -3109,6 +3528,9 @@ Action blocks perform operations and do not return a value.
 | `(player: Player, multiplier: Number)` |
 
 ##### SkipManDown
+
+Sets the target Player to skip the mandown state and go directly to the deploy screen when killed.
+_Note: By default, SkipMandown is disabled._
 
 | Signature |
 | --- |
@@ -3164,6 +3586,8 @@ Action blocks perform operations and do not return a value.
 
 ##### AddUIIcon
 
+Creates a new UI Icon Widget.
+
 | Signature |
 | --- |
 | `(parentObject: Object | Global | AreaTrigger | CapturePoint | EmplacementSpawner | FixedCamera | HQ | InteractPoint | LootSpawner | MapSpecificFeature | MCOM | Player | RingOfFire | Sector | SFX | SpatialObject | Spawner | SpawnPoint | Team | Vehicle | VehicleSpawner | VFX | VL7Cloud | VO | WaypointPath | WorldIcon, image: Enum_WorldIconImages, verticalOffset: Number, iconColour: Vector, iconText: Message, visibility: Player | Team)` |
@@ -3171,11 +3595,16 @@ Action blocks perform operations and do not return a value.
 
 ##### EnableWorldIconImage
 
+Enables or disables the image for a provided WorldIcons.
+
 | Signature |
 | --- |
 | `(worldIcon: WorldIcon, enableImage: Boolean)` |
 
 ##### EnableWorldIconText
+
+Enables or disables the text for a provided WorldIcons.
+_Note: There is no default text, and will need to be set before or after this property is enabled to appear_.
 
 | Signature |
 | --- |
@@ -3190,17 +3619,23 @@ Action blocks perform operations and do not return a value.
 
 ##### SetWorldIconColor
 
+Sets the color property of a WorldIcon.
+
 | Signature |
 | --- |
 | `(worldIcon: WorldIcon, newColor: Vector)` |
 
 ##### SetWorldIconImage
 
+Sets the image property of a WorldIcon to the selected WorldIconImages.
+
 | Signature |
 | --- |
 | `(worldIcon: WorldIcon, newImage: Enum_WorldIconImages)` |
 
 ##### SetWorldIconOwner
+
+Sets the owner Team of the provided WorldIcon.
 
 | Signature |
 | --- |
@@ -3209,11 +3644,15 @@ Action blocks perform operations and do not return a value.
 
 ##### SetWorldIconPosition
 
+Sets the in-world position of a provided WorldIcon.
+
 | Signature |
 | --- |
 | `(worldIcon: WorldIcon, newPosition: Vector)` |
 
 ##### SetWorldIconText
+
+Sets the text property for a provided WorldIcon.
 
 | Signature |
 | --- |
@@ -3260,6 +3699,8 @@ Action blocks perform operations and do not return a value.
 | `(message: Message, team: Team)` |
 
 ##### SendErrorReport
+
+Displays a provided Message as an error in the Admin menu.
 
 | Signature |
 | --- |
@@ -3321,6 +3762,8 @@ Action blocks perform operations and do not return a value.
 
 ##### AddUIButton
 
+Creates a UI Button Widget.
+
 | Signature |
 | --- |
 | `(name: String, position: Vector, size: Vector, anchor: Enum_UIAnchor)` |
@@ -3331,6 +3774,8 @@ Action blocks perform operations and do not return a value.
 | `(name: String, position: Vector, size: Vector, anchor: Enum_UIAnchor, parent: UIWidget, visible: Boolean, padding: Number, bgColor: Vector, bgAlpha: Number, bgFill: Enum_UIBgFill, buttonEnabled: Boolean, baseColor: Vector, baseAlpha: Number, disabledColor: Vector, disabledAlpha: Number, pressedColor: Vector, pressedAlpha: Number, hoverColor: Vector, hoverAlpha: Number, focusedColor: Vector, focusedAlpha: Number, depth: Enum_UIDepth, receiver: Player | Team)` |
 
 ##### AddUIContainer
+
+Creates a new UI Container Widget.
 
 | Signature |
 | --- |
@@ -3350,6 +3795,8 @@ Action blocks perform operations and do not return a value.
 
 ##### AddUIImage
 
+Creates a new UI Image Widget.
+
 | Signature |
 | --- |
 | `(name: String, position: Vector, size: Vector, anchor: Enum_UIAnchor, imageType: Enum_UIImageType)` |
@@ -3360,6 +3807,8 @@ Action blocks perform operations and do not return a value.
 | `(name: String, position: Vector, size: Vector, anchor: Enum_UIAnchor, parent: UIWidget, visible: Boolean, padding: Number, bgColor: Vector, bgAlpha: Number, bgFill: Enum_UIBgFill, imageType: Enum_UIImageType, imageColor: Vector, imageAlpha: Number, depth: Enum_UIDepth, receiver: Player | Team)` |
 
 ##### AddUIText
+
+Creates a new UI Text Widget.
 
 | Signature |
 | --- |
@@ -3381,11 +3830,15 @@ Action blocks perform operations and do not return a value.
 
 ##### DeleteAllUIWidgets
 
+Deletes all UI Widgets.
+
 | Signature |
 | --- |
 | `()` |
 
 ##### DeleteUIWidget
+
+Deletes a particular UI Widget.
 
 | Signature |
 | --- |
@@ -3393,11 +3846,15 @@ Action blocks perform operations and do not return a value.
 
 ##### EnableUIButtonEvent
 
+Determines if UI Button Widgets can send events.
+
 | Signature |
 | --- |
 | `(widget: UIWidget, buttonEvent: Enum_UIButtonEvent, enabled: Boolean)` |
 
 ##### EnableUIInputMode
+
+Determines if UI Buttons can be interacted with.
 
 | Signature |
 | --- |
@@ -3406,11 +3863,15 @@ Action blocks perform operations and do not return a value.
 
 ##### SetUIButtonAlphaBase
 
+Changes the base alpha (transparency) of an UI Button Widget.
+
 | Signature |
 | --- |
 | `(widget: UIWidget, value: Number)` |
 
 ##### SetUIButtonAlphaDisabled
+
+Changes the alpha (transparency) of an UI Button Widget when it is disabled.
 
 | Signature |
 | --- |
@@ -3418,11 +3879,15 @@ Action blocks perform operations and do not return a value.
 
 ##### SetUIButtonAlphaFocused
 
+Changes the alpha (transparency) of an UI Button Widget when it is focused.
+
 | Signature |
 | --- |
 | `(widget: UIWidget, value: Number)` |
 
 ##### SetUIButtonAlphaHover
+
+Changes the alpha (transparency) of an UI Button Widget when it is hovered.
 
 | Signature |
 | --- |
@@ -3430,11 +3895,15 @@ Action blocks perform operations and do not return a value.
 
 ##### SetUIButtonAlphaPressed
 
+Changes the alpha (transparency) of an UI Button Widget when it is pressed.
+
 | Signature |
 | --- |
 | `(widget: UIWidget, value: Number)` |
 
 ##### SetUIButtonColorBase
+
+Changes the base color of an UI Button Widget.
 
 | Signature |
 | --- |
@@ -3442,11 +3911,15 @@ Action blocks perform operations and do not return a value.
 
 ##### SetUIButtonColorDisabled
 
+Changes the color of an UI Button Widget when it is disabled.
+
 | Signature |
 | --- |
 | `(widget: UIWidget, value: Vector)` |
 
 ##### SetUIButtonColorFocused
+
+Changes the color of an UI Button Widget when it is focused.
 
 | Signature |
 | --- |
@@ -3454,11 +3927,15 @@ Action blocks perform operations and do not return a value.
 
 ##### SetUIButtonColorHover
 
+Changes the color of an UI Button Widget when it is hovered.
+
 | Signature |
 | --- |
 | `(widget: UIWidget, value: Vector)` |
 
 ##### SetUIButtonColorPressed
+
+Changes the color of an UI Button Widget when it is pressed.
 
 | Signature |
 | --- |
@@ -3466,11 +3943,15 @@ Action blocks perform operations and do not return a value.
 
 ##### SetUIButtonEnabled
 
+Determines if a specific UI Button Widget is enabled.
+
 | Signature |
 | --- |
 | `(widget: UIWidget, enabled: Boolean)` |
 
 ##### SetUIImageAlpha
+
+Changes the alpha (transparency) of the image of an UI Image Widget.
 
 | Signature |
 | --- |
@@ -3478,11 +3959,15 @@ Action blocks perform operations and do not return a value.
 
 ##### SetUIImageColor
 
+Changes the color of the image of an UI Image Widget.
+
 | Signature |
 | --- |
 | `(widget: UIWidget, value: Vector)` |
 
 ##### SetUIImageType
+
+Changes the image of an UI Image Widget.
 
 | Signature |
 | --- |
@@ -3490,11 +3975,15 @@ Action blocks perform operations and do not return a value.
 
 ##### SetUITextAlpha
 
+Changes the alpha (transparency) of the text of an UI Text Widget.
+
 | Signature |
 | --- |
 | `(widget: UIWidget, value: Number)` |
 
 ##### SetUITextAnchor
+
+Changes the anchor of the text in an UI Text Widget.
 
 | Signature |
 | --- |
@@ -3502,11 +3991,15 @@ Action blocks perform operations and do not return a value.
 
 ##### SetUITextColor
 
+Changes the font color of an UI Text Widget.
+
 | Signature |
 | --- |
 | `(widget: UIWidget, value: Vector)` |
 
 ##### SetUITextLabel
+
+Changes the message displayed by an UI Text Widget.
 
 | Signature |
 | --- |
@@ -3514,11 +4007,15 @@ Action blocks perform operations and do not return a value.
 
 ##### SetUITextSize
 
+Changes the font size of an UI Text Widget.
+
 | Signature |
 | --- |
 | `(widget: UIWidget, value: Number)` |
 
 ##### SetUIWidgetAnchor
+
+Changes the anchor of an UI Widget.
 
 | Signature |
 | --- |
@@ -3526,11 +4023,15 @@ Action blocks perform operations and do not return a value.
 
 ##### SetUIWidgetBgAlpha
 
+Changes the alpha (transparency) of an UI Widget.
+
 | Signature |
 | --- |
 | `(widget: UIWidget, value: Number)` |
 
 ##### SetUIWidgetBgColor
+
+Changes the background color of an UI Widget.
 
 | Signature |
 | --- |
@@ -3538,11 +4039,15 @@ Action blocks perform operations and do not return a value.
 
 ##### SetUIWidgetBgFill
 
+Changes the way the UI Widget's background is rendered.
+
 | Signature |
 | --- |
 | `(widget: UIWidget, bgFill: Enum_UIBgFill)` |
 
 ##### SetUIWidgetDepth
+
+Changes the draw order of an UI Widget.
 
 | Signature |
 | --- |
@@ -3550,11 +4055,15 @@ Action blocks perform operations and do not return a value.
 
 ##### SetUIWidgetName
 
+Changes the name of an UI Widget.
+
 | Signature |
 | --- |
 | `(widget: UIWidget, name: String)` |
 
 ##### SetUIWidgetPadding
+
+Changes the padding of an UI Widget.
 
 | Signature |
 | --- |
@@ -3562,11 +4071,15 @@ Action blocks perform operations and do not return a value.
 
 ##### SetUIWidgetParent
 
+Changes the parent of an UI Widget.
+
 | Signature |
 | --- |
 | `(widget: UIWidget, parent: UIWidget)` |
 
 ##### SetUIWidgetPosition
+
+Changes the position of an UI Widget.
 
 | Signature |
 | --- |
@@ -3574,11 +4087,15 @@ Action blocks perform operations and do not return a value.
 
 ##### SetUIWidgetSize
 
+Changes the size of an UI Widget.
+
 | Signature |
 | --- |
 | `(widget: UIWidget, value: Vector)` |
 
 ##### SetUIWidgetVisible
+
+Determines if an UI Widget is visible or not.
 
 | Signature |
 | --- |
@@ -3668,6 +4185,9 @@ Action blocks perform operations and do not return a value.
 
 ##### SetVehicleMaxHealthMultiplier
 
+Multiplies the maximum health of target Vehicle by the provided Number greater than 0 and less than or equal to 4.
+_Note: The health of a Vehicle is displayed in-game as a percentage._
+
 | Signature |
 | --- |
 | `(vehicle: Vehicle, maxHealthMultiplier: Number)` |
@@ -3675,6 +4195,8 @@ Action blocks perform operations and do not return a value.
 **Soldier**
 
 ##### ForcePlayerExitVehicle
+
+Forces the specified Player to exit the target Vehicle.
 
 | Signature |
 | --- |
@@ -3684,9 +4206,57 @@ Action blocks perform operations and do not return a value.
 
 ##### ForcePlayerToSeat
 
+Forces the specified Player into the target Vehicle at the provided seat Number.
+_Note: If the provided index is -1, that Player will be forced into the first available seat._
+
 | Signature |
 | --- |
 | `(player: Player, vehicle: Vehicle, seatNumber: Number)` |
+
+## Control Actions
+
+Control action blocks manage the flow of execution in a rule.
+
+### Break
+
+Breaks and exits the execution of a looping block, such as While or ForVariable.
+
+| Signature |
+| --- |
+| `()` |
+
+### Continue
+
+Forces the execution of a looping block (such as While or ForVariable) to the start of the next iteration of that block.
+
+| Signature |
+| --- |
+| `()` |
+
+### ForVariable
+
+The start of a series of Actions that will execute in a loop, modifying the control variable on each iteration. If the control Variable reaches or passes the range end value, the loop exits, and execution continues through the remaining Actions in the Rule.
+
+| Signature |
+| --- |
+| `(variable: Variable, start: Number, end: Number, stepSize: Number)` |
+
+### If
+
+A special block which evaluates conditions to control the flow of Actions in the If, Else If, and Else branches.
+
+| Signature |
+| --- |
+| `(condition: Boolean)` |
+
+### While
+
+A block of Actions that will execute in a loop as long as the provided condition is True.
+_Note: You must utilize a Wait block at the beginning or the end of the iteration._
+
+| Signature |
+| --- |
+| `(condition: Boolean)` |
 
 ## Objects
 

@@ -4,6 +4,20 @@ const definitionsFile = '.vitepress/block-definitions.json'
 const outFile = 'block-code-reference.md'
 const i18nUrl = 'https://portal.battlefield.com/bf6/13637837/i18n/en-US.json'
 
+// Manual mapping for block names whose i18n key doesn't match by simple lowercasing
+const blockNameToI18nKey = {
+  'GetCurrentOwnerTeam': 'getcurrentownerteamid',
+  'GetOwnerProgressTeam': 'getownerprogressteamid',
+  'GetPreviousOwnerTeam': 'getpreviousownerteamid',
+  'GetTeam': 'getteamid',
+  'GetVehicleTeam': 'getvehicleteamid',
+  'SetCapturePointCapturingTime': 'capturepointcapturingtime',
+  'SetCapturePointNeutralizationTime': 'capturepointneutralizationtime'
+}
+
+// Inline descriptions for blocks that have no i18n entry at all
+
+
 function typeToDisplay (type) {
   // Convert PascalCase type names to readable ones
   const map = {
@@ -132,6 +146,130 @@ function createTypeDisplay (typeName) {
 }
 
 /**
+ * Clean up type tokens and formatting in a raw summary string from i18n.
+ */
+function cleanSummary (text) {
+  if (!text) return ''
+  return text
+    .replace(/\*\*/g, '')           // remove markdown bold markers
+    // Replace type tokens with their readable names
+    .replace(/%\{PYRITE_TYPE_PLAYER\}/g, 'Player')
+    .replace(/%\{PYRITE_TYPE_TEAMID\}/g, 'Team')
+    .replace(/%\{PYRITE_TYPE_VEHICLE\}/g, 'Vehicle')
+    .replace(/%\{PYRITE_TYPE_CAPTUREPOINT\}/g, 'CapturePoint')
+    .replace(/%\{PYRITE_TYPE_MCOM\}/g, 'MCOM')
+    .replace(/%\{PYRITE_TYPE_AREATRIGGER\}/g, 'AreaTrigger')
+    .replace(/%\{PYRITE_TYPE_RINGOFFIRE\}/g, 'RingOfFire')
+    .replace(/%\{PYRITE_TYPE_NUMBER\}/g, 'Number')
+    .replace(/%\{PYRITE_TYPE_ARRAY\}/g, 'Array')
+    .replace(/%\{PYRITE_TYPE_STRING\}/g, 'String')
+    .replace(/%\{PYRITE_TYPE_BOOLEAN\}/g, 'Boolean')
+    .replace(/%\{PYRITE_TYPE_VECTOR\}/g, 'Vector')
+    .replace(/%\{PYRITE_TYPE_PLAYER_STATE\}/g, 'PlayerState')
+    .replace(/%\{PYRITE_TYPE_PLAYER_INVENTORY_ITEM\}/g, 'PlayerInventoryItem')
+    .replace(/%\{PYRITE_TYPE_SOLDIERSTATE\}/g, 'SoldierState')
+    .replace(/%\{PYRITE_TYPE_SOLDIER\}/g, 'Soldier')
+    .replace(/%\{PYRITE_TYPE_ANY\}/g, 'any')
+    .replace(/%\{PYRITE_TYPE_VARIABLE\}/g, 'Variable')
+    .replace(/%\{PYRITE_TYPE_MESSAGE\}/g, 'Message')
+    .replace(/%\{PYRITE_TYPE_DEATHTYPE\}/g, 'DeathType')
+    .replace(/%\{PYRITE_TYPE_DAMAGETYPE\}/g, 'DamageType')
+    .replace(/%\{PYRITE_TYPE_HARDWAREID\}/g, 'WeaponUnlock')
+    .replace(/%\{PYRITE_TYPE_WORLDICON\}/g, 'WorldIcon')
+    .replace(/%\{PYRITE_TYPE_ENUM_PLAYERDEATHTYPES\}/g, 'PlayerDeathTypes')
+    .replace(/%\{PYRITE_TYPE_ENUM_INVENTORYSLOTS\}/g, 'InventorySlots')
+    .replace(/%\{PYRITE_TYPE_ENUM_CHARACTERGADGETS\}/g, 'CharacterGadgets')
+    .replace(/%\{PYRITE_TYPE_ENUM_CUSTOMMESSAGES\}/g, 'CustomMessages')
+    .replace(/%\{PYRITE_TYPE_ENUM_SOLDIERKITS\}/g, 'SoldierKits')
+    .replace(/%\{PYRITE_TYPE_ENUM_MEDGADGETTYPES\}/g, 'MedGadgetTypes')
+    .replace(/%\{PYRITE_TYPE_ENUM_MELEEWEAPONS\}/g, 'MeleeWeapons')
+    .replace(/%\{PYRITE_TYPE_ENUM_PRIMARYWEAPONS\}/g, 'PrimaryWeapons')
+    .replace(/%\{PYRITE_TYPE_ENUM_RESUPPLYTYPES\}/g, 'ResupplyTypes')
+    .replace(/%\{PYRITE_TYPE_ENUM_CLASSGADGETS\}/g, 'ClassGadgets')
+    .replace(/%\{PYRITE_TYPE_ENUM_TYPES\}/g, 'Types')
+    .replace(/%\{PYRITE_TYPE_ENUM_MCOMS\}/g, 'MCOMs')
+    .replace(/%\{PYRITE_TYPE_ENUM_MCOMSTATEBOOL\}/g, 'MCOMStateBool')
+    .replace(/%\{PYRITE_TYPE_ENUM_PLAYERDAMAGETYPES\}/g, 'PlayerDamageTypes')
+    .replace(/%\{PYRITE_TYPE_ENUM_VEHICLES\}/g, 'Vehicles')
+    .replace(/%\{PYRITE_TYPE_ENUM_SOLDIERSTATENUMBER\}/g, 'SoldierStateNumber')
+    .replace(/%\{PYRITE_TYPE_ENUM_SOLDIERSTATEVECTOR\}/g, 'SoldierStateVector')
+    .replace(/%\{PYRITE_TYPE_ENUM_FACTIONS\}/g, 'Factions')
+    .replace(/%\{PYRITE_TYPE_ENUM_RESTRICTEDINPUTS\}/g, 'RestrictedInputs')
+    .replace(/%\{PYRITE_TYPE_ENUM_WORLDICONS\}/g, 'WorldIcons')
+    .replace(/%\{PYRITE_TYPE_ENUM_CAPTUREPOINTS\}/g, 'CapturePoints')
+    .replace(/%\{PYRITE_TYPE_ENUM_VEHICLESTATEVECTOR\}/g, 'VehicleStateVector')
+    .replace(/%\{PYRITE_TYPE_ENUM_VEHICLETYPES\}/g, 'VehicleTypes')
+    .replace(/%\{PYRITE_TYPE_ENUM_SOLDIERSTATEBOOL\}/g, 'SoldierStateBool')
+    .replace(/%\{PYRITE_TYPE_ENUM_INPUTTRIGGER\}/g, 'InputTrigger')
+    .replace(/%\{PYRITE_TYPE_ENUM_SECONDARYWEAPONS\}/g, 'SecondaryWeapons')
+    .replace(/%\{PYRITE_TYPE_ENUM_WORLDICONIMAGES\}/g, 'WorldIconImages')
+    .replace(/%\{PYRITE_TYPE_ENUM_SOUNDS\}/g, 'Sounds')
+    .replace(/%\{PYRITE_TYPE_ENUM_VOICEOVERS\}/g, 'VoiceOvers')
+    .replace(/%\{PYRITE_TYPE_ENUM_LOCATIONALSOUNDS\}/g, 'LocationalSounds')
+    .replace(/%\{PYRITE_TYPE_ENUM_MAPS\}/g, 'Maps')
+    .replace(/%\{PYRITE_TYPE_ENUM_THROWABLES\}/g, 'Throwables')
+    .replace(/%\{PYRITE_TYPE_ENUM_OPENGADGETS\}/g, 'OpenGadgets')
+    .replace(/%\{PYRITE_TYPE_[^}]+\}/g, '') // fallback: remove unknown type tokens
+    .replace(/%\{PYRITE_EVENT_ONGOING\}/g, 'Ongoing')
+    .replace(/%\{PYRITE_MOD\}/g, 'Mod')
+    .replace(/%\{PYRITE_EVENT\}/g, 'Event')
+    .replace(/%\{PYRITE_CONDITION\}/g, 'Condition')
+    .replace(/%\{PYRITE_ACTIONS\}/g, 'Actions')
+    .replace(/%\{PYRITE_RULE\}/g, 'Rule')
+    .replace(/%\{PYRITE_OBJECT_GLOBAL\}/g, 'Global')
+    .replace(/%\{PYRITE_SUBROUTINE\}/g, 'Subroutine')
+    // Event reference tokens
+    .replace(/%\{ID_ARRIVAL_MODBUILDER_EVENT_ONPLAYERDIED\}/g, 'OnPlayerDied')
+    .replace(/%\{ID_ARRIVAL_MODBUILDER_EVENT_ONPLAYEREARNEDKILL\}/g, 'OnPlayerEarnedKill')
+    .replace(/%\{ID_ARRIVAL_MODBUILDER_EVENT_ONPLAYERDAMAGED\}/g, 'OnPlayerDamaged')
+    .replace(/%\{ID_ARRIVAL_MODBUILDER_EVENT_ONPLAYERDEPLOYED\}/g, 'OnPlayerDeployed')
+    .replace(/%\{ID_ARRIVAL_MODBUILDER_OBJECT_PLAYER\}/g, 'Player')
+    .replace(/%\{ID_ARRIVAL_MODBUILDER_OBJECT_TEAM\}/g, 'Team')
+    .replace(/%\{ID_ARRIVAL_MODBUILDER_OBJECT_VEHICLE\}/g, 'Vehicle')
+    .replace(/%\{ID_ARRIVAL_MODBUILDER_OBJECT_CAPTUREPOINT\}/g, 'CapturePoint')
+    .replace(/%\{ID_ARRIVAL_BLOCK_EVENTPLAYER\}/g, 'EventPlayer')
+    .replace(/%\{ID_ARRIVAL_BLOCK_EVENTTEAM\}/g, 'EventTeam')
+    // Convert known block reference tokens to readable names
+    .replace(/%\{ID_ARRIVAL_BLOCK_FORVARIABLE\}/g, 'ForVariable')
+    .replace(/%\{ID_ARRIVAL_BLOCK_WHILE\}/g, 'While')
+    .replace(/%\{ID_ARRIVAL_BLOCK_IF\}/g, 'If')
+    .replace(/%\{ID_ARRIVAL_BLOCK_ELSEIF\}/g, 'ElseIf')
+    .replace(/%\{ID_ARRIVAL_BLOCK_WAIT\}/g, 'Wait')
+    .replace(/%\{ID_ARRIVAL_BLOCK_WAITUNTIL\}/g, 'WaitUntil')
+    .replace(/%\{ID_ARRIVAL_BLOCK_ALLPLAYERS\}/g, 'AllPlayers')
+    .replace(/%\{ID_ARRIVAL_BLOCK_FILTEREDARRAY\}/g, 'FilteredArray')
+    .replace(/%\{ID_ARRIVAL_BLOCK_MAPPEDARRAY\}/g, 'MappedArray')
+    .replace(/%\{ID_ARRIVAL_BLOCK_SORTEDARRAY\}/g, 'SortedArray')
+    .replace(/%\{ID_ARRIVAL_BLOCK_CURRENTARRAYELEMENT\}/g, 'CurrentArrayElement')
+    .replace(/%\{ID_ARRIVAL_BLOCK_ISTRUEFORALL\}/g, 'IsTrueForAll')
+    .replace(/%\{ID_ARRIVAL_BLOCK_ISTRUEFORANY\}/g, 'IsTrueForAny')
+    .replace(/%\{ID_ARRIVAL_BLOCK_FORCEPLAYERINPUT\}/g, 'ForcePlayerInput')
+    .replace(/%\{ID_ARRIVAL_BLOCK_ENABLEINPUTRESTRICTION\}/g, 'EnableInputRestriction')
+    .replace(/%\{ID_ARRIVAL_BLOCK_APPLYMEDGADGET\}/g, 'ApplyMedGadget')
+    .replace(/%\{ID_ARRIVAL_BLOCK_RESUPPLY\}/g, 'Resupply')
+    .replace(/%\{ID_ARRIVAL_BLOCK_SKIPMANDOWN\}/g, 'SkipMandown')
+    .replace(/%\{ID_ARRIVAL_BLOCK_CHASEVARIABLEATRATE\}/g, 'ChaseVariableAtRate')
+    .replace(/%\{ID_ARRIVAL_BLOCK_CHASEVARIABLEOVERTIME\}/g, 'ChaseVariableOverTime')
+    .replace(/%\{ID_ARRIVAL_BLOCK_STOPCHASINGVARIABLE\}/g, 'StopChasingVariable')
+    .replace(/%\{ID_ARRIVAL_BLOCK_GETGAMEMODESCORE\}/g, 'GetGameModeScore')
+    .replace(/%\{ID_ARRIVAL_BLOCK_SHOWEVENTGAMEMODEMESSAGE\}/g, 'ShowGameModeMessage')
+    .replace(/%\{ID_ARRIVAL_BLOCK_SHOWHIGHLIGHTEDGAMEMODEMESSAGE\}/g, 'ShowHighlightedMessage')
+    .replace(/%\{ID_ARRIVAL_BLOCK_SHOWNOTIFICATIONMESSAGE\}/g, 'ShowNotificationMessage')
+    .replace(/%\{ID_ARRIVAL_BLOCK_DISPLAYCUSTOMNOTIFICATIONMESSAGE\}/g, 'DisplayCustomNotificationMessage')
+    .replace(/%\{ID_ARRIVAL_BLOCK_CLEARCUSTOMNOTIFICATIONMESSAGE\}/g, 'ClearCustomNotificationMessage')
+    .replace(/%\{ID_ARRIVAL_BLOCK_[^}]+\}/g, '')
+    .replace(/%\{help\.common\.value-true\}/g, 'True')
+    .replace(/%\{help\.common\.value-false\}/g, 'False')
+    .replace(/%\{help\.common\.[^}]+\}/g, '')
+    .replace(/%\{[^}]+\}/g, '')
+    // Collapse horizontal whitespace but preserve newlines
+    .replace(/[ \t]+/g, ' ')
+    .replace(/^\s+|\s+$/gm, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+}
+
+/**
  * Manual overrides for event names whose auto-converted i18n key doesn't match.
  */
 const eventNameI18nOverride = {
@@ -148,10 +286,69 @@ function eventNameToI18nKey (name) {
 }
 
 /**
- * Fetch and parse the i18n JSON to extract event descriptions and payload descriptions.
- * Returns a Map of eventName -> { description, payloads: Map<blockType, description> }
+ * Look up the i18n summary for a given block name.
+ * Uses a manual mapping table + simple lowercasing + fallback patterns.
  */
-async function fetchI18nEventData () {
+/**
+ * Generate a fallback description for Event* blocks that lack i18n entries.
+ */
+function generateEventFallbackSummary (blockName, returnType) {
+  if (!blockName.startsWith('Event')) return ''
+
+  // Basic value types get 'value' instead of 'payload'
+  const basicTypes = ['Boolean', 'Number', 'Vector', 'PortalEnum']
+  const isBasic = basicTypes.includes(returnType)
+  const descriptor = isBasic ? 'value' : 'payload'
+
+  // Map some eventParameter names to their display-friendly form
+  const typeDisplay = returnType
+
+  if (returnType) {
+    return `Returns the ${typeDisplay} ${descriptor} from the Event context.`
+  }
+  return ''
+}
+
+function getBlockSummary (blockName, summaryMap, returnType) {
+  // 1. Check manual mapping first
+  if (blockNameToI18nKey[blockName]) {
+    const key = blockNameToI18nKey[blockName]
+    if (summaryMap.has(key)) return summaryMap.get(key)
+  }
+
+  // 2. Direct lowercase match
+  const lower = blockName.toLowerCase()
+  if (summaryMap.has(lower)) return summaryMap.get(lower)
+
+  // 3. Try with 'id' suffix (e.g. getteam -> getteamid)
+  if (summaryMap.has(lower + 'id')) return summaryMap.get(lower + 'id')
+
+  // 4. If starts with 'Set', try the rest lowercased (e.g. SetX -> x)
+  if (blockName.startsWith('Set')) {
+    const rest = blockName.slice(3).toLowerCase()
+    if (summaryMap.has(rest)) return summaryMap.get(rest)
+  }
+
+  // 5. If starts with 'Get', try rest + 'id' (e.g. GetTeam -> teamid)
+  if (blockName.startsWith('Get')) {
+    const rest = blockName.slice(3).toLowerCase()
+    if (summaryMap.has(rest + 'id')) return summaryMap.get(rest + 'id')
+  }
+
+  // 7. Fallback: generate a basic description for Event* blocks
+  if (blockName.startsWith('Event') && returnType) {
+    return generateEventFallbackSummary(blockName, returnType)
+  }
+
+  return ''
+}
+
+/**
+ * Fetch and parse the i18n JSON to extract:
+ * - eventData: Map of eventName -> { description, payloads }
+ * - summaryMap: Map of i18nKey -> summary (for value/action blocks)
+ */
+async function fetchI18nData () {
   console.log(`Fetching i18n from ${i18nUrl}...`)
   const headers = {
     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
@@ -166,72 +363,55 @@ async function fetchI18nEventData () {
     throw new Error(`Failed to fetch i18n: ${res.status} ${res.statusText}`)
   }
   const i18n = await res.json()
-  const rule = i18n?.help?.rule
-  if (!rule) {
-    console.warn('i18n JSON has no help.rule section, skipping descriptions')
-    return new Map()
+  const help = i18n?.help
+  if (!help) {
+    console.warn('i18n JSON has no help section, skipping descriptions')
+    return { eventData: new Map(), summaryMap: new Map() }
   }
 
+  // --- Build summaryMap for value/action blocks ---
+  const summaryMap = new Map()
+  for (const [key, val] of Object.entries(help)) {
+    if (val && typeof val === 'object' && 'summary' in val) {
+      summaryMap.set(key, val.summary)
+    }
+  }
+  // UI action blocks are nested under help.uiactions
+  if (help.uiactions) {
+    for (const [key, val] of Object.entries(help.uiactions)) {
+      if (val && typeof val === 'object' && 'summary' in val) {
+        summaryMap.set(key, val.summary)
+      }
+    }
+  }
+  console.log(`  Found ${summaryMap.size} block summaries in i18n`)
+
+  // --- Build eventData (existing logic) ---
+  const rule = help.rule
   const eventData = new Map()
+  if (!rule) {
+    console.warn('i18n JSON has no help.rule section, skipping event descriptions')
+    return { eventData, summaryMap }
+  }
 
   for (const [key, text] of Object.entries(rule)) {
     if (key === 'summary' || key === 'typesofrule') continue
 
-    // Extract the description before _Payloads:
-    // For events like ongoing that have no Payloads section
     const payloadsSplit = text.includes('_Payloads:') ? text.split('_Payloads:') : [text]
-    const description = payloadsSplit[0]
-      .replace(/\*\*/g, '')           // remove markdown bold markers
-      // Replace type tokens with their readable names
-      .replace(/%\{PYRITE_TYPE_PLAYER\}/g, 'Player')
-      .replace(/%\{PYRITE_TYPE_TEAMID\}/g, 'Team')
-      .replace(/%\{PYRITE_TYPE_VEHICLE\}/g, 'Vehicle')
-      .replace(/%\{PYRITE_TYPE_CAPTUREPOINT\}/g, 'CapturePoint')
-      .replace(/%\{PYRITE_TYPE_MCOM\}/g, 'MCOM')
-      .replace(/%\{PYRITE_TYPE_AREATRIGGER\}/g, 'AreaTrigger')
-      .replace(/%\{PYRITE_TYPE_RINGOFFIRE\}/g, 'RingOfFire')
-      .replace(/%\{PYRITE_TYPE_NUMBER\}/g, 'Number')
-      .replace(/%\{PYRITE_TYPE_ARRAY\}/g, 'Array')
-      .replace(/%\{PYRITE_TYPE_STRING\}/g, 'String')
-      .replace(/%\{PYRITE_TYPE_BOOLEAN\}/g, 'Boolean')
-      .replace(/%\{PYRITE_TYPE_VECTOR\}/g, 'Vector')
-      .replace(/%\{PYRITE_TYPE_PLAYER_STATE\}/g, 'PlayerState')
-      .replace(/%\{PYRITE_TYPE_PLAYER_INVENTORY_ITEM\}/g, 'PlayerInventoryItem')
-      .replace(/%\{PYRITE_TYPE_SOLDIERSTATE\}/g, 'SoldierState')
-      .replace(/%\{PYRITE_TYPE_SOLDIER\}/g, 'Soldier')
-      .replace(/%\{PYRITE_TYPE_ANY\}/g, 'any')
-      .replace(/%\{PYRITE_TYPE_[^}]+\}/g, '') // fallback: remove unknown type tokens
-      .replace(/%\{PYRITE_EVENT_ONGOING\}/g, 'Ongoing')
-      .replace(/%\{PYRITE_EVENT\}/g, 'Event')
-      .replace(/%\{PYRITE_CONDITION\}/g, 'Condition')
-      .replace(/%\{PYRITE_ACTIONS\}/g, 'Actions')
-      .replace(/%\{PYRITE_RULE\}/g, 'Rule')
-      .replace(/%\{PYRITE_OBJECT_GLOBAL\}/g, 'Global')
-      .replace(/%\{ID_ARRIVAL_MODBUILDER_OBJECT_PLAYER\}/g, 'Player')
-      .replace(/%\{ID_ARRIVAL_MODBUILDER_OBJECT_TEAM\}/g, 'Team')
-      .replace(/%\{ID_ARRIVAL_MODBUILDER_OBJECT_VEHICLE\}/g, 'Vehicle')
-      .replace(/%\{ID_ARRIVAL_MODBUILDER_OBJECT_CAPTUREPOINT\}/g, 'CapturePoint')
-      .replace(/%\{ID_ARRIVAL_BLOCK_EVENTPLAYER\}/g, 'EventPlayer')
-      .replace(/%\{ID_ARRIVAL_BLOCK_EVENTTEAM\}/g, 'EventTeam')
-      .replace(/%\{ID_ARRIVAL_BLOCK_[^}]+\}/g, '')
-      .replace(/%\{help\.common\.value-true\}/g, 'True')
-      .replace(/%\{help\.common\.value-false\}/g, 'False')
-      .replace(/%\{help\.common\.[^}]+\}/g, '')
-      .replace(/%\{[^}]+\}/g, '')
-      // Collapse horizontal whitespace but preserve newlines
-      .replace(/[ \t]+/g, ' ')
-      .replace(/^\s+|\s+$/gm, '')
-      .replace(/\n{3,}/g, '\n\n')
-      .trim()
+    const description = cleanSummary(payloadsSplit[0])
+
+    // Restore _Note: -> **Note:** after cleaning
+    const descWithNote = description
+      .replace(/_Note:/g, '**Note:**')
+      .replace(/_$/g, '')
 
     const payloads = new Map()
     if (payloadsSplit.length > 1) {
       const payloadsStr = payloadsSplit[1]
-        .replace(/^_/, '')            // remove leading underscore
-        .replace(/_$/, '')            // remove trailing underscore
+        .replace(/^_/, '')
+        .replace(/_$/, '')
         .trim()
 
-      // Parse each %{ID_ARRIVAL_BLOCK_XXX} (description) pair
       const payloadPattern = /%\{ID_ARRIVAL_BLOCK_([^}]+)\}\s*(?:\(([^)]*)\))?/g
       let match
       while ((match = payloadPattern.exec(payloadsStr)) !== null) {
@@ -243,11 +423,11 @@ async function fetchI18nEventData () {
       }
     }
 
-    eventData.set(key, { description, payloads })
+    eventData.set(key, { description: descWithNote, payloads })
   }
 
   console.log(`  Found ${eventData.size} events in i18n`)
-  return eventData
+  return { eventData, summaryMap }
 }
 
 async function main () {
@@ -255,14 +435,17 @@ async function main () {
   const raw = await readFile(definitionsFile, 'utf8')
   const data = JSON.parse(raw)
 
-  // Fetch i18n event data
-  let i18nEventData
+  // Fetch i18n data (event descriptions + block summaries)
+  let i18nEventData, summaryMap
   try {
-    i18nEventData = await fetchI18nEventData()
+    const result = await fetchI18nData()
+    i18nEventData = result.eventData
+    summaryMap = result.summaryMap
   } catch (err) {
     console.warn(`Warning: could not fetch i18n: ${err.message}`)
     console.warn('Proceeding without i18n descriptions')
     i18nEventData = new Map()
+    summaryMap = new Map()
   }
 
   const events = data.events || []
@@ -423,12 +606,12 @@ async function main () {
         lines.push(`##### ${item.name}`)
         lines.push('')
 
-        if (item.displayNameSID) {
-          const desc = item.displayNameSID.replace(/^help\./, '').replace(/\.summary$/, '')
-          if (desc) {
-            lines.push(`*${desc}*`)
-            lines.push('')
-          }
+        // Look up description from i18n summaries (with fallback for Event* blocks)
+        const returnType = (item.functionSignatures && item.functionSignatures[0] && item.functionSignatures[0].returnType) || ''
+        const blockSummary = cleanSummary(getBlockSummary(item.name, summaryMap, returnType))
+        if (blockSummary) {
+          lines.push(blockSummary)
+          lines.push('')
         }
 
         lines.push(`| Signature | Return Type |`)
@@ -484,6 +667,13 @@ async function main () {
         lines.push(`##### ${item.name}`)
         lines.push('')
 
+        // Look up description from i18n summaries
+        const blockSummary = cleanSummary(getBlockSummary(item.name, summaryMap))
+        if (blockSummary) {
+          lines.push(blockSummary)
+          lines.push('')
+        }
+
         lines.push(`| Signature |`)
         lines.push(`| --- |`)
         for (const sig of sigs) {
@@ -501,6 +691,44 @@ async function main () {
         lines.push('')
       }
     }
+  }
+
+  lines.push('## Control Actions')
+  lines.push('')
+  lines.push('Control action blocks manage the flow of execution in a rule.')
+  lines.push('')
+
+  for (const ca of controlActions) {
+    if (ca.deprecated) continue
+
+    const sigs = (ca.functionSignatures || []).filter(s => !s.deprecated)
+    if (sigs.length === 0) continue
+
+    lines.push(`### ${ca.name}`)
+    lines.push('')
+
+    // Look up description from i18n summaries
+    const blockSummary = cleanSummary(getBlockSummary(ca.name, summaryMap))
+    if (blockSummary) {
+      lines.push(blockSummary)
+      lines.push('')
+    }
+
+    lines.push(`| Signature |`)
+    lines.push(`| --- |`)
+    for (const sig of sigs) {
+      const paramStr = (sig.parameterTypes || []).map(p => {
+        if (p.anyType) return 'any'
+        if (p.parameterTypes) {
+          const types = p.parameterTypes.map(t => createTypeDisplay(t)).join(' | ')
+          return p.parameterName ? `${p.parameterName}: ${types}` : types
+        }
+        return createTypeDisplay(p)
+      }).join(', ')
+
+      lines.push(`| \`(${paramStr})\` |`)
+    }
+    lines.push('')
   }
 
   lines.push('## Objects')
