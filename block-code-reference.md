@@ -656,7 +656,7 @@ Returns the index of the first true value in the specified array.
 
 ##### IsTrueForAll
 
-Returns if the provided condition is for every element in the provided Array.
+Returns True if the provided condition is True for every element in the provided Array.
 
 | Signature | Return Type |
 | --- | --- |
@@ -664,7 +664,7 @@ Returns if the provided condition is for every element in the provided Array.
 
 ##### IsTrueForAny
 
-Returns if the provided condition is for at least one element in the provided Array.
+Returns True if the provided condition is True for at least one element in the provided Array.
 
 | Signature | Return Type |
 | --- | --- |
@@ -777,7 +777,7 @@ Returns the CapturePoint payload from the [OnCapturePointCaptured](#oncapturepoi
 
 ##### EventDamageType
 
-Returns the PlayerDamateTypesItem payload from the [OnPlayerDamaged](#onplayerdamaged) Event context.
+Returns the PlayerDamageTypesItem payload from the [OnPlayerDamaged](#onplayerdamaged) Event context.
 
 
 ##### EventDeathType
@@ -963,7 +963,7 @@ Returns the gamemode target score needed for victory.
 
 ##### IsFaction
 
-Returns if the provided Team is using soldiers from the specified .
+Returns True if the provided Team is using soldiers from the specified Faction.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1048,7 +1048,7 @@ Returns the VL7Cloud object corresponding to the provided id.
 
 ##### IsCurrentMap
 
-Returns if the provided is the name of the current map.
+Returns True if the provided Map is the name of the current map.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1067,7 +1067,7 @@ Spawns an object at runtime. Returns an object id if the object supports it, oth
 
 ##### And
 
-Returns a Boolean value based on whether both of the provided inputs return .
+Returns a Boolean value based on whether both of the provided inputs return True.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1099,7 +1099,7 @@ Returns a Boolean indicating if the 1st provided value is greater than the 2nd p
 
 ##### IfThenElse
 
-Returns the 1st provided value if the condition is , otherwise, returns the 2nd provided value.
+Returns the 1st provided value if the condition is True, otherwise, returns the 2nd provided value.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1107,7 +1107,7 @@ Returns the 1st provided value if the condition is , otherwise, returns the 2nd 
 
 ##### IsType
 
-Returns if the provided value is equal to the specified .
+Returns True if the provided value is equal to the specified Type.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1155,7 +1155,7 @@ Returns a Boolean indicating if two values are not equal to each other.
 
 ##### Or
 
-Returns a Boolean based on whether either of the two inputs are .
+Returns a Boolean based on whether either of the two inputs are True.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1163,7 +1163,7 @@ Returns a Boolean based on whether either of the two inputs are .
 
 ##### Xor
 
-Returns if the provided Boolean inputs return different values.
+Returns True if the provided Boolean inputs return different values.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1497,7 +1497,7 @@ Returns an Array of all capture points within a game.
 
 ##### GetCapturePoint
 
-Returns the CapturePoint or MCOM corresponding to the provided or respectively.
+Returns the CapturePoint or MCOM corresponding to the provided Capture Point or MCOM respectively.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1623,7 +1623,7 @@ Returns a Gadgets Item which can be used with SpawnLoot, AddEquipment, AIStartUs
 
 ##### GetArgument
 
-Returns the value of the argument that is passed into the . The list of available parameters will populate once this block is placed inside the .
+Returns the value of the argument that is passed into the Subroutine. The list of available parameters will populate once this block is placed inside the Subroutine.
 
 | Signature | Return Type |
 | --- | --- |
@@ -2190,7 +2190,7 @@ Returns the team value of the specified player OR the corresponding team of the 
 
 ##### IsPlayerValid
 
-Returns if the provided Player is valid.
+Returns True if the provided Player is valid.
 
 | Signature | Return Type |
 | --- | --- |
@@ -2215,7 +2215,7 @@ Creates and returns a new weapon package.
 
 ##### EventDamageTypeCompare
 
-Returns a Boolean indicating if the victim was damaged by the provided .
+Returns a Boolean indicating if the victim was damaged by the provided DamageType.
 
 | Signature | Return Type |
 | --- | --- |
@@ -2223,7 +2223,7 @@ Returns a Boolean indicating if the victim was damaged by the provided .
 
 ##### EventDeathTypeCompare
 
-Returns a Boolean indicating if the victim died by the provided .
+Returns a Boolean indicating if the victim died by the provided DeathType.
 
 | Signature | Return Type |
 | --- | --- |
@@ -2231,7 +2231,7 @@ Returns a Boolean indicating if the victim died by the provided .
 
 ##### EventWeaponCompare
 
-Returns a Boolean indicating if the given is equivalent to the provided ability.
+Returns a Boolean indicating if the given HardwareId is equivalent to the provided ability.
 
 | Signature | Return Type |
 | --- | --- |
@@ -2240,7 +2240,7 @@ Returns a Boolean indicating if the given is equivalent to the provided ability.
 
 ##### GetInventoryAmmo
 
-Returns the target Player loaded ammo of the provided .
+Returns the target Player loaded ammo of the provided Inventory Slot.
 
 | Signature | Return Type |
 | --- | --- |
@@ -2248,7 +2248,7 @@ Returns the target Player loaded ammo of the provided .
 
 ##### GetInventoryMagazineAmmo
 
-Returns the target Player magazine ammo of the provided .
+Returns the target Player magazine ammo of the provided Inventory Slot.
 
 | Signature | Return Type |
 | --- | --- |
@@ -2275,7 +2275,7 @@ Returns a boolean indicating if the provided player has the specified ability.
 
 ##### IsInventorySlotActive
 
-Returns whether or not the active inventory slot of the target Player is the provided .
+Returns True whether or not the active inventory slot of the target Player is the provided Inventory Slot.
 
 | Signature | Return Type |
 | --- | --- |
@@ -2439,7 +2439,7 @@ Returns the world icon object corresponding to the provided id.
 
 ##### Message
 
-Returns a constructed object which can be used with Showeventgamemodemessage, Shownotificationmessage, Showhighlightedgamemodemessage, and Displaycustomnotificationmessage. The object is created by providing a Number, Player, or format String (which can take up to 3 format items). 
+Returns a constructed Message object which can be used with ShowEventGameModeMessage, ShowNotificationMessage, ShowHighlightedGameModeMessage, and DisplayCustomNotificationMessage. The Message object is created by providing a Number, Player, or format String (which can take up to 3 format items). 
 A format String is a String that contains `{}` (called braces) within them, which can be substituted for parameters. For example, the String - `{} gained {} points!` - can be given a Player and Number parameter and could output as `John gained 2 points!`. See the example below for how this can be used with blocks. 
 
 _Note: It's your responsibility to ensure a safe and fair experience for others, violating the EA User Agreement by using offensive or inappropriate text may result in account bans._
@@ -2717,7 +2717,7 @@ Returns an Array of all vehicles within a game.
 
 ##### CompareVehicleName
 
-Returns a Boolean indicating if the target Vehicle has the same name as the provided or if it is the same type as the provided .
+Returns a Boolean indicating if the target Vehicle has the same name as the provided Vehicle or if it is the same type as the provided Vehicle Type.
 
 | Signature | Return Type |
 | --- | --- |
@@ -2817,7 +2817,7 @@ Sets a Player to act independently. They will attempt to complete objectives, fi
 
 ##### AIDefendPositionBehavior
 
-Sets a **Player** to defend an area around a location. (Only works for AI players)
+Sets a Player to defend an area around a location. (Only works for AI players)
 
 | Signature |
 | --- |
@@ -2833,7 +2833,7 @@ Sets a Player's current position as idle point. (Only works for AI players)
 
 ##### AILOSMoveToBehavior
 
-Sets a **Player** to move to a location with a line of sight to a specific position. (Only works for AI players)
+Sets a Player to move to a location with a line of sight to a specific position. (Only works for AI players)
 
 | Signature |
 | --- |
@@ -2849,7 +2849,7 @@ Sets a target Player a destination to move to. (Only works for AI players)
 
 ##### AIParachuteBehavior
 
-Sets a **Player** to use parachute. (Only works for AI players)
+Sets a Player to use parachute. (Only works for AI players)
 
 | Signature |
 | --- |
@@ -2857,7 +2857,7 @@ Sets a **Player** to use parachute. (Only works for AI players)
 
 ##### AIValidatedMoveToBehavior
 
-Sets a **Player** to move to a valid position on navmesh near a location. (Only works for AI players)
+Sets a Player to move to a valid position on navmesh near a location. (Only works for AI players)
 
 | Signature |
 | --- |
@@ -3542,12 +3542,12 @@ Spots a target Player for all players for a specified duration of time (in secon
 
 ##### Abort
 
-Stops the execution of a list of in a .
+Stops the execution of a list of Actions in a Rule.
 
 
 ##### AbortIf
 
-Stops the execution of a list of in a if the provided Boolean is . Otherwise, the execution continues with the remaining .
+Stops the execution of a list of Actions in a Rule if the provided Boolean is True. Otherwise, the execution continues with the remaining Actions.
 
 | Signature |
 | --- |
@@ -3579,7 +3579,7 @@ Calls a javascript action function.
 
 ##### Skip
 
-Skips a provided number of following this block within this .
+Skips a provided number of Actions following this block within this Rule.
 
 | Signature |
 | --- |
@@ -3587,7 +3587,7 @@ Skips a provided number of following this block within this .
 
 ##### SkipIf
 
-Skips a provided number of following this block within this if the condition evaluates to . If it does not, execution continues with the remaining .
+Skips a provided number of Actions following this block within this Rule if the condition evaluates to True. If it does not, execution continues with the remaining Actions.
 
 | Signature |
 | --- |
@@ -3603,7 +3603,7 @@ Stops an in-progress tracking of a Variable from the ChaseVariableOverTime or Ch
 
 ##### Wait
 
-Pauses the execution of in a for a provided Number of seconds.
+Pauses the execution of Actions in a Rule for a provided Number of seconds.
 
 | Signature |
 | --- |
@@ -3611,7 +3611,7 @@ Pauses the execution of in a for a provided Number of seconds.
 
 ##### WaitUntil
 
-Pauses the execution of in a for a provided Number of seconds or if the provided condition evaluates to during that interval.
+Pauses the execution of Actions in a Rule for a provided Number of seconds or if the provided condition evaluates to True during that interval.
 
 | Signature |
 | --- |
@@ -3762,7 +3762,7 @@ Enables or disables all keyboard and mouse inputs - such as movement, firing, an
 
 ##### EnableInputRestriction
 
-Enables or disables a specified on a target Player.
+Enables or disables a specified Restricted Input on a target Player.
 
 | Signature |
 | --- |
@@ -3794,7 +3794,7 @@ Adds a Weapon or Gadget to a Player's Loadout.
 
 ##### ForceSwitchInventory
 
-Forces the target Player to switch to the provided .
+Forces the target Player to switch to the provided Inventory Slot.
 
 | Signature |
 | --- |
@@ -3812,7 +3812,7 @@ Removes a Weapon or Gadget from a Player's Loadout.
 
 ##### SetInventoryAmmo
 
-Sets the target Player loaded ammo for the provided .
+Sets the target Player loaded ammo for the provided Inventory Slot.
 
 | Signature |
 | --- |
@@ -3820,7 +3820,7 @@ Sets the target Player loaded ammo for the provided .
 
 ##### SetInventoryMagazineAmmo
 
-Sets the target Player magazine ammo for the provided .
+Sets the target Player magazine ammo for the provided Inventory Slot.
 
 | Signature |
 | --- |
@@ -3838,7 +3838,7 @@ Puts the target Player into the mandown state (unless mandown is disabled).
 
 ##### Resupply
 
-Resupplies the target Player using a provided .
+Resupplies the target Player using a provided Resupply Type.
 
 | Signature |
 | --- |
@@ -3941,7 +3941,7 @@ Attaches a new UI Icon Widget to an object.
 
 ##### EnableWorldIconImage
 
-Enables or disables the image for a provided .
+Enables or disables the image for a provided World Icons.
 
 | Signature |
 | --- |
@@ -3949,7 +3949,7 @@ Enables or disables the image for a provided .
 
 ##### EnableWorldIconText
 
-Enables or disables the text for a provided . 
+Enables or disables the text for a provided World Icons. 
 
 _Note: There is no default text, and will need to be set before or after this property is enabled to appear_.
 
@@ -3968,7 +3968,7 @@ Removes a UI Icon Widget from an object.
 
 ##### SetWorldIconColor
 
-Sets the color property of a .
+Sets the color property of a WorldIcon.
 
 | Signature |
 | --- |
@@ -3976,7 +3976,7 @@ Sets the color property of a .
 
 ##### SetWorldIconImage
 
-Sets the image property of a to the selected .
+Sets the image property of a WorldIcon to the selected World Icon Image.
 
 | Signature |
 | --- |
@@ -3993,7 +3993,7 @@ Restricts a world icon to be visible only to a specific Player or Team.
 
 ##### SetWorldIconPosition
 
-Sets the in-world position of a provided .
+Sets the in-world position of a provided WorldIcon.
 
 | Signature |
 | --- |
@@ -4001,7 +4001,7 @@ Sets the in-world position of a provided .
 
 ##### SetWorldIconText
 
-Sets the text property for a provided .
+Sets the text property for a provided WorldIcon.
 
 | Signature |
 | --- |
@@ -4019,7 +4019,7 @@ Clears all custom messages for a provided Player or Team. If no Player or Team i
 
 ##### ClearCustomNotificationMessage
 
-Clears text from the provided for the provided Player or Team. If no Player or Team is given, it clears all players text at that .
+Clears text from the provided Custom Message for the provided Player or Team. If no Player or Team is given, it clears all players text at that Custom Message.
 
 | Signature |
 | --- |
@@ -4029,7 +4029,7 @@ Clears text from the provided for the provided Player or Team. If no Player or T
 
 ##### DisplayCustomNotificationMessage
 
-Display a on-screen.
+Display a Message on-screen.
 
 _Note: It's your responsibility to ensure a safe and fair experience for others, violating the EA User Agreement by using offensive or inappropriate text may result in account bans._
 
@@ -4041,7 +4041,7 @@ _Note: It's your responsibility to ensure a safe and fair experience for others,
 
 ##### DisplayHighlightedWorldLogMessage
 
-Displays a on the world log above the minimap for 6 seconds. If no target is provided, it will display the to everyone. 
+Displays a Message on the world log above the minimap for 6 seconds. If no target is provided, it will display the Message to everyone. 
 
 _Note: This will only appear to players that are deployed on the map. It's your responsibility to ensure a safe and fair experience for others, violating the EA User Agreement by using offensive or inappropriate text may result in account bans._
 
@@ -4053,7 +4053,7 @@ _Note: This will only appear to players that are deployed on the map. It's your 
 
 ##### DisplayNotificationMessage
 
-Displays a notification-type on the top-right of the screen for 6 seconds. If no target is provided, it will display the to everyone. 
+Displays a notification-type Message on the top-right of the screen for 6 seconds. If no target is provided, it will display the Message to everyone. 
 
 _Note: It's your responsibility to ensure a safe and fair experience for others, violating the EA User Agreement by using offensive or inappropriate text may result in account bans._
 
@@ -4065,7 +4065,7 @@ _Note: It's your responsibility to ensure a safe and fair experience for others,
 
 ##### SendErrorReport
 
-Displays a provided as an error in the Admin menu.
+Displays a provided Message as an error in the Admin menu.
 
 | Signature |
 | --- |

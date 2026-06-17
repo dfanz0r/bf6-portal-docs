@@ -58,7 +58,11 @@ async function loadI18n () {
 function resolveI18n (str) {
   if (!str) return str
 
-  // Known PYRITE_TYPE mappings
+  // Known PYRITE_* / PYRITE_TYPE_* mappings. Used both for the outer input
+  // AND inside the %{help.xxx} resolver callback so tokens embedded in
+  // resolved i18n content get the same treatment as the outer string (this
+  // is what fixes the "the ." jank when %{PYRITE_SUBROUTINE} etc. appear in
+  // summary text resolved from i18nData).
   const typeMap = {
     'PYRITE_TYPE_PLAYER': 'Player',
     'PYRITE_TYPE_TEAMID': 'Team',
@@ -93,6 +97,9 @@ function resolveI18n (str) {
     'PYRITE_TYPE_ENUM_SOLDIERSTATENUMBER': 'Soldier State (Number)',
     'PYRITE_TYPE_ENUM_SOLDIERSTATEBOOL': 'Soldier State (Boolean)',
     'PYRITE_TYPE_ENUM_SOLDIERSTATEVECTOR': 'Soldier State (Vector)',
+    // Vehicle-state enum is referenced in summary text but was previously
+    // stripped to empty by the %{PYRITE_TYPE_*} catchall.
+    'PYRITE_TYPE_ENUM_VEHICLESTATEVECTOR': 'Vehicle State (Vector)',
     'PYRITE_TYPE_ENUM_CAPTUREPOINTS': 'Capture Point',
     'PYRITE_TYPE_ENUM_MCOMS': 'MCOM',
     'PYRITE_TYPE_ENUM_MCOMSTATEBOOL': 'MCOM State (Boolean)',
@@ -173,81 +180,127 @@ function resolveI18n (str) {
     'PYRITE_OBJECT_GLOBAL': 'Global',
     'PYRITE_OPTION_DEPRECATED': '(Deprecated)',
     'PYRITE_TYPE_ANY': 'any',
+    // modBlock summary references %{PYRITE_MOD}; without this it was stripped.
+    'PYRITE_MOD': 'Mod',
   }
 
-  // Resolve %{PYRITE_xxx} tokens
-  for (const [key, val] of Object.entries(typeMap)) {
-    str = str.replace(new RegExp(`%\\{${key}\\}`, 'g'), val)
+  // ID_ARRIVAL_BLOCK_* -> PascalCase block names. Without this, the
+  // existing split('_') heuristic produced wrong-case strings like
+  // "Showeventgamemodemessage" instead of "ShowEventGameModeMessage" inside
+  // resolved i18n summaries.
+  const blockMap = {
+    'ID_ARRIVAL_BLOCK_ALLPLAYERS': 'AllPlayers',
+    'ID_ARRIVAL_BLOCK_APPLYMEDGADGET': 'ApplyMedGadget',
+    'ID_ARRIVAL_BLOCK_CHASEVARIABLEATRATE': 'ChaseVariableAtRate',
+    'ID_ARRIVAL_BLOCK_CHASEVARIABLEOVERTIME': 'ChaseVariableOverTime',
+    'ID_ARRIVAL_BLOCK_CLEARCUSTOMNOTIFICATIONMESSAGE': 'ClearCustomNotificationMessage',
+    'ID_ARRIVAL_BLOCK_CURRENTARRAYELEMENT': 'CurrentArrayElement',
+    'ID_ARRIVAL_BLOCK_DISPLAYCUSTOMNOTIFICATIONMESSAGE': 'DisplayCustomNotificationMessage',
+    'ID_ARRIVAL_BLOCK_ELSEIF': 'ElseIf',
+    'ID_ARRIVAL_BLOCK_ENABLEINPUTRESTRICTION': 'EnableInputRestriction',
+    'ID_ARRIVAL_BLOCK_EVENTOTHERPLAYER': 'EventOtherPlayer',
+    'ID_ARRIVAL_BLOCK_EVENTPLAYER': 'EventPlayer',
+    'ID_ARRIVAL_BLOCK_EVENTTEAM': 'EventTeam',
+    'ID_ARRIVAL_BLOCK_FILTEREDARRAY': 'FilteredArray',
+    'ID_ARRIVAL_BLOCK_FORCEPLAYERINPUT': 'ForcePlayerInput',
+    'ID_ARRIVAL_BLOCK_FORVARIABLE': 'ForVariable',
+    'ID_ARRIVAL_BLOCK_GETGAMEMODESCORE': 'GetGameModeScore',
+    'ID_ARRIVAL_BLOCK_IF': 'If',
+    'ID_ARRIVAL_BLOCK_ISTRUEFORALL': 'IsTrueForAll',
+    'ID_ARRIVAL_BLOCK_ISTRUEFORANY': 'IsTrueForAny',
+    'ID_ARRIVAL_BLOCK_MAPPEDARRAY': 'MappedArray',
+    'ID_ARRIVAL_BLOCK_RESUPPLY': 'Resupply',
+    'ID_ARRIVAL_BLOCK_SHOWEVENTGAMEMODEMESSAGE': 'ShowEventGameModeMessage',
+    'ID_ARRIVAL_BLOCK_SHOWHIGHLIGHTEDGAMEMODEMESSAGE': 'ShowHighlightedGameModeMessage',
+    'ID_ARRIVAL_BLOCK_SHOWNOTIFICATIONMESSAGE': 'ShowNotificationMessage',
+    'ID_ARRIVAL_BLOCK_SKIPMANDOWN': 'SkipMandown',
+    'ID_ARRIVAL_BLOCK_SORTEDARRAY': 'SortedArray',
+    'ID_ARRIVAL_BLOCK_STOPCHASINGVARIABLE': 'StopChasingVariable',
+    'ID_ARRIVAL_BLOCK_WAIT': 'Wait',
+    'ID_ARRIVAL_BLOCK_WHILE': 'While',
   }
 
-  // Resolve %{help.xxx.xxx} tokens from i18n data
+  // ID_ARRIVAL_MODBUILDER_EVENT_* -> event names. Without this, the
+  // %{ID_[^}]+} catchall wiped the event name from rendered summaries
+  // (e.g. "triggered by the OnPlayerDamaged event" became "triggered by the  event").
+  const eventMap = {
+    'ID_ARRIVAL_MODBUILDER_EVENT_ONPLAYERDAMAGED': 'OnPlayerDamaged',
+    'ID_ARRIVAL_MODBUILDER_EVENT_ONPLAYERDEPLOYED': 'OnPlayerDeployed',
+    'ID_ARRIVAL_MODBUILDER_EVENT_ONPLAYERDIED': 'OnPlayerDied',
+    'ID_ARRIVAL_MODBUILDER_EVENT_ONPLAYEREARNEDKILL': 'OnPlayerEarnedKill',
+  }
+
+  // Fallback ID_ARRIVAL_MODBUILDER_OBJECT_xxx tail -> PascalCase. These
+  // tokens don't appear in summary text very often, so a heuristic is fine.
+  const idWordToPascal = (id) =>
+    id.split('_').map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join('')
+
+  // Apply every text-only substitution. Used for the original input AND for
+  // any string returned from the %{help.xxx} resolver, so resolved i18n
+  // content gets the same treatment as text passed in directly.
+  // (Note: %{help.xxx} tokens themselves are NOT handled here — they need
+  // resolution first.)
+  const substituteAll = (s) => {
+    let result = s
+    // 1. Specific typeMap replacements.
+    for (const [key, val] of Object.entries(typeMap)) {
+      result = result.replace(new RegExp(`%\\{${key}\\}`, 'g'), val)
+    }
+    // 2. Unknown uppercase tokens: fall back to blockMap, eventMap, then
+    //    i18n top-level keys (e.g. PYRITE_NEW_SUBROUTINE -> "New Subroutine").
+    result = result.replace(/%\{([A-Z_][A-Z0-9_]*)\}/g, (token, key) => {
+      if (Object.prototype.hasOwnProperty.call(typeMap, key)) return typeMap[key]
+      if (blockMap[key]) return blockMap[key]
+      if (eventMap[key]) return eventMap[key]
+      if (i18nData && typeof i18nData[key] === 'string') return i18nData[key]
+      return token
+    })
+    return result
+      .replace(/\*\*/g, '')                                  // bold markers
+      // Known typo in the CDN-cached help text: "PlayerDamateTypesItem" is
+      // missing the 'g' in "Damage". The block-definitions.json (and the
+      // <block type="..."> reference inside the same .md) spell it correctly,
+      // so normalize it here. Source .md files cannot be hand-edited because
+      // they get refreshed from the CDN on every download.
+      .replace(/PlayerDamateTypesItem/g, 'PlayerDamageTypesItem')
+      .replace(/%\{help\.common\.value-true\}/g, 'True')     // "%{help.common.value-true}"
+      .replace(/%\{help\.common\.value-false\}/g, 'False')   // "%{help.common.value-false}"
+      .replace(/%\{ID_ARRIVAL_MODBUILDER_EVENT_([^}]+)\}/g, (m, key) =>
+        eventMap[`ID_ARRIVAL_MODBUILDER_EVENT_${key}`] || idWordToPascal(key))
+      .replace(/%\{ID_ARRIVAL_BLOCK_([^}]+)\}/g, (m, key) =>
+        blockMap[`ID_ARRIVAL_BLOCK_${key}`] || idWordToPascal(key))
+      .replace(/%\{ID_ARRIVAL_MODBUILDER_OBJECT_([^}]+)\}/g, (m, key) => idWordToPascal(key))
+      // Strip any remaining unknown PYRITE/ID tokens to avoid orphan punctuation.
+      .replace(/%\{PYRITE_TYPE_[^}]+\}/g, '')
+      .replace(/%\{PYRITE_[^}]+\}/g, '')
+      .replace(/%\{ID_[^}]+\}/g, '')
+      .replace(/[ \t]+/g, ' ')
+      .trim()
+  }
+
+  // First clean the input string itself.
+  str = substituteAll(str)
+
+  // Resolve %{help.xxx.xxx} from i18n data; clean each resolved value.
   str = str.replace(/%\{help\.([^}]+)\}/g, (match, path) => {
-    const parts = path.split('.')
-    // Start from i18nData.help since path already stripped 'help.'
     let obj = i18nData?.help
-    for (const part of parts) {
+    for (const part of path.split('.')) {
       if (obj && typeof obj === 'object') {
         obj = obj[part]
       } else {
-        return match // can't resolve, keep as-is
+        return match
       }
     }
-    if (typeof obj === 'string') {
-      // Clean up markdown bold markers in the resolved text
-      return obj.replace(/\*\*/g, '').trim()
-        .replace(/%\{PYRITE_TYPE_PLAYER\}/g, 'Player')
-        .replace(/%\{PYRITE_TYPE_NUMBER\}/g, 'Number')
-        .replace(/%\{PYRITE_TYPE_BOOLEAN\}/g, 'Boolean')
-        .replace(/%\{PYRITE_TYPE_VECTOR\}/g, 'Vector')
-        .replace(/%\{PYRITE_TYPE_ARRAY\}/g, 'Array')
-        .replace(/%\{PYRITE_TYPE_STRING\}/g, 'String')
-        .replace(/%\{PYRITE_TYPE_VARIABLE\}/g, 'Variable')
-        .replace(/%\{PYRITE_TYPE_ANYTYPE\}/g, 'any')
-        .replace(/%\{PYRITE_TYPE_TEAMID\}/g, 'Team')
-        .replace(/%\{PYRITE_TYPE_VEHICLE\}/g, 'Vehicle')
-        .replace(/%\{PYRITE_TYPE_CAPTUREPOINT\}/g, 'CapturePoint')
-        .replace(/%\{PYRITE_TYPE_MCOM\}/g, 'MCOM')
-        .replace(/%\{PYRITE_TYPE_PLAYER\}/g, 'Player')
-        .replace(/%\{PYRITE_TYPE_NUMBER\}/g, 'Number')
-        .replace(/%\{ID_ARRIVAL_BLOCK_([^}]+)\}/g, (m, id) => {
-          // Convert ID_ARRIVAL_BLOCK_EVENTPLAYER -> EventPlayer
-          const parts = id.split('_')
-          return parts.map((p, i) => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join('')
-        })
-        .replace(/%\{ID_ARRIVAL_MODBUILDER_OBJECT_([^}]+)\}/g, (m, id) => {
-          const parts = id.split('_')
-          return parts.map((p, i) => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join('')
-        })
-        .replace(/%\{PYRITE_TYPE_[^}]+\}/g, '')
-        .replace(/%\{PYRITE_[^}]+\}/g, '')
-        .replace(/%\{ID_[^}]+\}/g, '')
-        .replace(/%\{help\.common\.[^}]+\}/g, '')
-        .replace(/[ \t]+/g, ' ')
-        .trim()
-    }
+    if (typeof obj === 'string') return substituteAll(obj)
     return match
   })
 
-  // Resolve %{ID_ARRIVAL_BLOCK_xxx} tokens directly
-  str = str.replace(/%\{ID_ARRIVAL_BLOCK_([^}]+)\}/g, (m, id) => {
-    const parts = id.split('_')
-    return parts.map((p, i) => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join('')
-  })
+  // Strip any remaining unresolved %{help.xxx}/{help.common.xxx}/%{...} tokens.
+  str = str.replace(/%\{help\.common\.[^}]+\}/g, '')
+    .replace(/%\{help\.[^}]+\}/g, '')
+    .replace(/%\{[^}]+\}/g, '')
 
-  // Resolve %{ID_ARRIVAL_MODBUILDER_OBJECT_xxx}
-  str = str.replace(/%\{ID_ARRIVAL_MODBUILDER_OBJECT_([^}]+)\}/g, (m, id) => {
-    const parts = id.split('_')
-    return parts.map((p, i) => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join('')
-  })
-
-  // Resolve %{help.common.value-true} -> True, %{help.common.value-false} -> False
-  str = str.replace(/%\{help\.common\.value-true\}/g, 'True')
-  str = str.replace(/%\{help\.common\.value-false\}/g, 'False')
-
-  // Remove any remaining %{...} tokens that couldn't be resolved
-  str = str.replace(/%\{[^}]+\}/g, '')
-
-  // Clean up whitespace
+  // Final whitespace cleanup
   str = str.replace(/[ \t]+/g, ' ')
     .replace(/^[ \t]+/gm, '')
     .replace(/\n{3,}/g, '\n\n')
