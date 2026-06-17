@@ -3,3 +3,5 @@ node_modules
 .vitepress/cache
 .cache
 .vitepress/sdk-version.json
+
+.vitepress/blockly-help/
