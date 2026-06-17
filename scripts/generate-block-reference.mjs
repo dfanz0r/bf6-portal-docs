@@ -3,9 +3,12 @@ import { existsSync } from 'node:fs'
 import path from 'node:path'
 
 const definitionsFile = '.vitepress/block-definitions.json'
-const helpDir = '.vitepress/blockly-help'
+const helpDir = '.cache/blockly-help'
 const i18nUrl = 'https://portal.battlefield.com/bf6/13637837/i18n/en-US.json'
-const i18nCacheFile = '.vitepress/blockly-help/i18n-cache.json'
+// i18n cache lives alongside the help files inside .cache/, so Cloudflare's
+// Build Cache restores them together. See download-block-help.mjs for the
+// reasoning behind using `.cache/` instead of `.vitepress/`.
+const i18nCacheFile = '.cache/blockly-help/i18n-cache.json'
 const outFile = 'block-code-reference.md'
 
 // ─── I18n resolution ─────────────────────────────────────────────────────────

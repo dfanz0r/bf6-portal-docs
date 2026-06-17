@@ -1,6 +1,8 @@
 import { mkdir, writeFile } from 'node:fs/promises'
 
-const outPath = '.vitepress/sdk-version.json'
+// Keep the SDK version tracker inside `.cache/` so Cloudflare's Build Cache
+// carries it across builds. See download-block-help.mjs for the rationale.
+const outPath = '.cache/sdk-version.json'
 const versionsUrl = 'https://download.portal.battlefield.com/versions.json'
 
 function emptyPayload () {
@@ -80,7 +82,7 @@ async function main () {
     console.warn(`Portal SDK version unavailable: ${err instanceof Error ? err.message : String(err)}`)
   }
 
-  await mkdir('.vitepress', { recursive: true })
+  await mkdir('.cache', { recursive: true })
   await writeFile(outPath, `${JSON.stringify(payload, null, 2)}\n`, 'utf8')
   console.log(`Wrote ${outPath}`)
 }

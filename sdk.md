@@ -1,5 +1,5 @@
 <script setup>
-import sdkVersion from './.vitepress/sdk-version.json'
+import sdkVersion from './.cache/sdk-version.json'
 
 const sdkDownloadUrl = 'https://download.portal.battlefield.com/PortalSDK.zip'
 const updatedAt = sdkVersion.fetchedAt

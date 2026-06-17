@@ -1,7 +1,18 @@
+# Build-time caches. These are populated by `npm run docs:build` (and the
+# scripts in scripts/) and are gitignored so the repo stays small.
+#
+# `.cache/` is special: it sits under the directory pattern that Cloudflare
+# Pages' Build Cache automatically persists across builds (it's the cache
+# dir used by Eleventy, Hugo, and Gatsby, and the auto-cache layer picks up
+# the same `.cache/` prefix even on frameworks like VitePress that aren't
+# in the framework-aware list). Putting our downloads there means they
+# survive between Cloudflare builds without us having to commit them.
+#
+# - .vitepress/dist: VitePress build output (don't touch, gets deployed)
+# - .vitepress/cache: VitePress deps cache (regenerated on each build)
+# - .cache: portal-sdk/<version>/PortalSDK.zip, blockly-help/<name>.md,
+#   blockly-help/manifest.json, blockly-help/i18n-cache.json, sdk-version.json
 node_modules
 .vitepress/dist
 .vitepress/cache
 .cache
-.vitepress/sdk-version.json
-
-.vitepress/blockly-help/

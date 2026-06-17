@@ -12,7 +12,9 @@ const execFileAsync = promisify(execFile)
 const versionsUrl = 'https://download.portal.battlefield.com/versions.json'
 const sdkDownloadUrl = 'https://download.portal.battlefield.com/PortalSDK.zip'
 const cacheRoot = '.cache/portal-sdk'
-const sdkVersionOut = '.vitepress/sdk-version.json'
+// Keep the SDK version tracker inside `.cache/` so Cloudflare's Build Cache
+// carries it across builds. See download-block-help.mjs for the rationale.
+const sdkVersionOut = '.cache/sdk-version.json'
 const apiReferenceOut = 'typescript-api-reference.md'
 
 const scriptDir = dirname(new URL(import.meta.url).pathname)
@@ -719,7 +721,7 @@ async function main () {
   const versionDir = join(cacheRoot, release.version)
   const zipPath = join(versionDir, 'PortalSDK.zip')
 
-  await mkdir('.vitepress', { recursive: true })
+  await mkdir('.cache', { recursive: true })
   await writeFile(sdkVersionOut, `${JSON.stringify({
     currentVersion: release.version,
     fileSize: release.fileSize,

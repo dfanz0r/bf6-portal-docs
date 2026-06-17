@@ -3,7 +3,16 @@ import { existsSync } from 'node:fs'
 import path from 'node:path'
 
 const definitionsFile = '.vitepress/block-definitions.json'
-const helpDir = '.vitepress/blockly-help'
+// Cached blockly help files live under `.cache/blockly-help/` rather than
+// `.vitepress/blockly-help/`. Cloudflare Pages' Build Cache automatically
+// persists directories matching the patterns used by the framework-aware
+// cache layer (Astro, Docusaurus, Eleventy, Gatsby, Hugo, Next.js, Nuxt,
+// SvelteKit) — `.cache/` specifically is on that allow-list (Eleventy,
+// Hugo, and Gatsby all use it). VitePress isn't in that framework list, so
+// its own internal `.vitepress/cache` is NOT auto-preserved, but anything
+// we put under `.cache/` is. This lets us skip re-downloading 517 CDN .md
+// files on every build without committing them to git.
+const helpDir = '.cache/blockly-help'
 const manifestFile = path.join(helpDir, 'manifest.json')
 const baseHelpUrl = 'https://portal.battlefield.com/bf6/13979158/assets/blockly/help'
 
