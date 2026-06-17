@@ -2,9 +2,93 @@
 outline: [2, 3]
 ---
 
+<script setup>
+import { nextTick, onMounted, ref, watch } from 'vue'
+
+const blockFilter = ref('')
+
+function isCodeBlock (node) {
+  return [...node.classList].some((className) => className.startsWith('language-'))
+}
+
+function collectEntryNodes (heading) {
+  const nodes = [heading]
+  let current = heading.nextElementSibling
+  while (current && !['H2', 'H3', 'H4', 'H5'].includes(current.tagName)) {
+    nodes.push(current)
+    current = current.nextElementSibling
+  }
+  return nodes
+}
+
+function applyBlockFilter () {
+  const query = blockFilter.value.trim().toLowerCase()
+  const root = document.querySelector('.vp-doc')
+  if (!root) return
+
+  // Collect h3 category heading names
+  const categoryNames = [...root.querySelectorAll('h3')]
+    .map(h => h.textContent?.trim())
+    .filter(Boolean)
+
+  // Entry headings: h4 (events) and h5 (values/actions), excluding category headings
+  const entryHeadings = [...root.querySelectorAll('h4, h5')].filter((heading) => {
+    return heading.textContent && !categoryNames.includes(heading.textContent.trim())
+  })
+
+  for (const heading of entryHeadings) {
+    const nodes = collectEntryNodes(heading)
+    const codeBlocks = nodes.filter(isCodeBlock)
+    const metaText = nodes
+      .filter((node) => !isCodeBlock(node))
+      .map((node) => node.textContent ?? '')
+      .join(' ')
+      .toLowerCase()
+
+    const metaMatches = !query || metaText.includes(query)
+    const matchingCodeBlocks = codeBlocks.filter((node) => (node.textContent ?? '').toLowerCase().includes(query))
+    const visible = !query || metaMatches || matchingCodeBlocks.length > 0
+
+    for (const node of nodes) {
+      if (isCodeBlock(node) && query && !metaMatches) {
+        node.classList.toggle('api-filter-hidden', !(node.textContent ?? '').toLowerCase().includes(query))
+      } else {
+        node.classList.toggle('api-filter-hidden', !visible)
+      }
+    }
+  }
+
+  // Handle category headings (h3): hide if no visible entries underneath
+  for (const heading of [...root.querySelectorAll('h3')]) {
+    const parent = heading.parentElement
+    const hasVisibleEntry = !!parent?.querySelector('h4:not(.api-filter-hidden), h5:not(.api-filter-hidden)')
+    heading.classList.toggle('api-filter-hidden', query && !hasVisibleEntry)
+  }
+
+  // Handle section headings (h2): hide if all their categories/entries are hidden
+  for (const heading of [...root.querySelectorAll('h2')]) {
+    if (heading.textContent?.trim() === 'Summary') continue
+    const parent = heading.parentElement
+    const hasVisibleCategory = !!parent?.querySelector('h3:not(.api-filter-hidden)')
+    const hasVisibleEntry = !!parent?.querySelector('h4:not(.api-filter-hidden), h5:not(.api-filter-hidden)')
+    heading.classList.toggle('api-filter-hidden', query && !hasVisibleCategory && !hasVisibleEntry)
+  }
+}
+
+onMounted(() => nextTick(applyBlockFilter))
+watch(blockFilter, () => nextTick(applyBlockFilter))
+</script>
+
 # Block Code Reference
 
 This page documents all available Blocky scripting blocks in Battlefield Portal.
+
+> **Note:** This reference was compiled from the [Battlefield Portal](https://portal.battlefield.com/bf6/experiences) website's built-in help documentation and organized here for easier navigation and cross-referencing.
+
+<div class="api-filter">
+  <label for="block-filter-input">Filter Blocks</label>
+  <input id="block-filter-input" v-model="blockFilter" type="search" placeholder="Search block names, descriptions, types..." />
+</div>
 
 ## Summary
 
@@ -27,13 +111,11 @@ In the Blocky editor, payload blocks are prefixed with `Event` (e.g. `EventPlaye
 ### Ongoing
 
 Ongoing Event types continually check if its Condition has become True. If so, the Actions will be executed once. In order for the Event to execute again, the Condition must become False before becoming True again.
+
 Ongoing Event types currently exist within the context of:
-- Global
-- Player
-- Team
-- Vehicle
-- CapturePoint
-Within the Player and Team contexts, payload value blocks, such as EventPlayer and EventTeam, can be used to refer to the specific Player or Team within the Event. **Note:** In FFA, Ongoing Team will not execute at all.
+Player, Team, Vehicle and CapturePoint
+
+Within the Player and Team contexts, payload value blocks, such as EventPlayer and EventTeam, can be used to refer to the specific Player or Team within the Event. Note: In FFA, Ongoing Team will not execute at all.
 
 ### Player
 
@@ -43,18 +125,16 @@ This will trigger when a Player takes damage.
 
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player | Damaged Player |
-| `EventOtherPlayer` | OtherPlayer | Damager Player |
-| `EventDamageType` | DamageType | Damage Type |
-| `EventWeapon` | WeaponUnlock | Damager Weapon |
+| [`EventPlayer`](#eventplayer) | Player | Damaged Player |
+| [`EventOtherPlayer`](#eventotherplayer) | OtherPlayer | Damager Player |
+| [`EventDamageType`](#eventdamagetype) | DamageType | Type of Damage Dealt |
+| [`EventWeapon`](#eventweapon) | WeaponUnlock | Killing Weapon |
 
 #### OnPlayerDeployed
 
-This will trigger whenever a Player deploys.
-
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player | Deployed Player |
+| [`EventPlayer`](#eventplayer) | Player |  |
 
 #### OnPlayerDied
 
@@ -62,10 +142,10 @@ This will trigger whenever a Player dies.
 
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player | Victim |
-| `EventOtherPlayer` | OtherPlayer | Killer |
-| `EventDeathType` | DeathType | Victim Death Type |
-| `EventWeapon` | WeaponUnlock | Killing Weapon |
+| [`EventPlayer`](#eventplayer) | Player | Victim |
+| [`EventOtherPlayer`](#eventotherplayer) | OtherPlayer | Killer |
+| [`EventDeathType`](#eventdeathtype) | DeathType | Victim Death Type |
+| [`EventWeapon`](#eventweapon) | WeaponUnlock | Killing Weapon |
 
 #### OnPlayerEarnedKill
 
@@ -73,10 +153,10 @@ This will trigger when a Player earns a kill against another Player.
 
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player | Killer |
-| `EventOtherPlayer` | OtherPlayer | Victim |
-| `EventDeathType` | DeathType | Victim Death Type |
-| `EventWeapon` | WeaponUnlock | Killing Weapon |
+| [`EventPlayer`](#eventplayer) | Player | Killer |
+| [`EventOtherPlayer`](#eventotherplayer) | OtherPlayer | Victim |
+| [`EventDeathType`](#eventdeathtype) | DeathType |  |
+| [`EventWeapon`](#eventweapon) | WeaponUnlock | Killing Weapon |
 
 #### OnPlayerEarnedKillAssist
 
@@ -84,17 +164,17 @@ This will trigger when a Player earns a kill assist.
 
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player | Assist Player |
-| `EventOtherPlayer` | OtherPlayer | Victim |
+| [`EventPlayer`](#eventplayer) | Player | Assist Player |
+| [`EventOtherPlayer`](#eventotherplayer) | OtherPlayer | Victim |
 
 #### OnPlayerEnterAreaTrigger
 
-This will trigger when a Player enters a AreaTrigger
+This will trigger when a Player enters an AreaTrigger.
 
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player |  |
-| `EventAreaTrigger` | AreaTrigger |  |
+| [`EventPlayer`](#eventplayer) | Player | Player Who Entered Volume |
+| [`EventAreaTrigger`](#eventareatrigger) | AreaTrigger | Area Trigger Entered |
 
 #### OnPlayerEnterCapturePoint
 
@@ -102,8 +182,8 @@ This will trigger when a Player enters a CapturePoint capturing area.
 
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player | Player Entering Capture Area |
-| `EventCapturePoint` | CapturePoint | Capture Point Being Entered |
+| [`EventPlayer`](#eventplayer) | Player | Player Entering Capture Area |
+| [`EventCapturePoint`](#eventcapturepoint) | CapturePoint | Capture Point Being Entered |
 
 #### OnPlayerEnterVehicle
 
@@ -111,8 +191,8 @@ This will trigger when a Player enters a Vehicle.
 
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player | Player Who Enters |
-| `EventVehicle` | Vehicle | Vehicle |
+| [`EventPlayer`](#eventplayer) | Player | Player Who Enters Seat |
+| [`EventVehicle`](#eventvehicle) | Vehicle | Vehicle |
 
 #### OnPlayerEnterVehicleSeat
 
@@ -120,25 +200,27 @@ This will trigger when a Player enters a Vehicle seat.
 
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player | Player Who Enters Seat |
-| `EventVehicle` | Vehicle | Vehicle |
-| `EventSeat` | Seat | Seat Index |
+| [`EventPlayer`](#eventplayer) | Player | Player Who Enters Seat |
+| [`EventVehicle`](#eventvehicle) | Vehicle | Vehicle |
+| [`EventSeat`](#eventseat) | Seat | Seat Index |
 
 #### OnPlayerEnterVL7Cloud
 
+This will trigger when a Player enters a VL7Cloud volume.
+
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player |  |
-| `EventVL7Cloud` | VL7Cloud |  |
+| [`EventPlayer`](#eventplayer) | Player | Player Entering Cloud |
+| [`EventVL7Cloud`](#eventvl7cloud) | VL7Cloud |  |
 
 #### OnPlayerExitAreaTrigger
 
-This will trigger when a Player exits a AreaTrigger
+This will trigger when a Player exits an AreaTrigger.
 
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player |  |
-| `EventAreaTrigger` | AreaTrigger |  |
+| [`EventPlayer`](#eventplayer) | Player | Player Who Left Volume |
+| [`EventAreaTrigger`](#eventareatrigger) | AreaTrigger | Area Trigger Exited |
 
 #### OnPlayerExitCapturePoint
 
@@ -146,8 +228,8 @@ This will trigger when a Player exits a CapturePoint capturing area.
 
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player | Player Exiting Capture Area |
-| `EventCapturePoint` | CapturePoint | Capture Point Being Exited |
+| [`EventPlayer`](#eventplayer) | Player | Player Leaving Capture Area |
+| [`EventCapturePoint`](#eventcapturepoint) | CapturePoint | Capture Point Left |
 
 #### OnPlayerExitVehicle
 
@@ -155,8 +237,8 @@ This will trigger when a Player exits a Vehicle.
 
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player | Player Who Exits |
-| `EventVehicle` | Vehicle | Vehicle |
+| [`EventPlayer`](#eventplayer) | Player | Player Who Enters Seat |
+| [`EventVehicle`](#eventvehicle) | Vehicle | Vehicle |
 
 #### OnPlayerExitVehicleSeat
 
@@ -164,25 +246,27 @@ This will trigger when a Player exits a Vehicle seat.
 
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player | Player Who Exits Seat |
-| `EventVehicle` | Vehicle | Vehicle |
-| `EventSeat` | Seat | Seat Index |
+| [`EventPlayer`](#eventplayer) | Player | Player Who Enters Seat |
+| [`EventVehicle`](#eventvehicle) | Vehicle | Vehicle |
+| [`EventSeat`](#eventseat) | Seat | Seat Index |
 
 #### OnPlayerExitVL7Cloud
 
+This will trigger when a Player exits a VL7Cloud volume.
+
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player |  |
-| `EventVL7Cloud` | VL7Cloud |  |
+| [`EventPlayer`](#eventplayer) | Player | Player Leaving Cloud |
+| [`EventVL7Cloud`](#eventvl7cloud) | VL7Cloud |  |
 
 #### OnPlayerInteract
 
-This will trigger when a Player starts interacting with an interaction point.
+This will trigger when a Player interacts with InteractPoint.
 
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player |  |
-| `EventInteractPoint` | InteractPoint |  |
+| [`EventPlayer`](#eventplayer) | Player | Player Who Interacted |
+| [`EventInteractPoint`](#eventinteractpoint) | InteractPoint | InteractPoint Interacted With |
 
 #### OnPlayerJoinGame
 
@@ -190,7 +274,7 @@ This will trigger when a Player joins the game.
 
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player | Joined Player |
+| [`EventPlayer`](#eventplayer) | Player | Joined Player |
 
 #### OnPlayerLeaveGame
 
@@ -198,14 +282,16 @@ This will trigger when any player leaves the game.
 
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventNumber` | Number |  |
+| [`EventNumber`](#eventnumber) | Number |  |
 
 #### OnPlayerSwitchTeam
 
+This will trigger when a Player changes team.
+
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player |  |
-| `EventTeam` | Team |  |
+| [`EventPlayer`](#eventplayer) | Player | Player changing Team |
+| [`EventTeam`](#eventteam) | Team | New Team |
 
 #### OnPlayerUIButtonEvent
 
@@ -213,9 +299,9 @@ This will trigger when a Player interacts with an UI button.
 
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player |  |
-| `EventUIWidget` | UIWidget |  |
-| `EventUIButtonEvent` | UIButtonEvent |  |
+| [`EventPlayer`](#eventplayer) | Player | Player who interacted |
+| [`EventUIWidget`](#eventuiwidget) | UIWidget | Button Interacted With |
+| [`EventUIButtonEvent`](#eventuibuttonevent) | UIButtonEvent | Type Of Interaction |
 
 #### OnPlayerUndeploy
 
@@ -223,7 +309,7 @@ This will trigger when the Player dies and returns to the deploy screen.
 
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player | Dead Player |
+| [`EventPlayer`](#eventplayer) | Player | Dead Player |
 
 ### Capture Point
 
@@ -233,7 +319,7 @@ This will trigger when a team takes control of a CapturePoint.
 
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventCapturePoint` | CapturePoint | Captured Capture Point |
+| [`EventCapturePoint`](#eventcapturepoint) | CapturePoint | Captured Capture Point |
 
 #### OnCapturePointCapturing
 
@@ -241,7 +327,7 @@ This will trigger when a team begins capturing a CapturePoint.
 
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventCapturePoint` | CapturePoint | Capture Point Being Captured |
+| [`EventCapturePoint`](#eventcapturepoint) | CapturePoint | Contested Capture Point |
 
 #### OnCapturePointLost
 
@@ -249,7 +335,7 @@ This will trigger when a team loses control of a CapturePoint.
 
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventCapturePoint` | CapturePoint | Lost Capture Point |
+| [`EventCapturePoint`](#eventcapturepoint) | CapturePoint | Lost Capture Point |
 
 ### Vehicle
 
@@ -259,7 +345,7 @@ This will trigger when a Vehicle is destroyed.
 
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventVehicle` | Vehicle | Destroyed Vehicle |
+| [`EventVehicle`](#eventvehicle) | Vehicle | Destroyed Vehicle |
 
 #### OnVehicleSpawned
 
@@ -267,7 +353,7 @@ This will trigger when a Vehicle is called into the map.
 
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventVehicle` | Vehicle | Spawned Vehicle |
+| [`EventVehicle`](#eventvehicle) | Vehicle | Spawned Vehicle |
 
 ### MCOM
 
@@ -277,7 +363,7 @@ This will trigger when a MCOM is armed.
 
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventMCOM` | MCOM |  |
+| [`EventMCOM`](#eventmcom) | MCOM | Armed MCOM |
 
 #### OnMCOMDefused
 
@@ -285,81 +371,79 @@ This will trigger when a MCOM is defused.
 
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventMCOM` | MCOM |  |
+| [`EventMCOM`](#eventmcom) | MCOM | Defused MCOM |
 
 #### OnMCOMDestroyed
 
-This will trigger when a MCOM is destroyed.
+This will trigger when a MCOM detonates.
 
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventMCOM` | MCOM |  |
+| [`EventMCOM`](#eventmcom) | MCOM | Destroyed MCOM |
 
 ### AI
 
 #### OnAIMoveToFailed
 
-This will trigger when an AI action to move failed.
+This will trigger when an AI Soldier stops trying to reach a destination.
 
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player |  |
+| [`EventPlayer`](#eventplayer) | Player | AIPlayer |
 
 #### OnAIMoveToRunning
 
-This will trigger when an AI action to move is still running.
+This will trigger when an AI Soldier starts moving to a target location.
 
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player |  |
+| [`EventPlayer`](#eventplayer) | Player | AIPlayer |
 
 #### OnAIMoveToSucceeded
 
-This will trigger when an AI action to move succeeded.
+This will trigger when an AI Soldier reaches target location.
 
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player |  |
+| [`EventPlayer`](#eventplayer) | Player | AIPlayer |
 
 #### OnAIParachuteRunning
 
-This will trigger when an AI parachute action is running.
+This will trigger when an AI Soldier parachute action is running.
 
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player |  |
+| [`EventPlayer`](#eventplayer) | Player | AIPlayer |
 
 #### OnAIParachuteSucceeded
 
-This will trigger when an AI parachute action has succeeded.
+This will trigger when an AI Soldier parachute action has succeeded.
 
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player |  |
+| [`EventPlayer`](#eventplayer) | Player | AIPlayer |
 
 #### OnAIWaypointIdleFailed
 
-This will trigger when following a waypoint failed.
+This will trigger when an AI Soldier stops following a waypoint.
 
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player |  |
+| [`EventPlayer`](#eventplayer) | Player | AIPlayer |
 
 #### OnAIWaypointIdleRunning
 
-This will trigger when following a waypoint is still running.
-
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player |  |
+| [`EventPlayer`](#eventplayer) | Player |  |
 
 #### OnAIWaypointIdleSucceeded
 
-This will trigger when following a waypoint succeeded.
+This will trigger when an AI Soldier finishes following a waypoint.
 
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player |  |
+| [`EventPlayer`](#eventplayer) | Player | AIPlayer |
 
 ### Game Mode
 
@@ -385,9 +469,11 @@ No payload parameters.
 
 #### OnGolmudTrainStopped
 
+This will trigger when the Golmud train stops.
+
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventGolmudTrainStopReason` | GolmudTrainStopReason |  |
+| [`EventGolmudTrainStopReason`](#eventgolmudtrainstopreason) | GolmudTrainStopReason |  |
 
 #### OnMandown
 
@@ -395,39 +481,49 @@ This will trigger when a Player is forced into the mandown state.
 
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player | Downed Player |
-| `EventOtherPlayer` | OtherPlayer |  |
+| [`EventPlayer`](#eventplayer) | Player | Downed Player |
+| [`EventOtherPlayer`](#eventotherplayer) | OtherPlayer |  |
 
 #### OnPortalGadgetAimStart
 
+This will trigger when a Player presses the Zoom button.
+
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player |  |
+| [`EventPlayer`](#eventplayer) | Player | Player aiming PortalGadget |
 
 #### OnPortalGadgetAimStop
 
+This will trigger when a Player releases the Zoom button.
+
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player |  |
+| [`EventPlayer`](#eventplayer) | Player | Player who aimed PortalGadget |
 
 #### OnPortalGadgetFireStart
 
+This will trigger when a Player presses the Fire button.
+
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player |  |
+| [`EventPlayer`](#eventplayer) | Player | Player activating PortalGadget |
 
 #### OnPortalGadgetFireStop
 
+This will trigger when a Player releases the Fire button.
+
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player |  |
+| [`EventPlayer`](#eventplayer) | Player | Player no longer activating PortalGadget |
 
 #### OnPortalGadgetLaserToggle
 
+This will trigger when a Player presses the Tactical Device button.
+
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player |  |
-| `EventBoolean` | Boolean |  |
+| [`EventPlayer`](#eventplayer) | Player | Player toggling laser on PortalGadget |
+| [`EventBoolean`](#eventboolean) | Boolean | whether the laser is toggled on or off |
 
 #### OnRayCastHit
 
@@ -435,17 +531,17 @@ This will trigger when a Raycast hits a target.
 
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player |  |
-| `EventPoint` | Point |  |
-| `EventNormal` | Normal |  |
+| [`EventPlayer`](#eventplayer) | Player | Origin of the Raycast |
+| [`EventPoint`](#eventpoint) | Point | Vector with Location of the Hit |
+| [`EventNormal`](#eventnormal) | Normal | Vector with orientation of the Normal |
 
 #### OnRayCastMissed
 
-This will trigger when a Raycast misses.
+This will trigger when a Raycast is called and doesn't hit any target.
 
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player |  |
+| [`EventPlayer`](#eventplayer) | Player | Origin of the Raycast |
 
 #### OnRevived
 
@@ -453,26 +549,24 @@ This will trigger when a Player is revived by another Player.
 
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player | Revived Player |
-| `EventOtherPlayer` | OtherPlayer | Reviver Player |
+| [`EventPlayer`](#eventplayer) | Player | Revived Player |
+| [`EventOtherPlayer`](#eventotherplayer) | OtherPlayer | Reviver Player |
 
 #### OnRingOfFireZoneSizeChange
 
-This will trigger when a RingOfFire changes size.
-
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventRingOfFire` | RingOfFire |  |
-| `EventNumber` | Number |  |
+| [`EventRingOfFire`](#eventringoffire) | RingOfFire |  |
+| [`EventNumber`](#eventnumber) | Number |  |
 
 #### OnSpawnerSpawned
 
-This will trigger when a spawner is spawned in.
+This will trigger when an AISpawner spawns an AI Soldier.
 
 | Payload | Type | Description |
 | --- | --- | --- |
-| `EventPlayer` | Player |  |
-| `EventSpawner` | Spawner |  |
+| [`EventPlayer`](#eventplayer) | Player | Newly Spawned AI Soldier |
+| [`EventSpawner`](#eventspawner) | Spawner | AI Spawner |
 
 ## Values
 
@@ -484,11 +578,15 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### AiInputItem
 
+Return an AI input which can be used with SetAiInput
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_AiInput |
+| `(String, String)` | Ai Input |
 
 ##### GetWaypointPath
+
+Returns the waypoint path object corresponding to the provided id.
 
 | Signature | Return Type |
 | --- | --- |
@@ -498,7 +596,8 @@ Value blocks return a value and can be used as inputs to other blocks.
 
 ##### AppendToArray
 
-Returns a copy of an Array with the provided value appended to the end.
+Returns a copy of an Array with the provided value appended to the end. 
+
 _Note: It is not possible for an array to contain arrays. Attempting to append an array to an array will concatenate them instead._
 
 | Signature | Return Type |
@@ -525,17 +624,11 @@ Returns the Number of elements in the specified Array.
 
 Returns a reference to the current Array element being evaluated. Only used for FilteredArray, MappedArray, SortedArray, IsTrueForAll, and IsTrueForAny.
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | void |
 
 ##### EmptyArray
 
 Returns an initialized empty Array.
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | Array |
 
 ##### FilteredArray
 
@@ -555,13 +648,15 @@ Returns the first value of the specified Array.
 
 ##### IndexOfFirstTrue
 
+Returns the index of the first true value in the specified array.
+
 | Signature | Return Type |
 | --- | --- |
 | `(array: Array, any)` | Number |
 
 ##### IsTrueForAll
 
-Returns True if the provided condition is True for every element in the provided Array.
+Returns if the provided condition is for every element in the provided Array.
 
 | Signature | Return Type |
 | --- | --- |
@@ -569,7 +664,7 @@ Returns True if the provided condition is True for every element in the provided
 
 ##### IsTrueForAny
 
-Returns True if the provided condition is True for at least one element in the provided Array.
+Returns if the provided condition is for at least one element in the provided Array.
 
 | Signature | Return Type |
 | --- | --- |
@@ -627,11 +722,15 @@ Returns the value found at a provided index of an Array.
 
 ##### GetSFX
 
+Returns the SFX object corresponding to the provided id.
+
 | Signature | Return Type |
 | --- | --- |
 | `(number: Number)` | SFX |
 
 ##### GetVO
+
+Returns the VO object corresponding to the provided id.
 
 | Signature | Return Type |
 | --- | --- |
@@ -640,6 +739,8 @@ Returns the value found at a provided index of an Array.
 ### Camera
 
 ##### GetFixedCamera
+
+Returns a Fixed Camera.
 
 | Signature | Return Type |
 | --- | --- |
@@ -651,6 +752,8 @@ Returns the value found at a provided index of an Array.
 
 ##### GetVFX
 
+Returns the VFX object corresponding to the provided id.
+
 | Signature | Return Type |
 | --- | --- |
 | `(vfxNumber: Number)` | VFX |
@@ -659,249 +762,161 @@ Returns the value found at a provided index of an Array.
 
 ##### EventAreaTrigger
 
-Returns the AreaTrigger payload from the Event context.
+Returns the AreaTrigger payload from the [OnPlayerEnterAreaTrigger](#onplayerenterareatrigger) and [OnPlayerExitAreaTrigger](#onplayerexitareatrigger) Event contexts.
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | AreaTrigger |
 
 ##### EventBoolean
 
-Returns the Boolean value from the Event context.
+Returns a Boolean payload.
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | Boolean |
 
 ##### EventCapturePoint
 
-Returns the CapturePoint payload from the Rule Event context.
+Returns the CapturePoint payload from the [OnCapturePointCaptured](#oncapturepointcaptured), [OnCapturePointLost](#oncapturepointlost), [OnCapturePointCapturing](#oncapturepointcapturing), [OnPlayerEnterCapturePoint](#onplayerentercapturepoint) and [OnPlayerExitCapturePoint](#onplayerexitcapturepoint) Event contexts.
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | CapturePoint |
 
 ##### EventDamageType
 
-Returns the DamageType of the victim from the OnPlayerDamaged Event context.
+Returns the PlayerDamateTypesItem payload from the [OnPlayerDamaged](#onplayerdamaged) Event context.
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | DamageType |
 
 ##### EventDeathType
 
-Returns the DeathType of the victim from the OnPlayerDied or OnPlayerEarnedKill Event context.
+Returns the PlayerDeathTypesItem payload from the [OnPlayerDied](#onplayerdied) and [OnPlayerEarnedKill](#onplayerearnedkill) Event contexts.
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | DeathType |
 
 ##### EventEmplacementSpawner
 
-Returns the EmplacementSpawner payload from the Event context.
+Returns the EmplacementSpawner payload from the [Ongoing](#ongoing) (EmplacementSpawner) Event context.
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | EmplacementSpawner |
 
 ##### EventFixedCamera
 
-Returns the FixedCamera payload from the Event context.
+Currently unused EventParamter.
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | FixedCamera |
 
 ##### EventGolmudTrainStopReason
 
-Returns the PortalEnum value from the Event context.
+Part of the [OnGolmudTrainStopped](#ongolmudtrainstopped) Payload to specify why the train stopped.
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | PortalEnum |
 
 ##### EventHQ
 
-Returns the HQ payload from the Event context.
+Returns the HQ payload from the [Ongoing](#ongoing) (HQ) Event context.
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | HQ |
 
 ##### EventInteractPoint
 
-Returns the InteractPoint payload from the Event context.
+Returns the InteractPoint payload from the [OnPlayerInteract](#onplayerinteract) Event context.
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | InteractPoint |
 
 ##### EventMCOM
 
-Returns a MCOM payload from the Rule Event context.
+Returns the MCOM payload from the [OnMCOMArmed](#onmcomarmed), [OnMCOMDefused](#onmcomdefused) and [OnMCOMDestroyed](#onmcomdestroyed) Event contexts.
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | MCOM |
 
 ##### EventNormal
 
-Returns the Vector value from the Event context.
+Returns the Normal payload from the OnRaycastHit Event context.
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | Vector |
 
 ##### EventNumber
 
-Returns the Number value from the Event context.
+Returns the Number payload from the [OnPlayerLeaveGame](#onplayerleavegame) Event context.
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | Number |
 
 ##### EventOtherPlayer
 
-Returns the 2nd Player payload from the Rule Event context.
+Returns the Team payload from the [OnPlayerDied](#onplayerdied), [OnPlayerEarnedKill](#onplayerearnedkill), [OnPlayerEarnedKillAssist](#onplayerearnedkillassist), [OnPlayerDamaged](#onplayerdamaged), [OnRevived](#onrevived), [OnMandown](#onmandown) Event contexts.
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | Player |
 
 ##### EventPlayer
 
-Returns the 1st Player payload from the Rule Event context.
+Returns the Player payload from many Event contexts.
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | Player |
 
 ##### EventPoint
 
-Returns the Vector value from the Event context.
+Returns the Point payload from the OnRaycastHit Event context.
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | Vector |
 
 ##### EventRingOfFire
 
-Returns the RingOfFire payload from the Event context.
+Returns the RingOfFire payload from the [OnRingOfFireZoneSizeChange](#onringoffirezonesizechange) Event context.
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | RingOfFire |
 
 ##### EventSeat
 
-Returns the Number seat index payload of a Vehicle from the Rule Event context.
+Returns the Seat payload from the [OnPlayerExitVehicleSeat](#onplayerexitvehicleseat) and [OnPlayerEnterVehicleSeat](#onplayerentervehicleseat) Event contexts.
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | Number |
 
 ##### EventSector
 
-Returns the Sector payload from the Event context.
+Returns the Sector payload from the [Ongoing](#ongoing) (Sector) Event context.
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | Sector |
 
 ##### EventSpawner
 
-Returns the Spawner payload from the Event context.
+Returns the Spawner payload from the [OnSpawnerSpawned](#onspawnerspawned) Event context.
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | Spawner |
 
 ##### EventSpawnPoint
 
-Returns the SpawnPoint payload from the Event context.
+Returns the SpawnPoint payload from the [Ongoing](#ongoing) (SpawnPoint) Event context.
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | SpawnPoint |
 
 ##### EventTeam
 
-Returns the Team payload from the Ongoing Team Event context.
+Returns the Team payload from the [OnPlayerSwitchTeam](#onplayerswitchteam) Event contexts.
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | Team |
 
 ##### EventUIButtonEvent
 
-Returns the PortalEnum value from the Event context.
+Returns the UIButtonEventItem payload from the [OnPlayerUIButtonEvent](#onplayeruibuttonevent) Event context.
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | PortalEnum |
 
 ##### EventUIWidget
 
-Returns the UIWidget payload from the Event context.
+Returns the UIWidget payload from the [OnPlayerUIButtonEvent](#onplayeruibuttonevent) Event context.
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | UIWidget |
 
 ##### EventVehicle
 
-Returns the Vehicle payload from the Rule Event context.
+Returns the Vehicle payload from the [OnVehicleSpawned](#onvehiclespawned), [OnVehicleDestroyed](#onvehicledestroyed), [OnPlayerExitVehicleSeat](#onplayerexitvehicleseat), [OnPlayerExitVehicle](#onplayerexitvehicle), [OnPlayerEnterVehicleSeat](#onplayerentervehicleseat) and [OnPlayerEnterVehicle](#onplayerentervehicle) Event contexts.
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | Vehicle |
 
 ##### EventVehicleSpawner
 
-Returns the VehicleSpawner payload from the Event context.
+Returns the VehicleSpawner payload from the [Ongoing](#ongoing) (VehicleSpawner) Event context.
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | VehicleSpawner |
 
 ##### EventVL7Cloud
 
-Returns the VL7Cloud payload from the Event context.
+Returns the VL7 from the [OnPlayerEnterVL7Cloud](#onplayerentervl7cloud) and [OnPlayerExitVL7Cloud](#onplayerexitvl7cloud) Event context.
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | VL7Cloud |
 
 ##### EventWaypointPath
 
-Returns the WaypointPath payload from the Event context.
+Returns the WaypointPath payload from the [Ongoing](#ongoing) (WaypointPath) Event context.
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | WaypointPath |
 
 ##### EventWeapon
 
-Returns the WeaponUnlock of the weapon used to kill the victim from the OnPlayerDied or OnPlayerEarnedKill Event context.
+Returns the Weapon payload from the [OnPlayerDied](#onplayerdied), [OnPlayerDamaged](#onplayerdamaged), [OnPlayerEarnedKill](#onplayerearnedkill) and [OnPlayerDamaged](#onplayerdamaged) Event contexts.
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | WeaponUnlock |
 
 ##### EventWorldIcon
 
-Returns the WorldIcon payload from the Event context.
+Returns the WorldIcon payload from the [Ongoing](#ongoing) (WorldIcon) Event context.
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | WorldIcon |
 
 ### Gameplay
 
 **Deploy**
 
 ##### GetSpawnPoint
+
+Returns the spawn point object corresponding to the provided id.
 
 | Signature | Return Type |
 | --- | --- |
@@ -922,17 +937,15 @@ Returns the current gamemode score of the provided Player or Team.
 
 Returns the amount of time left (seconds) in the current gamemode.
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | Number |
 
 ##### GetMatchTimeRemaining
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | Number |
+Returns the amount of time left (in seconds) in the current gamemode.
+
 
 ##### GetRingOfFire
+
+Returns the ring of fire object corresponding to the provided id.
 
 | Signature | Return Type |
 | --- | --- |
@@ -942,27 +955,23 @@ Returns the amount of time left (seconds) in the current gamemode.
 
 Returns the time limit set for the gamemode (in seconds).
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | Number |
 
 ##### GetTargetScore
 
 Returns the gamemode target score needed for victory.
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | Number |
 
 ##### IsFaction
 
-Returns True if the provided Team is using soldiers from the specified Factions.
+Returns if the provided Team is using soldiers from the specified .
 
 | Signature | Return Type |
 | --- | --- |
-| `(team: Team, factions: Enum_Factions)` | Boolean |
+| `(team: Team, factions: Factions)` | Boolean |
 
 ##### GetAreaTrigger
+
+Returns the area trigger object corresponding to the provided id.
 
 | Signature | Return Type |
 | --- | --- |
@@ -970,17 +979,20 @@ Returns True if the provided Team is using soldiers from the specified Factions.
 
 ##### GetEmplacementSpawner
 
+Returns the emplacement spawner object corresponding to the provided id.
+
 | Signature | Return Type |
 | --- | --- |
 | `(number: Number)` | EmplacementSpawner |
 
 ##### GetGolmudTrainLocation
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | Vector |
+Returns the World Position of the Golmud Moving Train. (Only on Golmud Railway map).
+
 
 ##### GetInteractPoint
+
+Returns the interact point object corresponding to the provided id.
 
 | Signature | Return Type |
 | --- | --- |
@@ -988,17 +1000,23 @@ Returns True if the provided Team is using soldiers from the specified Factions.
 
 ##### GetLootSpawner
 
+Returns the loot spawner object corresponding to the provided id.
+
 | Signature | Return Type |
 | --- | --- |
 | `(number: Number)` | LootSpawner |
 
 ##### GetObjId
 
+Returns the id corresponding to the provided object.
+
 | Signature | Return Type |
 | --- | --- |
-| `(object: Object | Global | AreaTrigger | CapturePoint | EmplacementSpawner | FixedCamera | HQ | InteractPoint | LootSpawner | MapSpecificFeature | MCOM | Player | RingOfFire | Sector | SFX | SpatialObject | Spawner | SpawnPoint | Team | Vehicle | VehicleSpawner | VFX | VL7Cloud | VO | WaypointPath | WorldIcon)` | Number |
+| `(object: Object \| Global \| AreaTrigger \| CapturePoint \| EmplacementSpawner \| FixedCamera \| HQ \| InteractPoint \| LootSpawner \| MapSpecificFeature \| MCOM \| Player \| RingOfFire \| Sector \| SFX \| SpatialObject \| Spawner \| SpawnPoint \| Team \| Vehicle \| VehicleSpawner \| VFX \| VL7Cloud \| VO \| WaypointPath \| WorldIcon)` | Number |
 
 ##### GetSpatialObject
+
+Returns the spatial object corresponding to the provided id.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1006,11 +1024,15 @@ Returns True if the provided Team is using soldiers from the specified Factions.
 
 ##### GetSpawner
 
+Returns the spawner object corresponding to the provided id.
+
 | Signature | Return Type |
 | --- | --- |
 | `(number: Number)` | Spawner |
 
 ##### GetVehicleSpawner
+
+Returns the vehicle spawner object corresponding to the provided id.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1018,30 +1040,34 @@ Returns True if the provided Team is using soldiers from the specified Factions.
 
 ##### GetVL7Cloud
 
+Returns the VL7Cloud object corresponding to the provided id.
+
 | Signature | Return Type |
 | --- | --- |
 | `(vl7CloudId: Number)` | VL7Cloud |
 
 ##### IsCurrentMap
 
-Returns True if the provided Maps is the name of the current map.
+Returns if the provided is the name of the current map.
 
 | Signature | Return Type |
 | --- | --- |
-| `(maps: Enum_Maps)` | Boolean |
+| `(maps: Maps)` | Boolean |
 
 ##### SpawnObject
 
+Spawns an object at runtime. Returns an object id if the object supports it, otherwise -1
+
 | Signature | Return Type |
 | --- | --- |
-| `(prefabEnum: Enum_RuntimeSpawn_Common | Enum_RuntimeSpawn_Abbasid | Enum_RuntimeSpawn_Aftermath | Enum_RuntimeSpawn_Badlands | Enum_RuntimeSpawn_Battery | Enum_RuntimeSpawn_Capstone | Enum_RuntimeSpawn_Contaminated | Enum_RuntimeSpawn_Dumbo | Enum_RuntimeSpawn_Eastwood | Enum_RuntimeSpawn_FireStorm | Enum_RuntimeSpawn_Limestone | Enum_RuntimeSpawn_Outskirts | Enum_RuntimeSpawn_Subsurface | Enum_RuntimeSpawn_Tungsten | Enum_RuntimeSpawn_Granite_Downtown | Enum_RuntimeSpawn_Granite_Marina | Enum_RuntimeSpawn_Granite_MilitaryRnD | Enum_RuntimeSpawn_Granite_MilitaryStorage | Enum_RuntimeSpawn_Granite_ResidentialNorth | Enum_RuntimeSpawn_Granite_TechCenter | Enum_RuntimeSpawn_Granite_Underground | Enum_RuntimeSpawn_Sand | Enum_RuntimeSpawn_GolmudRailway, position: Vector, rotation: Vector, scale: Vector)` | void |
-| `(prefabEnum: Enum_RuntimeSpawn_Common | Enum_RuntimeSpawn_Abbasid | Enum_RuntimeSpawn_Aftermath | Enum_RuntimeSpawn_Badlands | Enum_RuntimeSpawn_Battery | Enum_RuntimeSpawn_Capstone | Enum_RuntimeSpawn_Contaminated | Enum_RuntimeSpawn_Dumbo | Enum_RuntimeSpawn_Eastwood | Enum_RuntimeSpawn_FireStorm | Enum_RuntimeSpawn_Limestone | Enum_RuntimeSpawn_Outskirts | Enum_RuntimeSpawn_Subsurface | Enum_RuntimeSpawn_Tungsten | Enum_RuntimeSpawn_Granite_Downtown | Enum_RuntimeSpawn_Granite_Marina | Enum_RuntimeSpawn_Granite_MilitaryRnD | Enum_RuntimeSpawn_Granite_MilitaryStorage | Enum_RuntimeSpawn_Granite_ResidentialNorth | Enum_RuntimeSpawn_Granite_TechCenter | Enum_RuntimeSpawn_Granite_Underground | Enum_RuntimeSpawn_Sand | Enum_RuntimeSpawn_GolmudRailway, position: Vector, rotation: Vector)` | void |
+| `(prefabEnum: Runtime Spawn Common \| Runtime Spawn Abbasid \| Runtime Spawn Aftermath \| Runtime Spawn Badlands \| Runtime Spawn Battery \| Runtime Spawn Capstone \| Runtime Spawn Contaminated \| Runtime Spawn Dumbo \| Runtime Spawn Eastwood \| Runtime Spawn Fire Storm \| Runtime Spawn Limestone \| Runtime Spawn Outskirts \| Runtime Spawn Subsurface \| Runtime Spawn Tungsten \| Runtime Spawn Granite Downtown \| Runtime Spawn Granite Marina \| Runtime Spawn Granite Military Rn D \| Runtime Spawn Granite Military Storage \| Runtime Spawn Granite Residential North \| Runtime Spawn Granite Tech Center \| Runtime Spawn Granite Underground \| Runtime Spawn Sand \| Runtime Spawn Golmud Railway, position: Vector, rotation: Vector, scale: Vector)` | void |
+| `(prefabEnum: Runtime Spawn Common \| Runtime Spawn Abbasid \| Runtime Spawn Aftermath \| Runtime Spawn Badlands \| Runtime Spawn Battery \| Runtime Spawn Capstone \| Runtime Spawn Contaminated \| Runtime Spawn Dumbo \| Runtime Spawn Eastwood \| Runtime Spawn Fire Storm \| Runtime Spawn Limestone \| Runtime Spawn Outskirts \| Runtime Spawn Subsurface \| Runtime Spawn Tungsten \| Runtime Spawn Granite Downtown \| Runtime Spawn Granite Marina \| Runtime Spawn Granite Military Rn D \| Runtime Spawn Granite Military Storage \| Runtime Spawn Granite Residential North \| Runtime Spawn Granite Tech Center \| Runtime Spawn Granite Underground \| Runtime Spawn Sand \| Runtime Spawn Golmud Railway, position: Vector, rotation: Vector)` | void |
 
 ### Logic
 
 ##### And
 
-Returns a Boolean value based on whether both of the provided inputs return True.
+Returns a Boolean value based on whether both of the provided inputs return .
 
 | Signature | Return Type |
 | --- | --- |
@@ -1073,7 +1099,7 @@ Returns a Boolean indicating if the 1st provided value is greater than the 2nd p
 
 ##### IfThenElse
 
-Returns the 1st provided value if the condition is True, otherwise, returns the 2nd provided value.
+Returns the 1st provided value if the condition is , otherwise, returns the 2nd provided value.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1081,13 +1107,15 @@ Returns the 1st provided value if the condition is True, otherwise, returns the 
 
 ##### IsType
 
-Returns True if the provided value is equal to the specified Types.
+Returns if the provided value is equal to the specified .
 
 | Signature | Return Type |
 | --- | --- |
-| `(any, type: Enum_Types)` | Boolean |
+| `(any, type: Types)` | Boolean |
 
 ##### JsValue
+
+Calls a javascript value function.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1127,7 +1155,7 @@ Returns a Boolean indicating if two values are not equal to each other.
 
 ##### Or
 
-Returns a Boolean based on whether either of the two inputs are True.
+Returns a Boolean based on whether either of the two inputs are .
 
 | Signature | Return Type |
 | --- | --- |
@@ -1135,7 +1163,7 @@ Returns a Boolean based on whether either of the two inputs are True.
 
 ##### Xor
 
-Returns True if the provided Boolean inputs return different values.
+Returns if the provided Boolean inputs return different values.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1144,6 +1172,8 @@ Returns True if the provided Boolean inputs return different values.
 **Messages**
 
 ##### Concat
+
+Returns a string containing the concatenation of two strings.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1257,6 +1287,8 @@ Returns the cosine value of a specified angle in radians.
 | `(number: Number)` | Number |
 
 ##### CreateTransform
+
+Creates a Transform from Position and Rotation Vectors
 
 | Signature | Return Type |
 | --- | --- |
@@ -1372,9 +1404,6 @@ Returns a unit-length normalization of a Vector.
 
 Returns the constant value 3.14159
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | Number |
 
 ##### RadiansToDegrees
 
@@ -1465,13 +1494,10 @@ Returns the tangent value of a specified angle in radians.
 
 Returns an Array of all capture points within a game.
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | Array |
 
 ##### GetCapturePoint
 
-Returns the CapturePoint or MCOM corresponding to the provided CapturePoints or MCOMs respectively.
+Returns the CapturePoint or MCOM corresponding to the provided or respectively.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1487,7 +1513,7 @@ Returns a Number from zero to one corresponding to the capture progress of the p
 
 ##### GetCurrentOwnerTeam
 
-Returns the current owner Team corresponding to the provided CapturePoint.
+Returns the current owner team corresponding to the provided capture point.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1495,7 +1521,7 @@ Returns the current owner Team corresponding to the provided CapturePoint.
 
 ##### GetOwnerProgressTeam
 
-Returns the Team of the team currently capturing the provided CapturePoint.
+Returns the team of the team currently capturing the provided capture point.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1511,7 +1537,7 @@ Returns a Array of all players within the boundaries of a provided CapturePoint.
 
 ##### GetPreviousOwnerTeam
 
-Returns the previous owner Team corresponding to the provided CapturePoint.
+Returns the previous owner team corresponding to the provided capture point.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1521,6 +1547,8 @@ Returns the previous owner Team corresponding to the provided CapturePoint.
 
 ##### GetHQ
 
+Returns the HQ object corresponding to the provided id.
+
 | Signature | Return Type |
 | --- | --- |
 | `(number: Number)` | HQ |
@@ -1529,11 +1557,15 @@ Returns the previous owner Team corresponding to the provided CapturePoint.
 
 ##### GetMCOM
 
+Returns the MCOM object corresponding to the provided id.
+
 | Signature | Return Type |
 | --- | --- |
 | `(number: Number)` | MCOM |
 
 ##### GetSector
+
+Returns the sector object corresponding to the provided id.
 
 | Signature | Return Type |
 | --- | --- |
@@ -1543,45 +1575,55 @@ Returns the previous owner Team corresponding to the provided CapturePoint.
 
 ##### AmmoTypesItem
 
+Returns an AmmoTypes Item which can be used with SpawnLoot.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_AmmoTypes |
+| `(String, String)` | Ammo Types |
 
 ##### ArmorTypesItem
 
+Returns an ArmorTypes Item which can be used with SpawnLoot and AddEquipment.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_ArmorTypes |
+| `(String, String)` | Armor Types |
 
 ##### CamerasItem
 
+Returns a Cameras Item which can be used with SetCameraType and SetCameraTypeForAll.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_Cameras |
+| `(String, String)` | Cameras |
 
 ##### CustomNotificationSlotsItem
 
+Returns a CustomNotificationSlot which can be used with DisplayCustomNotificationMessage and ClearCustomNotificationMessage.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_CustomNotificationSlots |
+| `(String, String)` | Custom Notification Slots |
 
 ##### FactionsItem
 
-Returns a Factions from the collection of all available factions.
+Returns a Factions Item which can be used with IsFaction.
 
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_Factions |
+| `(String, String)` | Factions |
 
 ##### GadgetsItem
 
+Returns a Gadgets Item which can be used with SpawnLoot, AddEquipment, AIStartUsingGadget and AddUIGadgetImage.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_Gadgets |
+| `(String, String)` | Gadgets |
 
 ##### GetArgument
 
-Returns the value of the argument that is passed into the Subroutine. The list of available parameters will populate once this block is placed inside the Subroutine.
+Returns the value of the argument that is passed into the . The list of available parameters will populate once this block is placed inside the .
 
 | Signature | Return Type |
 | --- | --- |
@@ -1597,387 +1639,483 @@ Returns the value of a Variable.
 
 ##### GolmudTrainMoveCommandsItem
 
+Returns a GolmudTrainMoveCommands for use with GolmudTrainSendMoveCommand.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_GolmudTrainMoveCommands |
+| `(String, String)` | Golmud Train Move Commands |
 
 ##### GolmudTrainStopReasonItem
 
+Returns a GolmudTrainStopReason to use with the [OnGolmudTrainStopped](#ongolmudtrainstopped) Event.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_GolmudTrainStopReason |
+| `(String, String)` | Golmud Train Stop Reason |
 
 ##### GolmudTrainVariantsItem
 
+Returns a GolmudTrainVariant used by mutators.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_GolmudTrainVariants |
+| `(String, String)` | Golmud Train Variants |
 
 ##### InventorySlotsItem
 
-Returns a InventorySlots from the collection of all available player inventory slots.
+Returns an InventorySlots Item which can be used with RemovePlayerInventoryAtSlot, SetInventoryAmmo, SetInventoryMagazineAmmo and ForceSwitchInventory.
 
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_InventorySlots |
+| `(String, String)` | Inventory Slots |
 
 ##### MapsItem
 
-Returns a Maps from the collection of all maps.
+Returns a Maps Item which can be used with IsCurrentMap.
 
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_Maps |
+| `(String, String)` | Maps |
 
 ##### MoveSpeedItem
 
+Returns a MoveSpeed Item which can be used with AISetMoveSpeed.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_MoveSpeed |
+| `(String, String)` | Move Speed |
 
 ##### MusicEventsItem
 
+Returns a triggerable music event.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_MusicEvents |
+| `(String, String)` | Music Events |
 
 ##### MusicPackagesItem
 
+Returns a "music package" for loading music, such as loading Core music or loading BattleRoyale music.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_MusicPackages |
+| `(String, String)` | Music Packages |
 
 ##### MusicParamsItem
 
+Returns a parameter that controls different parts of the music.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_MusicParams |
+| `(String, String)` | Music Params |
 
 ##### PlayerDamageTypesItem
 
-Returns a PlayerDamageTypes from the collection of all possible damage types.
+Returns a PlayerDamageTypes Item which can be used with EventDamageTypeCompare.
 
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_PlayerDamageTypes |
+| `(String, String)` | Player Damage Types |
 
 ##### PlayerDeathTypesItem
 
-Returns a PlayerDeathTypes from the collection of all possible death types.
+Returns a PlayerDeathTypes Item which can be used with EventDeathTypeCompare.
 
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_PlayerDeathTypes |
+| `(String, String)` | Player Death Types |
 
 ##### RestrictedInputsItem
 
-Returns a RestrictedInputs from the collection of all inputs which can be restricted with EnableInputRestriction.
+Returns a RestrictedInputs Item which can be used with EnableInputRestriction.
 
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_RestrictedInputs |
+| `(String, String)` | Restricted Inputs |
 
 ##### ResupplyTypesItem
 
-Returns a ResupplyTypes from the collection of resupply types which can be used with Resupply.
+Returns a ResupplyTypes Item which can be used with Resupply.
 
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_ResupplyTypes |
+| `(String, String)` | Resupply Types |
 
 ##### RuntimeSpawn_AbbasidItem
 
+Returns an object which can used with SpawnObject.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_RuntimeSpawn_Abbasid |
+| `(String, String)` | Runtime Spawn Abbasid |
 
 ##### RuntimeSpawn_AftermathItem
 
+Returns an object which can used with SpawnObject.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_RuntimeSpawn_Aftermath |
+| `(String, String)` | Runtime Spawn Aftermath |
 
 ##### RuntimeSpawn_BadlandsItem
 
+Returns an object which can used with SpawnObject.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_RuntimeSpawn_Badlands |
+| `(String, String)` | Runtime Spawn Badlands |
 
 ##### RuntimeSpawn_BatteryItem
 
+Returns an object which can used with SpawnObject.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_RuntimeSpawn_Battery |
+| `(String, String)` | Runtime Spawn Battery |
 
 ##### RuntimeSpawn_CapstoneItem
 
+Returns an object which can used with SpawnObject.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_RuntimeSpawn_Capstone |
+| `(String, String)` | Runtime Spawn Capstone |
 
 ##### RuntimeSpawn_CommonItem
 
+Returns an object which can used with SpawnObject.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_RuntimeSpawn_Common |
+| `(String, String)` | Runtime Spawn Common |
 
 ##### RuntimeSpawn_ContaminatedItem
 
+Returns an object which can used with SpawnObject.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_RuntimeSpawn_Contaminated |
+| `(String, String)` | Runtime Spawn Contaminated |
 
 ##### RuntimeSpawn_DumboItem
 
+Returns an object which can used with SpawnObject.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_RuntimeSpawn_Dumbo |
+| `(String, String)` | Runtime Spawn Dumbo |
 
 ##### RuntimeSpawn_EastwoodItem
 
+Returns an object which can used with SpawnObject.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_RuntimeSpawn_Eastwood |
+| `(String, String)` | Runtime Spawn Eastwood |
 
 ##### RuntimeSpawn_FireStormItem
 
+Returns an object which can used with SpawnObject.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_RuntimeSpawn_FireStorm |
+| `(String, String)` | Runtime Spawn Fire Storm |
 
 ##### RuntimeSpawn_GolmudRailwayItem
 
+Returns an object which can used with SpawnObject.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_RuntimeSpawn_GolmudRailway |
+| `(String, String)` | Runtime Spawn Golmud Railway |
 
 ##### RuntimeSpawn_Granite_DowntownItem
 
+Returns an object which can used with SpawnObject.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_RuntimeSpawn_Granite_Downtown |
+| `(String, String)` | Runtime Spawn Granite Downtown |
 
 ##### RuntimeSpawn_Granite_MarinaItem
 
+Returns an object which can used with SpawnObject.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_RuntimeSpawn_Granite_Marina |
+| `(String, String)` | Runtime Spawn Granite Marina |
 
 ##### RuntimeSpawn_Granite_ResidentialNorthItem
 
+Returns an object which can used with SpawnObject.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_RuntimeSpawn_Granite_ResidentialNorth |
+| `(String, String)` | Runtime Spawn Granite Residential North |
 
 ##### RuntimeSpawn_Granite_TechCenterItem
 
+Returns an object which can used with SpawnObject.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_RuntimeSpawn_Granite_TechCenter |
+| `(String, String)` | Runtime Spawn Granite Tech Center |
 
 ##### RuntimeSpawn_Granite_UndergroundItem
 
+Returns an object which can used with SpawnObject.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_RuntimeSpawn_Granite_Underground |
+| `(String, String)` | Runtime Spawn Granite Underground |
 
 ##### RuntimeSpawn_LimestoneItem
 
+Returns an object which can used with SpawnObject.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_RuntimeSpawn_Limestone |
+| `(String, String)` | Runtime Spawn Limestone |
 
 ##### RuntimeSpawn_OutskirtsItem
 
+Returns an object which can used with SpawnObject.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_RuntimeSpawn_Outskirts |
+| `(String, String)` | Runtime Spawn Outskirts |
 
 ##### RuntimeSpawn_SandItem
 
+Returns an object which can used with SpawnObject.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_RuntimeSpawn_Sand |
+| `(String, String)` | Runtime Spawn Sand |
 
 ##### RuntimeSpawn_SubsurfaceItem
 
+Returns an object which can used with SpawnObject.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_RuntimeSpawn_Subsurface |
+| `(String, String)` | Runtime Spawn Subsurface |
 
 ##### RuntimeSpawn_TungstenItem
 
+Returns an object which can used with SpawnObject.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_RuntimeSpawn_Tungsten |
+| `(String, String)` | Runtime Spawn Tungsten |
 
 ##### ScoreboardTypeItem
 
+Returns a ScoreboardType Item which can used with SetScoreboardType.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_ScoreboardType |
+| `(String, String)` | Scoreboard Type |
 
 ##### ScreenEffectsItem
 
+Returns a ScreenEffectsItem which can used with EnableScreenEffect.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_ScreenEffects |
+| `(String, String)` | Screen Effects |
 
 ##### SoldierClassItem
 
+Returns a SoldierClass Item which can be used with SpawnAIFromAISpawner.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_SoldierClass |
+| `(String, String)` | Soldier Class |
 
 ##### SoldierEffectsItem
 
+SoldierEffectsItem
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_SoldierEffects |
+| `(String, String)` | Soldier Effects |
 
 ##### SoldierStateBoolItem
 
-Returns the SoldierStateBool of the selected Boolean-based player property.
+Returns a SoldierStateBool Item which can be used with GetSoldierState.
 
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_SoldierStateBool |
+| `(String, String)` | Soldier State Bool |
 
 ##### SoldierStateNumberItem
 
-Returns the SoldierStateNumber of the selected Number-based player property.
+Returns a SoldierStateBool Item which can be used with GetSoldierState.
 
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_SoldierStateNumber |
+| `(String, String)` | Soldier State Number |
 
 ##### SoldierStateVectorItem
 
-Returns the SoldierStateVector of the selected Vector-based player property.
+Returns a SoldierStateBool Item which can be used with GetSoldierState.
 
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_SoldierStateVector |
+| `(String, String)` | Soldier State Vector |
 
 ##### SpawnModesItem
 
+Returns a SpawnModes Item which can be used with SetSpawnMode.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_SpawnModes |
+| `(String, String)` | Spawn Modes |
 
 ##### SpectatingGroupItem
 
+Returns a SpectatingGroup for use with SetSpectatingFilters
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_SpectatingGroup |
+| `(String, String)` | Spectating Group |
 
 ##### SpotStatusItem
 
+Returns a SpotStatus Item which can be used with SpotTarget.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_SpotStatus |
+| `(String, String)` | Spot Status |
 
 ##### StanceItem
 
+Returns a Stance Item which can be used with AISetStance.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_Stance |
+| `(String, String)` | Stance |
 
 ##### StationaryEmplacementsItem
 
+Returns a StationaryEmplacements Item which can be used with SetEmplacementSpawnerType.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_StationaryEmplacements |
+| `(String, String)` | Stationary Emplacements |
 
 ##### TypesItem
 
-Returns a Types from the collection of all object types.
+Returns a Types Item which can used with IsType.
 
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_Types |
+| `(String, String)` | Types |
 
 ##### UIAnchorItem
 
+Returns a UIAnchor Item which can used with many UI Actions.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_UIAnchor |
+| `(String, String)` | UI Anchor |
 
 ##### UIBgFillItem
 
+Returns a UIBgFill Item which can used with many UI Actions.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_UIBgFill |
+| `(String, String)` | UI Bg Fill |
 
 ##### UIButtonEventItem
 
+Returns a UIButtonEvent Item which can used with many EnableUIButtonEvent.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_UIButtonEvent |
+| `(String, String)` | UI Button Event |
 
 ##### UIDepthItem
 
+Returns a UIDepth Item which can used with many UI Actions.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_UIDepth |
+| `(String, String)` | UI Depth |
 
 ##### UIImageTypeItem
 
+Returns a UIImageType Item which can used with AddUIImage.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_UIImageType |
+| `(String, String)` | UI Image Type |
 
 ##### VehicleCategoriesItem
 
+Returns a VehicleCategories item.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_VehicleCategories |
+| `(String, String)` | Vehicle Categories |
 
 ##### VehicleListItem
 
+Returns a VehicleList Item which can be used with SetVehicleSpawnerVehicleType and CompareVehicleName.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_VehicleList |
+| `(String, String)` | Vehicle List |
 
 ##### VehicleStateVectorItem
 
-Returns the VehicleStateVector of the selected Vector-based vehicle property.
+Returns a VehicleStateVector Item which can be used with GetVehicleState.
 
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_VehicleStateVector |
+| `(String, String)` | Vehicle State Vector |
 
 ##### VoiceOverEvents2DItem
 
+Returns a VoiceOverEvents2D Item which can be used with PlayVO.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_VoiceOverEvents2D |
+| `(String, String)` | Voice Over Events2 D |
 
 ##### VoiceOverFlagsItem
 
+Returns a VoiceOverFlags Item which can be used with PlayVO.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_VoiceOverFlags |
+| `(String, String)` | Voice Over Flags |
 
 ##### WeaponAttachmentsItem
 
+Returns a WeaponAttachments Item which can be used with AddAttachmentToWeaponPackage.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_WeaponAttachments |
+| `(String, String)` | Weapon Attachments |
 
 ##### WeaponsItem
 
+Returns an Weapons Item which can be used with AddEquipment, and AddUIWeaponImage.
+
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_Weapons |
+| `(String, String)` | Weapons |
 
 ##### WorldIconImagesItem
 
-Returns a WorldIconImages from the collection of world icon images.
+Returns a WorldIconImages Item which can be used with SetWorldIconImage.
 
 | Signature | Return Type |
 | --- | --- |
-| `(String, String)` | Enum_WorldIconImages |
+| `(String, String)` | World Icon Images |
 
 ### Player
 
@@ -1985,13 +2123,11 @@ Returns a WorldIconImages from the collection of world icon images.
 
 Returns an Array of all players within a game.
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | Array |
 
 ##### ClosestPlayerTo
 
-Returns the closest alive Player to a provided position. Can be filtered using a Team.
+Returns the closest alive Player to a provided position. Can be filtered using a Team. 
+
 _Note: If no players are alive when this block is called, the returned Player will be invalid._
 
 | Signature | Return Type |
@@ -2001,7 +2137,8 @@ _Note: If no players are alive when this block is called, the returned Player wi
 
 ##### FarthestPlayerFrom
 
-Returns the farthest alive Player from a provided position. Can be filtered using a Team.
+Returns the farthest alive Player from a provided position. Can be filtered using a Team. 
+
 _Note: If no players are alive when this block is called, the returned Player will be invalid._
 
 | Signature | Return Type |
@@ -2027,6 +2164,8 @@ Returns the total amount of kills for the target Player.
 
 ##### GetSquad
 
+Returns the squad object corresponding to the provided player, or team/squad id.
+
 | Signature | Return Type |
 | --- | --- |
 | `(player: Player)` | Squad |
@@ -2034,13 +2173,15 @@ Returns the total amount of kills for the target Player.
 
 ##### GetSquadName
 
+Returns a string of the name of the provided squad.
+
 | Signature | Return Type |
 | --- | --- |
 | `(Squad)` | String |
 
 ##### GetTeam
 
-Returns the Team value of the specified Player OR the corresponding Team of the provided Number.
+Returns the team value of the specified player OR the corresponding team of the provided number.
 
 | Signature | Return Type |
 | --- | --- |
@@ -2049,13 +2190,15 @@ Returns the Team value of the specified Player OR the corresponding Team of the 
 
 ##### IsPlayerValid
 
-Returns True if the provided Player is valid.
+Returns if the provided Player is valid.
 
 | Signature | Return Type |
 | --- | --- |
 | `(player: Player)` | Boolean |
 
 ##### IsSquadLeader
+
+Returns a boolean checking to see if provided player is the leader of their squad.
 
 | Signature | Return Type |
 | --- | --- |
@@ -2065,52 +2208,51 @@ Returns True if the provided Player is valid.
 
 ##### CreateNewWeaponPackage
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | WeaponPackage |
+Creates and returns a new weapon package.
+
 
 **Soldier**
 
 ##### EventDamageTypeCompare
 
-Returns a Boolean indicating if the victim was damaged by the provided DamageType.
+Returns a Boolean indicating if the victim was damaged by the provided .
 
 | Signature | Return Type |
 | --- | --- |
-| `(damageType: DamageType, playerDamageTypes: Enum_PlayerDamageTypes)` | Boolean |
+| `(damageType: DamageType, playerDamageTypes: Player Damage Types)` | Boolean |
 
 ##### EventDeathTypeCompare
 
-Returns a Boolean indicating if the victim died by the provided DeathType.
+Returns a Boolean indicating if the victim died by the provided .
 
 | Signature | Return Type |
 | --- | --- |
-| `(deathType: DeathType, playerDeathTypes: Enum_PlayerDeathTypes)` | Boolean |
+| `(deathType: DeathType, playerDeathTypes: Player Death Types)` | Boolean |
 
 ##### EventWeaponCompare
 
-Returns a Boolean indicating if the given WeaponUnlock is equivalent to the provided ability.
+Returns a Boolean indicating if the given is equivalent to the provided ability.
 
 | Signature | Return Type |
 | --- | --- |
-| `(eventWeapon: WeaponUnlock, weapon: Enum_Weapons)` | Boolean |
-| `(eventWeapon: WeaponUnlock, gadget: Enum_Gadgets)` | Boolean |
+| `(eventWeapon: WeaponUnlock, weapon: Weapons)` | Boolean |
+| `(eventWeapon: WeaponUnlock, gadget: Gadgets)` | Boolean |
 
 ##### GetInventoryAmmo
 
-Returns the target Player loaded ammo of the provided InventorySlots.
+Returns the target Player loaded ammo of the provided .
 
 | Signature | Return Type |
 | --- | --- |
-| `(player: Player, inventorySlots: Enum_InventorySlots)` | Number |
+| `(player: Player, inventorySlots: Inventory Slots)` | Number |
 
 ##### GetInventoryMagazineAmmo
 
-Returns the target Player magazine ammo of the provided InventorySlots.
+Returns the target Player magazine ammo of the provided .
 
 | Signature | Return Type |
 | --- | --- |
-| `(player: Player, inventorySlots: Enum_InventorySlots)` | Number |
+| `(player: Player, inventorySlots: Inventory Slots)` | Number |
 
 ##### GetSoldierState
 
@@ -2118,30 +2260,34 @@ Returns the value of the target Player state.
 
 | Signature | Return Type |
 | --- | --- |
-| `(player: Player, soldierStateNumber: Enum_SoldierStateNumber)` | Number |
-| `(player: Player, soldierStateBool: Enum_SoldierStateBool)` | Boolean |
-| `(player: Player, soldierStateVector: Enum_SoldierStateVector)` | Vector |
+| `(player: Player, soldierStateNumber: Soldier State Number)` | Number |
+| `(player: Player, soldierStateBool: Soldier State Bool)` | Boolean |
+| `(player: Player, soldierStateVector: Soldier State Vector)` | Vector |
 
 ##### HasEquipment
 
+Returns a boolean indicating if the provided player has the specified ability.
+
 | Signature | Return Type |
 | --- | --- |
-| `(player: Player, weapon: Enum_Weapons)` | Boolean |
-| `(player: Player, gadget: Enum_Gadgets)` | Boolean |
+| `(player: Player, weapon: Weapons)` | Boolean |
+| `(player: Player, gadget: Gadgets)` | Boolean |
 
 ##### IsInventorySlotActive
 
-Returns True whether or not the active inventory slot of the target Player is the provided InventorySlots.
+Returns whether or not the active inventory slot of the target Player is the provided .
 
 | Signature | Return Type |
 | --- | --- |
-| `(player: Player, inventorySlots: Enum_InventorySlots)` | Boolean |
+| `(player: Player, inventorySlots: Inventory Slots)` | Boolean |
 
 ##### IsSoldierClass
 
+Returns true if the provided player is using the specified class.
+
 | Signature | Return Type |
 | --- | --- |
-| `(player: Player, soldierClass: Enum_SoldierClass)` | Boolean |
+| `(player: Player, soldierClass: Soldier Class)` | Boolean |
 
 ### Transform
 
@@ -2149,51 +2295,52 @@ Returns True whether or not the active inventory slot of the target Player is th
 
 Returns the backward directional Vector of (0, 0, 1).
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | Vector |
 
 ##### DownVector
 
 Returns the downward directional Vector of (0, -1, 0).
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | Vector |
 
 ##### ForwardVector
 
 Returns the forward directional Vector of (0, 0, -1).
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | Vector |
 
 ##### GetObjectPosition
 
+Returns the position vector of the provided object.
+
 | Signature | Return Type |
 | --- | --- |
-| `(object: Object | Global | AreaTrigger | CapturePoint | EmplacementSpawner | FixedCamera | HQ | InteractPoint | LootSpawner | MapSpecificFeature | MCOM | Player | RingOfFire | Sector | SFX | SpatialObject | Spawner | SpawnPoint | Team | Vehicle | VehicleSpawner | VFX | VL7Cloud | VO | WaypointPath | WorldIcon)` | Vector |
+| `(object: Object \| Global \| AreaTrigger \| CapturePoint \| EmplacementSpawner \| FixedCamera \| HQ \| InteractPoint \| LootSpawner \| MapSpecificFeature \| MCOM \| Player \| RingOfFire \| Sector \| SFX \| SpatialObject \| Spawner \| SpawnPoint \| Team \| Vehicle \| VehicleSpawner \| VFX \| VL7Cloud \| VO \| WaypointPath \| WorldIcon)` | Vector |
 
 ##### GetObjectRotation
 
+Returns the rotation vector of the provided object.
+
 | Signature | Return Type |
 | --- | --- |
-| `(object: Object | Global | AreaTrigger | CapturePoint | EmplacementSpawner | FixedCamera | HQ | InteractPoint | LootSpawner | MapSpecificFeature | MCOM | Player | RingOfFire | Sector | SFX | SpatialObject | Spawner | SpawnPoint | Team | Vehicle | VehicleSpawner | VFX | VL7Cloud | VO | WaypointPath | WorldIcon)` | Vector |
+| `(object: Object \| Global \| AreaTrigger \| CapturePoint \| EmplacementSpawner \| FixedCamera \| HQ \| InteractPoint \| LootSpawner \| MapSpecificFeature \| MCOM \| Player \| RingOfFire \| Sector \| SFX \| SpatialObject \| Spawner \| SpawnPoint \| Team \| Vehicle \| VehicleSpawner \| VFX \| VL7Cloud \| VO \| WaypointPath \| WorldIcon)` | Vector |
 
 ##### GetObjectTransform
 
+Returns the transform vector of the provided object.
+
 | Signature | Return Type |
 | --- | --- |
-| `(object: Object | Global | AreaTrigger | CapturePoint | EmplacementSpawner | FixedCamera | HQ | InteractPoint | LootSpawner | MapSpecificFeature | MCOM | Player | RingOfFire | Sector | SFX | SpatialObject | Spawner | SpawnPoint | Team | Vehicle | VehicleSpawner | VFX | VL7Cloud | VO | WaypointPath | WorldIcon)` | Transform |
+| `(object: Object \| Global \| AreaTrigger \| CapturePoint \| EmplacementSpawner \| FixedCamera \| HQ \| InteractPoint \| LootSpawner \| MapSpecificFeature \| MCOM \| Player \| RingOfFire \| Sector \| SFX \| SpatialObject \| Spawner \| SpawnPoint \| Team \| Vehicle \| VehicleSpawner \| VFX \| VL7Cloud \| VO \| WaypointPath \| WorldIcon)` | Transform |
 
 ##### GetTransformPosition
+
+Returns the position of a Transform as a Vector.
 
 | Signature | Return Type |
 | --- | --- |
 | `(transform: Transform)` | Vector |
 
 ##### GetTransformRotation
+
+Returns the rotation of a Transform as a Vector
 
 | Signature | Return Type |
 | --- | --- |
@@ -2203,9 +2350,6 @@ Returns the forward directional Vector of (0, 0, -1).
 
 Returns the leftward directional Vector of (-1, 0, 0).
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | Vector |
 
 ##### LocalPositionOf
 
@@ -2227,17 +2371,11 @@ Converts the provided world vector to the corresponding vector in local Player s
 
 Returns the rightward directional Vector of (1, 0, 0).
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | Vector |
 
 ##### UpVector
 
 Returns the upward directional Vector of (0, 1, 0).
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | Vector |
 
 ##### VectorTowards
 
@@ -2291,6 +2429,8 @@ Returns the 'Z' component of a provided Vector.
 
 ##### GetWorldIcon
 
+Returns the world icon object corresponding to the provided id.
+
 | Signature | Return Type |
 | --- | --- |
 | `(worldIconNumber: Number)` | WorldIcon |
@@ -2299,20 +2439,23 @@ Returns the 'Z' component of a provided Vector.
 
 ##### Message
 
-Returns a constructed Message object which can be used with ShowGameModeMessage, ShowNotificationMessage, ShowHighlightedMessage, and DisplayCustomNotificationMessage. The Message object is created by providing a Number, Player, or format String (which can take up to 3 format items).
-A format String is a String that contains `{}` (called braces) within them, which can be substituted for parameters. For example, the String - `{} gained {} points!` - can be given a Player and Number parameter and could output as `John gained 2 points!`. See the example below for how this can be used with blocks.
+Returns a constructed object which can be used with Showeventgamemodemessage, Shownotificationmessage, Showhighlightedgamemodemessage, and Displaycustomnotificationmessage. The object is created by providing a Number, Player, or format String (which can take up to 3 format items). 
+A format String is a String that contains `{}` (called braces) within them, which can be substituted for parameters. For example, the String - `{} gained {} points!` - can be given a Player and Number parameter and could output as `John gained 2 points!`. See the example below for how this can be used with blocks. 
+
 _Note: It's your responsibility to ensure a safe and fair experience for others, violating the EA User Agreement by using offensive or inappropriate text may result in account bans._
 
 | Signature | Return Type |
 | --- | --- |
-| `(msg: String | Number | Player, msgArg0: String | Number | Player, msgArg1: String | Number | Player, msgArg2: String | Number | Player)` | Message |
-| `(msg: String | Number | Player, msgArg0: String | Number | Player, msgArg1: String | Number | Player)` | Message |
-| `(msg: String | Number | Player, msgArg0: String | Number | Player)` | Message |
-| `(msg: String | Number | Player)` | Message |
+| `(msg: String \| Number \| Player, msgArg0: String \| Number \| Player, msgArg1: String \| Number \| Player, msgArg2: String \| Number \| Player)` | Message |
+| `(msg: String \| Number \| Player, msgArg0: String \| Number \| Player, msgArg1: String \| Number \| Player)` | Message |
+| `(msg: String \| Number \| Player, msgArg0: String \| Number \| Player)` | Message |
+| `(msg: String \| Number \| Player)` | Message |
 
 **UIWidgets**
 
 ##### FindUIWidgetWithName
+
+Returns the UI Widget matching the specified name.
 
 | Signature | Return Type |
 | --- | --- |
@@ -2321,11 +2464,15 @@ _Note: It's your responsibility to ensure a safe and fair experience for others,
 
 ##### GetUIButtonAlphaBase
 
+Returns a number representing the button base alpha of the specified UI Widget.
+
 | Signature | Return Type |
 | --- | --- |
 | `(widget: UIWidget)` | Number |
 
 ##### GetUIButtonAlphaDisabled
+
+Returns a number representing the button disabled alpha of the specified UI Widget.
 
 | Signature | Return Type |
 | --- | --- |
@@ -2333,11 +2480,15 @@ _Note: It's your responsibility to ensure a safe and fair experience for others,
 
 ##### GetUIButtonAlphaFocused
 
+Returns a number representing the button focused alpha of the specified UI Widget.
+
 | Signature | Return Type |
 | --- | --- |
 | `(widget: UIWidget)` | Number |
 
 ##### GetUIButtonAlphaHover
+
+Returns a number representing the button hover alpha of the specified UI Widget.
 
 | Signature | Return Type |
 | --- | --- |
@@ -2345,11 +2496,15 @@ _Note: It's your responsibility to ensure a safe and fair experience for others,
 
 ##### GetUIButtonAlphaPressed
 
+Returns a number representing the button pressed alpha of the specified UI Widget.
+
 | Signature | Return Type |
 | --- | --- |
 | `(widget: UIWidget)` | Number |
 
 ##### GetUIButtonColorBase
+
+Returns a vector representing the button base color of the specified UI Widget.
 
 | Signature | Return Type |
 | --- | --- |
@@ -2357,11 +2512,15 @@ _Note: It's your responsibility to ensure a safe and fair experience for others,
 
 ##### GetUIButtonColorDisabled
 
+Returns a vector representing the button disabled color of the specified UI Widget.
+
 | Signature | Return Type |
 | --- | --- |
 | `(widget: UIWidget)` | Vector |
 
 ##### GetUIButtonColorFocused
+
+Returns a vector representing the button focused color of the specified UI Widget.
 
 | Signature | Return Type |
 | --- | --- |
@@ -2369,11 +2528,15 @@ _Note: It's your responsibility to ensure a safe and fair experience for others,
 
 ##### GetUIButtonColorHover
 
+Returns a vector representing the button hover color of the specified UI Widget.
+
 | Signature | Return Type |
 | --- | --- |
 | `(widget: UIWidget)` | Vector |
 
 ##### GetUIButtonColorPressed
+
+Returns a vector representing the button pressed color of the specified UI Widget.
 
 | Signature | Return Type |
 | --- | --- |
@@ -2381,11 +2544,15 @@ _Note: It's your responsibility to ensure a safe and fair experience for others,
 
 ##### GetUIButtonEnabled
 
+Returns a boolean indicating the button enabled status of the specified UI Widget.
+
 | Signature | Return Type |
 | --- | --- |
 | `(widget: UIWidget)` | Boolean |
 
 ##### GetUIImageAlpha
+
+Returns a number representing the image alpha of the specified UI Widget.
 
 | Signature | Return Type |
 | --- | --- |
@@ -2393,23 +2560,28 @@ _Note: It's your responsibility to ensure a safe and fair experience for others,
 
 ##### GetUIImageColor
 
+Returns a vector representing the image color of the specified UI Widget.
+
 | Signature | Return Type |
 | --- | --- |
 | `(widget: UIWidget)` | Vector |
 
 ##### GetUIImageType
 
+Returns an enum value representing the image type of the specified UI Widget.
+
 | Signature | Return Type |
 | --- | --- |
-| `(widget: UIWidget)` | Enum_UIImageType |
+| `(widget: UIWidget)` | UI Image Type |
 
 ##### GetUIRoot
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | UIWidget |
+Returns the UI Root as a UI Widget.
+
 
 ##### GetUITextAlpha
+
+Returns a number representing the text alpha of the specified UI Widget.
 
 | Signature | Return Type |
 | --- | --- |
@@ -2417,11 +2589,15 @@ _Note: It's your responsibility to ensure a safe and fair experience for others,
 
 ##### GetUITextAnchor
 
+Returns an enum value representing the text anchor of the specified UI Widget.
+
 | Signature | Return Type |
 | --- | --- |
-| `(widget: UIWidget)` | Enum_UIAnchor |
+| `(widget: UIWidget)` | UI Anchor |
 
 ##### GetUITextColor
+
+Returns a vector representing the text color of the specified UI Widget.
 
 | Signature | Return Type |
 | --- | --- |
@@ -2429,17 +2605,23 @@ _Note: It's your responsibility to ensure a safe and fair experience for others,
 
 ##### GetUITextSize
 
+Returns a number representing the text size of the specified UI Widget.
+
 | Signature | Return Type |
 | --- | --- |
 | `(widget: UIWidget)` | Number |
 
 ##### GetUIWidgetAnchor
 
+Returns an enum value representing the anchor location of the specified UI Widget.
+
 | Signature | Return Type |
 | --- | --- |
-| `(widget: UIWidget)` | Enum_UIAnchor |
+| `(widget: UIWidget)` | UI Anchor |
 
 ##### GetUIWidgetBgAlpha
+
+Returns the background alpha value of the specified UI Widget.
 
 | Signature | Return Type |
 | --- | --- |
@@ -2447,23 +2629,31 @@ _Note: It's your responsibility to ensure a safe and fair experience for others,
 
 ##### GetUIWidgetBgColor
 
+Returns the background color vector of the specified UI Widget.
+
 | Signature | Return Type |
 | --- | --- |
 | `(widget: UIWidget)` | Vector |
 
 ##### GetUIWidgetBgFill
 
+Returns an enum value representing the background fill of the specified UI Widget.
+
 | Signature | Return Type |
 | --- | --- |
-| `(widget: UIWidget)` | Enum_UIBgFill |
+| `(widget: UIWidget)` | UI Bg Fill |
 
 ##### GetUIWidgetDepth
 
+Returns an enum value representing the depth of the specified UI Widget.
+
 | Signature | Return Type |
 | --- | --- |
-| `(widget: UIWidget)` | Enum_UIDepth |
+| `(widget: UIWidget)` | UI Depth |
 
 ##### GetUIWidgetName
+
+Returns a string containing the name of the specified UI Widget.
 
 | Signature | Return Type |
 | --- | --- |
@@ -2471,11 +2661,15 @@ _Note: It's your responsibility to ensure a safe and fair experience for others,
 
 ##### GetUIWidgetPadding
 
+Returns a number representing the padding value of the specified UI Widget.
+
 | Signature | Return Type |
 | --- | --- |
 | `(widget: UIWidget)` | Number |
 
 ##### GetUIWidgetParent
+
+Returns the Parent UI Widget of the specified UI Widget.
 
 | Signature | Return Type |
 | --- | --- |
@@ -2483,11 +2677,15 @@ _Note: It's your responsibility to ensure a safe and fair experience for others,
 
 ##### GetUIWidgetPosition
 
+Returns the positional vector of the specified UI Widget.
+
 | Signature | Return Type |
 | --- | --- |
 | `(widget: UIWidget)` | Vector |
 
 ##### GetUIWidgetSize
+
+Returns the scale vector of the specified UI Widget.
 
 | Signature | Return Type |
 | --- | --- |
@@ -2495,11 +2693,15 @@ _Note: It's your responsibility to ensure a safe and fair experience for others,
 
 ##### GetUIWidgetVisible
 
+Returns a boolean representing the visible state of the specified UI Widget.
+
 | Signature | Return Type |
 | --- | --- |
 | `(widget: UIWidget)` | Boolean |
 
 ##### HasUIWidgetWithName
+
+Returns a boolean indicating if the UI Widget exists.
 
 | Signature | Return Type |
 | --- | --- |
@@ -2512,17 +2714,14 @@ _Note: It's your responsibility to ensure a safe and fair experience for others,
 
 Returns an Array of all vehicles within a game.
 
-| Signature | Return Type |
-| --- | --- |
-| `()` | Array |
 
 ##### CompareVehicleName
 
-Returns a Boolean indicating if the target Vehicle has the same name as the provided Vehicles or if it is the same type as the provided VehicleTypes.
+Returns a Boolean indicating if the target Vehicle has the same name as the provided or if it is the same type as the provided .
 
 | Signature | Return Type |
 | --- | --- |
-| `(vehicle: Vehicle, vehicleList: Enum_VehicleList)` | Boolean |
+| `(vehicle: Vehicle, vehicleList: Vehicle List)` | Boolean |
 
 ##### GetVehicleFromPlayer
 
@@ -2546,12 +2745,11 @@ Returns the value of the target Vehicle state.
 
 | Signature | Return Type |
 | --- | --- |
-| `(vehicle: Vehicle, vehicleStateVector: Enum_VehicleStateVector)` | Vector |
+| `(vehicle: Vehicle, vehicleStateVector: Vehicle State Vector)` | Vector |
 
 ##### GetVehicleTeam
 
-Returns the Team of the provided Vehicle.
-_Note: A Vehicle that is not occupied will have a neutral Team._
+Returns the team of the provided vehicle. Note: A vehicle that is not occupied will have a neutral team.
 
 | Signature | Return Type |
 | --- | --- |
@@ -2585,7 +2783,8 @@ Returns a Array of all players inside a provided Vehicle
 
 ##### GetPlayerFromVehicleSeat
 
-Returns the Player currently occupying the provided seat index Number of the provided Vehicle.
+Returns the Player currently occupying the provided seat index Number of the provided Vehicle. 
+
 _Note: If no players are in the vehicle seat when this block is called, the returned Player will be invalid._
 
 | Signature | Return Type |
@@ -2618,6 +2817,8 @@ Sets a Player to act independently. They will attempt to complete objectives, fi
 
 ##### AIDefendPositionBehavior
 
+Sets a **Player** to defend an area around a location. (Only works for AI players)
+
 | Signature |
 | --- |
 | `(player: Player, defendPosition: Vector, minDistance: Number, maxDistance: Number)` |
@@ -2631,6 +2832,8 @@ Sets a Player's current position as idle point. (Only works for AI players)
 | `(player: Player)` |
 
 ##### AILOSMoveToBehavior
+
+Sets a **Player** to move to a location with a line of sight to a specific position. (Only works for AI players)
 
 | Signature |
 | --- |
@@ -2646,11 +2849,15 @@ Sets a target Player a destination to move to. (Only works for AI players)
 
 ##### AIParachuteBehavior
 
+Sets a **Player** to use parachute. (Only works for AI players)
+
 | Signature |
 | --- |
 | `(player: Player)` |
 
 ##### AIValidatedMoveToBehavior
+
+Sets a **Player** to move to a valid position on navmesh near a location. (Only works for AI players)
 
 | Signature |
 | --- |
@@ -2666,13 +2873,17 @@ Sets a Player to patrol a waypoint. (Only works for AI players)
 
 ##### SetAiInput
 
+Trigger AI bots input for the duration. Up to 3 simultaneous inputs (3 channels)
+
 | Signature |
 | --- |
-| `(player: Player, input: Enum_AiInput, duration: Number)` |
+| `(player: Player, input: Ai Input, duration: Number)` |
 
 **Deploy**
 
 ##### AISetUnspawnOnDead
+
+Use this on a spawner to determine if AI soldiers spawned will leave the game after they are killed.
 
 | Signature |
 | --- |
@@ -2680,30 +2891,38 @@ Sets a Player to patrol a waypoint. (Only works for AI players)
 
 ##### SetUnspawnDelayInSeconds
 
+Sets the time (in seconds) it takes for AI soldiers from the provided Spawner to unspawn after death.
+
 | Signature |
 | --- |
 | `(spawner: Spawner, delay: Number)` |
 
 ##### SpawnAIFromAISpawner
 
+Spawn one AI soldier from a specific AI Spawner.
+
 | Signature |
 | --- |
 | `(spawner: Spawner)` |
-| `(spawner: Spawner, classToSpawn: Enum_SoldierClass, name: Message)` |
-| `(spawner: Spawner, classToSpawn: Enum_SoldierClass)` |
+| `(spawner: Spawner, classToSpawn: Soldier Class, name: Message)` |
+| `(spawner: Spawner, classToSpawn: Soldier Class)` |
 | `(spawner: Spawner, name: Message)` |
 | `(spawner: Spawner, team: Team)` |
-| `(spawner: Spawner, classToSpawn: Enum_SoldierClass, name: Message, team: Team)` |
-| `(spawner: Spawner, classToSpawn: Enum_SoldierClass, team: Team)` |
+| `(spawner: Spawner, classToSpawn: Soldier Class, name: Message, team: Team)` |
+| `(spawner: Spawner, classToSpawn: Soldier Class, team: Team)` |
 | `(spawner: Spawner, name: Message, team: Team)` |
 
 ##### UnspawnAllAIsFromAISpawner
+
+Unspawns all AIs who were spawned by a specific AI Spawner.
 
 | Signature |
 | --- |
 | `(spawner: Spawner)` |
 
 ##### AIEnableShooting
+
+Enables or disables shooting for AI. (Only works for AI players)
 
 | Signature |
 | --- |
@@ -2712,6 +2931,8 @@ Sets a Player to patrol a waypoint. (Only works for AI players)
 
 ##### AIEnableTargeting
 
+Enables or disables targeting for AI. An AI unable to target cannot shoot, but will also not notice other soldiers (Only works for AI players)
+
 | Signature |
 | --- |
 | `(player: Player)` |
@@ -2719,17 +2940,23 @@ Sets a Player to patrol a waypoint. (Only works for AI players)
 
 ##### AIForceFire
 
+Forces an AI player to fire or activate whatever weapon or gadget they are holding in their hands for a length of time.
+
 | Signature |
 | --- |
 | `(player: Player, fireDuration: Number)` |
 
 ##### AIGadgetSettings
 
+Tweak settings for a player's gadgets. (Only works for AI players)
+
 | Signature |
 | --- |
 | `(player: Player, applyUsageCriteria: Boolean, applyCoolDownAfterUse: Boolean, applyInaccuracy: Boolean)` |
 
 ##### AISetFocusPoint
+
+Sets a player's focus point, possibly asking it to fire at it. (Only works for AI players)
 
 | Signature |
 | --- |
@@ -2741,7 +2968,7 @@ Sets a Player's move speed for MoveTo Behaviors. (Only works for AI players)
 
 | Signature |
 | --- |
-| `(player: Player, moveSpeed: Enum_MoveSpeed)` |
+| `(player: Player, moveSpeed: Move Speed)` |
 
 ##### AISetStance
 
@@ -2749,7 +2976,7 @@ Sets a Player's stance. (Only works for AI players)
 
 | Signature |
 | --- |
-| `(player: Player, stance: Enum_Stance)` |
+| `(player: Player, stance: Stance)` |
 
 ##### AISetTarget
 
@@ -2762,18 +2989,24 @@ Sets a Player's current target. (Only works for AI players)
 
 ##### AIStartUsingGadget
 
+Gives a player the instruction to use a specific gadget on a target location or player. (Only works for AI players)
+
 | Signature |
 | --- |
-| `(player: Player, gadget: Enum_Gadgets, targetPos: Vector)` |
-| `(player: Player, gadget: Enum_Gadgets, targetPlayer: Player)` |
+| `(player: Player, gadget: Gadgets, targetPos: Vector)` |
+| `(player: Player, gadget: Gadgets, targetPlayer: Player)` |
 
 ##### AIStopUsingGadget
+
+Clears the player's gadget instructions. (Only works for AI players)
 
 | Signature |
 | --- |
 | `(player: Player)` |
 
 ##### SetAIToHumanDamageModifier
+
+Sets the damage multiplier from AI players to actualy players.
 
 | Signature |
 | --- |
@@ -2783,7 +3016,8 @@ Sets a Player's current target. (Only works for AI players)
 
 ##### SetVariableAtIndex
 
-Finds or initializes an Array on a provided Variable, and stores a provided value in that Array at the specified index.
+Finds or initializes an Array on a provided Variable, and stores a provided value in that Array at the specified index. 
+
 _Note: The first value in the array starts at an index of 0._
 
 | Signature |
@@ -2793,6 +3027,8 @@ _Note: The first value in the array starts at an index of 0._
 ### Audio
 
 ##### PlaySound
+
+Plays a sound using runtime spawner tech.
 
 | Signature |
 | --- |
@@ -2807,14 +3043,18 @@ _Note: The first value in the array starts at an index of 0._
 
 ##### PlayVO
 
+Plays a voice-over event clip.
+
 | Signature |
 | --- |
-| `(voiceOver: VO, event: Enum_VoiceOverEvents2D, flag: Enum_VoiceOverFlags)` |
-| `(voiceOver: VO, event: Enum_VoiceOverEvents2D, flag: Enum_VoiceOverFlags, player: Player)` |
-| `(voiceOver: VO, event: Enum_VoiceOverEvents2D, flag: Enum_VoiceOverFlags, squad: Squad)` |
-| `(voiceOver: VO, event: Enum_VoiceOverEvents2D, flag: Enum_VoiceOverFlags, team: Team)` |
+| `(voiceOver: VO, event: Voice Over Events2 D, flag: Voice Over Flags)` |
+| `(voiceOver: VO, event: Voice Over Events2 D, flag: Voice Over Flags, player: Player)` |
+| `(voiceOver: VO, event: Voice Over Events2 D, flag: Voice Over Flags, squad: Squad)` |
+| `(voiceOver: VO, event: Voice Over Events2 D, flag: Voice Over Flags, team: Team)` |
 
 ##### SetSoundAmplitude
+
+Sets the amplitude of a given sound.
 
 | Signature |
 | --- |
@@ -2824,6 +3064,8 @@ _Note: The first value in the array starts at an index of 0._
 | `(sound: SFX, amplitude: Number)` |
 
 ##### StopSound
+
+Stops a given sound.
 
 | Signature |
 | --- |
@@ -2836,29 +3078,37 @@ _Note: The first value in the array starts at an index of 0._
 
 ##### SetCameraTypeForAll
 
+Sets CameraType for all players.
+
 | Signature |
 | --- |
-| `(cameraType: Enum_Cameras)` |
-| `(cameraType: Enum_Cameras, cameraIndex: Number)` |
+| `(cameraType: Cameras)` |
+| `(cameraType: Cameras, cameraIndex: Number)` |
 
 ##### SetCameraTypeForPlayer
 
+Sets CameraType for provided Player.
+
 | Signature |
 | --- |
-| `(player: Player, cameraType: Enum_Cameras)` |
-| `(player: Player, cameraType: Enum_Cameras, cameraIndex: Number)` |
+| `(player: Player, cameraType: Cameras)` |
+| `(player: Player, cameraType: Cameras, cameraIndex: Number)` |
 
 ##### SetSpectatingFiltersForAll
 
+Sets the spectating filters. SpectatingGroup sets the selectable players in the spectating UI. ownSquadOnly and ownTeamOnly limit whether a player can spectate other squads/teams after currently spectated one is eliminated
+
 | Signature |
 | --- |
-| `(group: Enum_SpectatingGroup, ownSquadOnly: Boolean, ownTeamOnly: Boolean)` |
+| `(group: Spectating Group, ownSquadOnly: Boolean, ownTeamOnly: Boolean)` |
 
 ##### SetSpectatingFiltersForPlayer
 
+Sets the spectating filters. SpectatingGroup sets the selectable players in the spectating UI. ownSquadOnly and ownTeamOnly limit whether a player can spectate other squads/teams after currently spectated one is eliminated
+
 | Signature |
 | --- |
-| `(player: Player, group: Enum_SpectatingGroup, ownSquadOnly: Boolean, ownTeamOnly: Boolean)` |
+| `(player: Player, group: Spectating Group, ownSquadOnly: Boolean, ownTeamOnly: Boolean)` |
 
 ### Effects
 
@@ -2866,11 +3116,11 @@ _Note: The first value in the array starts at an index of 0._
 
 ##### EnableScreenEffect
 
-Enables of disables a player-specific screen effect.
+Enables or disables a player-specific screen effect.
 
 | Signature |
 | --- |
-| `(player: Player, screenEffect: Enum_ScreenEffects, enable: Boolean)` |
+| `(player: Player, screenEffect: Screen Effects, enable: Boolean)` |
 
 **VFX**
 
@@ -2884,11 +3134,15 @@ Enables of disables a visual effect.
 
 ##### MoveVFX
 
+Move a VFX to a new coordinate. May have become redundant with the creation of the universal MoveObject action.
+
 | Signature |
 | --- |
 | `(vfxID: VFX, position: Vector, rotation: Vector)` |
 
 ##### SetVFXColor
+
+Changes the color of a visual effect.
 
 | Signature |
 | --- |
@@ -2896,11 +3150,15 @@ Enables of disables a visual effect.
 
 ##### SetVFXScale
 
+Changes the scale of a visual effect.
+
 | Signature |
 | --- |
 | `(vfxID: VFX, scale: Number)` |
 
 ##### SetVFXSpeed
+
+Changes the speed of a visual effect.
 
 | Signature |
 | --- |
@@ -2910,11 +3168,15 @@ Enables of disables a visual effect.
 
 ##### ForceEmplacementSpawnerSpawn
 
+Cause an emplacement spawner to spawn an emplacement of the type it is currently set to.
+
 | Signature |
 | --- |
 | `(emplacementSpawner: EmplacementSpawner)` |
 
 ##### SetEmplacementSpawnerAbandonVehicleOutOfCombatArea
+
+Enables or disables the feature to destroy emplacement left outside of the combat area.
 
 | Signature |
 | --- |
@@ -2922,11 +3184,15 @@ Enables of disables a visual effect.
 
 ##### SetEmplacementSpawnerApplyDamageToAbandonVehicle
 
+Enables or disables the feature to destroy abandoned emplacements.
+
 | Signature |
 | --- |
 | `(emplacementSpawner: EmplacementSpawner, enabled: Boolean)` |
 
 ##### SetEmplacementSpawnerAutoSpawn
+
+Enables or Disables automatic emplacement respawning from the emplacement spawner.
 
 | Signature |
 | --- |
@@ -2934,11 +3200,15 @@ Enables of disables a visual effect.
 
 ##### SetEmplacementSpawnerKeepAliveAbandonRadius
 
+Sets the distance from the nearest player for an emplacement to consider itself abandoned.
+
 | Signature |
 | --- |
 | `(emplacementSpawner: EmplacementSpawner, keepAliveAbandonedRadius: Number)` |
 
 ##### SetEmplacementSpawnerRespawnTime
+
+Sets the delay after destruction before an emplacement automatically respawn, if the feature is activated.
 
 | Signature |
 | --- |
@@ -2946,11 +3216,15 @@ Enables of disables a visual effect.
 
 ##### SetEmplacementSpawnerSpawnerRadius
 
+Sets the distance its enplacement spawner for an emplacement to consider itself abandoned.
+
 | Signature |
 | --- |
 | `(emplacementSpawner: EmplacementSpawner, keepAliveSpawnerRadius: Number)` |
 
 ##### SetEmplacementSpawnerTimeUntilAbandon
+
+Sets the time left idle before an emplacement is considered abandoned.
 
 | Signature |
 | --- |
@@ -2958,9 +3232,11 @@ Enables of disables a visual effect.
 
 ##### SetEmplacementSpawnerType
 
+Sets the type of emplacement that will spawn from the emplacement spawner.
+
 | Signature |
 | --- |
-| `(emplacementSpawner: EmplacementSpawner, emplacementType: Enum_StationaryEmplacements)` |
+| `(emplacementSpawner: EmplacementSpawner, emplacementType: Stationary Emplacements)` |
 
 ### Gameplay
 
@@ -2968,19 +3244,19 @@ Enables of disables a visual effect.
 
 ##### SendPortalLogToAdmin
 
-| Signature |
-| --- |
-| `()` |
+Sends Portal Log to the admin client of the current session when hosting via "Host" (Dedicated Server). For "Host Locally," Portal Log is always available locally, so this will do nothing. Writes to PortalLog.txt on the admin's client. If admin doesn't exist, this will do nothing. Quota applies for valid log sends per session.
+
 
 **Deploy**
 
 ##### DeployAllPlayers
 
-| Signature |
-| --- |
-| `()` |
+Force spawns all players in the deploy screen.
+
 
 ##### EnableAllPlayerDeploy
+
+Enables or disables spawning from the deploy screen for all players.
 
 | Signature |
 | --- |
@@ -2988,13 +3264,16 @@ Enables of disables a visual effect.
 
 ##### EnablePlayerDeploy
 
+Enables or disables the ability for a target Player to deploy.
+
 | Signature |
 | --- |
 | `(player: Player, deployAllowed: Boolean)` |
 
 ##### SetRedeployTime
 
-Overrides the time to redeploy for a target Player.
+Overrides the time to redeploy for a target Player. 
+
 _Note: The redeploy time must be set to a value between 0 and 60 seconds._
 
 | Signature |
@@ -3003,11 +3282,12 @@ _Note: The redeploy time must be set to a value between 0 and 60 seconds._
 
 ##### UndeployAllPlayers
 
-| Signature |
-| --- |
-| `()` |
+Undeploys all players that are alive on the battlefield back to the deploy screen.
+
 
 ##### UndeployPlayer
+
+Undeploys a target Player that is alive on the battlefield back to the deploy screen.
 
 | Signature |
 | --- |
@@ -3017,6 +3297,8 @@ _Note: The redeploy time must be set to a value between 0 and 60 seconds._
 
 ##### EndGameMode
 
+Ends the current gamemode and designates the provided Player or Team as the winner. The gamemode ends in draw if TeamId is set to 0.
+
 | Signature |
 | --- |
 | `(player: Player)` |
@@ -3024,23 +3306,28 @@ _Note: The redeploy time must be set to a value between 0 and 60 seconds._
 
 ##### PauseGameModeTime
 
+Pauses or unpauses the gamemode timer based on the provided Boolean input.
+
 | Signature |
 | --- |
 | `(pauseTimer: Boolean)` |
 
 ##### ResetGameModeTime
 
-| Signature |
-| --- |
-| `()` |
+Resets the gamemode time to its starting value.
+
 
 ##### RingOfFireStart
+
+Signals the RingOfFire to start shrinking.
 
 | Signature |
 | --- |
 | `(ringOfFire: RingOfFire)` |
 
 ##### SetFriendlyFire
+
+Enables of disables friendly fire.
 
 | Signature |
 | --- |
@@ -3057,11 +3344,15 @@ Sets the gamemode score of the provided Player or Team.
 
 ##### SetGameModeTargetScore
 
+Sets the gamemode target score used to determine victory.
+
 | Signature |
 | --- |
 | `(newScore: Number)` |
 
 ##### SetGameModeTimeLimit
+
+Sets the duration of the game in seconds.
 
 | Signature |
 | --- |
@@ -3069,11 +3360,15 @@ Sets the gamemode score of the provided Player or Team.
 
 ##### SetHQTeam
 
+Sets a HQ to a specific Team.
+
 | Signature |
 | --- |
 | `(hq: HQ, team: Team)` |
 
 ##### SetRingOfFireDamageAmount
+
+Sets the damage dealt by the RingOfFire to players caught.
 
 | Signature |
 | --- |
@@ -3081,21 +3376,21 @@ Sets the gamemode score of the provided Player or Team.
 
 ##### SetRingOfFireStableTime
 
+Sets the duration the RingOfFire remains stable before Shrinking again.
+
 | Signature |
 | --- |
 | `(ringOfFireId: RingOfFire, ringOfFireStableTime: Number)` |
 
 ##### AutoBalanceTeams
 
-| Signature |
-| --- |
-| `()` |
+Balances Team1 and Team2 while maintaining squad compositions, requires matching team and squad capacities.
+
 
 ##### DisablePlayerJoin
 
-| Signature |
-| --- |
-| `()` |
+Using this command prevents anyone from joining this server. There is no way to undo this at the time.
+
 
 ##### EnableAreaTrigger
 
@@ -3115,11 +3410,15 @@ Enables of disables an interact point.
 
 ##### GolmudTrainSendMoveCommand
 
+Sends a move instruction to the Golmud Railway train.
+
 | Signature |
 | --- |
-| `(moveCommand: Enum_GolmudTrainMoveCommands)` |
+| `(moveCommand: Golmud Train Move Commands)` |
 
 ##### RayCast
+
+Request the system to evaluate if a straight line between two points is interupted or not. Use [OnRayCastHit](#onraycasthit) and [OnRayCastMissed](#onraycastmissed) to read the result.
 
 | Signature |
 | --- |
@@ -3128,7 +3427,8 @@ Enables of disables an interact point.
 
 ##### SetTeam
 
-Sets the target Player team using the provided Team. This will force the Player back to the deploy screen.
+Sets the target Player team using the provided Team. This will force the Player back to the deploy screen. 
+
 _Note: this block is not supported in Free-For-All._
 
 | Signature |
@@ -3137,20 +3437,26 @@ _Note: this block is not supported in Free-For-All._
 
 ##### SetVL7CloudEffects
 
+Enables or Disables any effect from a designated VL7Cloud object.
+
 | Signature |
 | --- |
 | `(vl7Cloud: VL7Cloud, screenEffect: Boolean, soldierEffect: Boolean, visualEffect: Boolean)` |
 
 ##### SpawnLoot
 
+Spawns a weapon or gadget at a LootSpawner.
+
 | Signature |
 | --- |
-| `(lootSpawner: LootSpawner, ammo: Enum_AmmoTypes)` |
-| `(lootSpawner: LootSpawner, weapon: Enum_Weapons)` |
-| `(lootSpawner: LootSpawner, gadget: Enum_Gadgets)` |
-| `(lootSpawner: LootSpawner, armor: Enum_ArmorTypes)` |
+| `(lootSpawner: LootSpawner, ammo: Ammo Types)` |
+| `(lootSpawner: LootSpawner, weapon: Weapons)` |
+| `(lootSpawner: LootSpawner, gadget: Gadgets)` |
+| `(lootSpawner: LootSpawner, armor: Armor Types)` |
 
 ##### SwitchTeams
+
+Switches players on TeamA and TeamB. Both teams must have the same Human and Bot count.
 
 | Signature |
 | --- |
@@ -3158,19 +3464,22 @@ _Note: this block is not supported in Free-For-All._
 
 ##### UnspawnAllLoot
 
-| Signature |
-| --- |
-| `()` |
+Removes all existing loot from the world.
+
 
 ##### UnspawnObject
 
+Unspawn an Object spawned using SpawnObject.
+
 | Signature |
 | --- |
-| `(obj: Object | Global | AreaTrigger | CapturePoint | EmplacementSpawner | FixedCamera | HQ | InteractPoint | LootSpawner | MapSpecificFeature | MCOM | Player | RingOfFire | Sector | SFX | SpatialObject | Spawner | SpawnPoint | Team | Vehicle | VehicleSpawner | VFX | VL7Cloud | VO | WaypointPath | WorldIcon)` |
+| `(obj: Object \| Global \| AreaTrigger \| CapturePoint \| EmplacementSpawner \| FixedCamera \| HQ \| InteractPoint \| LootSpawner \| MapSpecificFeature \| MCOM \| Player \| RingOfFire \| Sector \| SFX \| SpatialObject \| Spawner \| SpawnPoint \| Team \| Vehicle \| VehicleSpawner \| VFX \| VL7Cloud \| VO \| WaypointPath \| WorldIcon)` |
 
 **Health**
 
 ##### DealDamage
+
+Deals a provided amount of damage to a target Player by a another Player.
 
 | Signature |
 | --- |
@@ -3187,6 +3496,10 @@ Revives a target Player who is in the mandown state.
 | `(player: Player)` |
 
 ##### Heal
+
+Instantly adds a given amount of health to the target Player applied by a healer Player. 
+
+_Note: When healing a player with a max health multiplier not equal to 1, the amount of health they receive will scale with their max health multiplier value._
 
 | Signature |
 | --- |
@@ -3207,9 +3520,11 @@ Kills a target Player (skips the Mandown state).
 
 ##### SetSoldierEffect
 
+Applies an effect to a soldier based on a passed-in player.
+
 | Signature |
 | --- |
-| `(player: Player, soldierEffects: Enum_SoldierEffects, isEnabled: Boolean)` |
+| `(player: Player, soldierEffects: Soldier Effects, isEnabled: Boolean)` |
 
 ##### SpotTarget
 
@@ -3217,9 +3532,9 @@ Spots a target Player for all players for a specified duration of time (in secon
 
 | Signature |
 | --- |
-| `(targetplayer: Player, duration: Number, spotStatus: Enum_SpotStatus)` |
-| `(targetPlayer: Player, spotterPlayer: Player, duration: Number, spotStatus: Enum_SpotStatus)` |
-| `(targetplayer: Player, spotStatus: Enum_SpotStatus)` |
+| `(targetplayer: Player, duration: Number, spotStatus: Spot Status)` |
+| `(targetPlayer: Player, spotterPlayer: Player, duration: Number, spotStatus: Spot Status)` |
+| `(targetplayer: Player, spotStatus: Spot Status)` |
 | `(targetPlayer: Player, spotterPlayer: Player, duration: Number)` |
 | `(targetplayer: Player, duration: Number)` |
 
@@ -3227,15 +3542,12 @@ Spots a target Player for all players for a specified duration of time (in secon
 
 ##### Abort
 
-Stops the execution of a list of Actions in a Rule.
+Stops the execution of a list of in a .
 
-| Signature |
-| --- |
-| `()` |
 
 ##### AbortIf
 
-Stops the execution of a list of Actions in a Rule if the provided Boolean is True. Otherwise, the execution continues with the remaining Actions.
+Stops the execution of a list of in a if the provided Boolean is . Otherwise, the execution continues with the remaining .
 
 | Signature |
 | --- |
@@ -3244,7 +3556,6 @@ Stops the execution of a list of Actions in a Rule if the provided Boolean is Tr
 ##### ChaseVariableAtRate
 
 Gradually modifies the value of a Variable at a specified rate (value/second) until it reaches the provided limit.
-_Note: If the limit is changed later, the Variable will continue to be updated from its previous value. To spot modifying the Variable, use StopChasingVariable._
 
 | Signature |
 | --- |
@@ -3253,7 +3564,6 @@ _Note: If the limit is changed later, the Variable will continue to be updated f
 ##### ChaseVariableOverTime
 
 Gradually modifies the value of a Variable over time (in seconds). The variable's value will reach the limit at the end of the interval.
-_Note: If the limit is changed later, the Variable will continue to be updated from its previous value. To spot modifying the Variable, use StopChasingVariable._
 
 | Signature |
 | --- |
@@ -3261,13 +3571,15 @@ _Note: If the limit is changed later, the Variable will continue to be updated f
 
 ##### JsAction
 
+Calls a javascript action function.
+
 | Signature |
 | --- |
 | `(actionName: String, any, any)` |
 
 ##### Skip
 
-Skips a provided number of Actions following this block within this Rule.
+Skips a provided number of following this block within this .
 
 | Signature |
 | --- |
@@ -3275,7 +3587,7 @@ Skips a provided number of Actions following this block within this Rule.
 
 ##### SkipIf
 
-Skips a provided number of Actions following this block within this Rule if the condition evaluates to True. If it does not, execution continues with the remaining Actions.
+Skips a provided number of following this block within this if the condition evaluates to . If it does not, execution continues with the remaining .
 
 | Signature |
 | --- |
@@ -3291,7 +3603,7 @@ Stops an in-progress tracking of a Variable from the ChaseVariableOverTime or Ch
 
 ##### Wait
 
-Pauses the execution of Actions in a Rule for a provided Number of seconds.
+Pauses the execution of in a for a provided Number of seconds.
 
 | Signature |
 | --- |
@@ -3299,7 +3611,7 @@ Pauses the execution of Actions in a Rule for a provided Number of seconds.
 
 ##### WaitUntil
 
-Pauses the execution of Actions in a Rule for a provided Number of seconds or if the provided condition evaluates to True during that interval.
+Pauses the execution of in a for a provided Number of seconds or if the provided condition evaluates to during that interval.
 
 | Signature |
 | --- |
@@ -3310,6 +3622,8 @@ Pauses the execution of Actions in a Rule for a provided Number of seconds or if
 **CapturePoint**
 
 ##### EnableCapturePointDeploying
+
+Enables or disables deploying on provided CapturePoint for the team that owns it.
 
 | Signature |
 | --- |
@@ -3359,9 +3673,11 @@ Enables or disables a headquarters.
 
 ##### EnableGameModeObjective
 
+Enables or disables the provided Objective.
+
 | Signature |
 | --- |
-| `(objective: CapturePoint | HQ | Sector | MCOM, enable: Boolean)` |
+| `(objective: CapturePoint \| HQ \| Sector \| MCOM, enable: Boolean)` |
 
 ##### SetMCOMFuseTime
 
@@ -3372,6 +3688,8 @@ Sets the fuse time (in seconds) for target MCOM to the provided Number
 | `(mCOM: MCOM, fuseTime: Number)` |
 
 ##### SetMCOMOwner
+
+Sets the ownership of the MCOM, swapping teams will flip who can plant and defuse. Only allows for Neutral, Team1 and Team2.
 
 | Signature |
 | --- |
@@ -3393,23 +3711,31 @@ Sets the value of a Variable.
 
 ##### DeployPlayer
 
+Deploys a target Player onto the battlefield from the deploy screen.
+
 | Signature |
 | --- |
 | `(player: Player)` |
 
 ##### SetSpawnMode
 
+Determines if players are spawned automatically or not.
+
 | Signature |
 | --- |
-| `(spawnModes: Enum_SpawnModes)` |
+| `(spawnModes: Spawn Modes)` |
 
 ##### SpawnPlayerFromSpawnPoint
+
+Force Deploy a soldier from a specific spawn point.
 
 | Signature |
 | --- |
 | `(player: Player, spawnPoint: SpawnPoint)` |
 
 ##### SetPlayerIncomingDamageFactor
+
+Sets damage taken factor on player (Will be rounded to the nearest 5%). The value will be clamped between 0 - 200%.
 
 | Signature |
 | --- |
@@ -3436,63 +3762,69 @@ Enables or disables all keyboard and mouse inputs - such as movement, firing, an
 
 ##### EnableInputRestriction
 
-Enables or disables a specified RestrictedInputs on a target Player.
+Enables or disables a specified on a target Player.
 
 | Signature |
 | --- |
-| `(player: Player, inputRestriction: Enum_RestrictedInputs, restrictInput: Boolean)` |
+| `(player: Player, inputRestriction: Restricted Inputs, restrictInput: Boolean)` |
 
 **Inventory**
 
 ##### AddAttachmentToWeaponPackage
 
+Adds an Attachment to a Weapon Package created through CreateWeaponPackage. Will replace existing Attachments of the same type
+
 | Signature |
 | --- |
-| `(attachment: Enum_WeaponAttachments, weaponPackage: WeaponPackage)` |
+| `(attachment: Weapon Attachments, weaponPackage: WeaponPackage)` |
 
 ##### AddEquipment
 
+Adds a Weapon or Gadget to a Player's Loadout.
+
 | Signature |
 | --- |
-| `(player: Player, weapon: Enum_Weapons)` |
-| `(player: Player, gadget: Enum_Gadgets)` |
-| `(player: Player, weapon: Enum_Weapons, weaponPackage: WeaponPackage)` |
-| `(player: Player, Enum_Weapons, desiredInventorySlot: Enum_InventorySlots)` |
-| `(player: Player, gadget: Enum_Gadgets, desiredInventorySlot: Enum_InventorySlots)` |
-| `(player: Player, weapon: Enum_Weapons, weaponPackage: WeaponPackage, desiredInventorySlots: Enum_InventorySlots)` |
-| `(player: Player, armor: Enum_ArmorTypes)` |
+| `(player: Player, weapon: Weapons)` |
+| `(player: Player, gadget: Gadgets)` |
+| `(player: Player, weapon: Weapons, weaponPackage: WeaponPackage)` |
+| `(player: Player, Weapons, desiredInventorySlot: Inventory Slots)` |
+| `(player: Player, gadget: Gadgets, desiredInventorySlot: Inventory Slots)` |
+| `(player: Player, weapon: Weapons, weaponPackage: WeaponPackage, desiredInventorySlots: Inventory Slots)` |
+| `(player: Player, armor: Armor Types)` |
 
 ##### ForceSwitchInventory
 
-Forces the target Player to switch to the provided InventorySlots.
+Forces the target Player to switch to the provided .
 
 | Signature |
 | --- |
-| `(player: Player, inventorySlot: Enum_InventorySlots)` |
+| `(player: Player, inventorySlot: Inventory Slots)` |
 
 ##### RemoveEquipment
 
+Removes a Weapon or Gadget from a Player's Loadout.
+
 | Signature |
 | --- |
-| `(player: Player, inventorySlot: Enum_InventorySlots)` |
-| `(Player, weapon: Enum_Weapons)` |
-| `(Player, gadget: Enum_Gadgets)` |
+| `(player: Player, inventorySlot: Inventory Slots)` |
+| `(Player, weapon: Weapons)` |
+| `(Player, gadget: Gadgets)` |
 
 ##### SetInventoryAmmo
 
-Sets the target Player loaded ammo for the provided InventorySlots.
+Sets the target Player loaded ammo for the provided .
 
 | Signature |
 | --- |
-| `(player: Player, inventorySlots: Enum_InventorySlots, ammo: Number)` |
+| `(player: Player, inventorySlots: Inventory Slots, ammo: Number)` |
 
 ##### SetInventoryMagazineAmmo
 
-Sets the target Player magazine ammo for the provided InventorySlots.
+Sets the target Player magazine ammo for the provided .
 
 | Signature |
 | --- |
-| `(player: Player, inventorySlots: Enum_InventorySlots, magAmmo: Number)` |
+| `(player: Player, inventorySlots: Inventory Slots, magAmmo: Number)` |
 
 **Soldier**
 
@@ -3506,22 +3838,23 @@ Puts the target Player into the mandown state (unless mandown is disabled).
 
 ##### Resupply
 
-Resupplies the target Player using a provided ResupplyTypes.
+Resupplies the target Player using a provided .
 
 | Signature |
 | --- |
-| `(player: Player, ressuplyType: Enum_ResupplyTypes)` |
+| `(player: Player, ressuplyType: Resupply Types)` |
 
 ##### SetPlayerMaxHealth
 
-Sets the max health of a target Player from 0 to 1000.
-_Note: The value will be multiplied by the max health multiplier of the that target._
+Sets the max health of a target player from 1 to 500. The value will be multiplied by the target's max health multiplier.
 
 | Signature |
 | --- |
 | `(player: Player, maxHealth: Number)` |
 
 ##### SetPlayerMovementSpeedMultiplier
+
+Sets a player's movement speed multiplier.
 
 | Signature |
 | --- |
@@ -3530,7 +3863,6 @@ _Note: The value will be multiplied by the max health multiplier of the that tar
 ##### SkipManDown
 
 Sets the target Player to skip the mandown state and go directly to the deploy screen when killed.
-_Note: By default, SkipMandown is disabled._
 
 | Signature |
 | --- |
@@ -3540,62 +3872,76 @@ _Note: By default, SkipMandown is disabled._
 
 ##### MoveObject
 
+Move the Object provided, Euler rotation optional
+
 | Signature |
 | --- |
-| `(object: Object | Global | AreaTrigger | CapturePoint | EmplacementSpawner | FixedCamera | HQ | InteractPoint | LootSpawner | MapSpecificFeature | MCOM | Player | RingOfFire | Sector | SFX | SpatialObject | Spawner | SpawnPoint | Team | Vehicle | VehicleSpawner | VFX | VL7Cloud | VO | WaypointPath | WorldIcon, positionDelta: Vector)` |
-| `(object: Object | Global | AreaTrigger | CapturePoint | EmplacementSpawner | FixedCamera | HQ | InteractPoint | LootSpawner | MapSpecificFeature | MCOM | Player | RingOfFire | Sector | SFX | SpatialObject | Spawner | SpawnPoint | Team | Vehicle | VehicleSpawner | VFX | VL7Cloud | VO | WaypointPath | WorldIcon, positionDelta: Vector, rotationDelta: Vector)` |
+| `(object: Object \| Global \| AreaTrigger \| CapturePoint \| EmplacementSpawner \| FixedCamera \| HQ \| InteractPoint \| LootSpawner \| MapSpecificFeature \| MCOM \| Player \| RingOfFire \| Sector \| SFX \| SpatialObject \| Spawner \| SpawnPoint \| Team \| Vehicle \| VehicleSpawner \| VFX \| VL7Cloud \| VO \| WaypointPath \| WorldIcon, positionDelta: Vector)` |
+| `(object: Object \| Global \| AreaTrigger \| CapturePoint \| EmplacementSpawner \| FixedCamera \| HQ \| InteractPoint \| LootSpawner \| MapSpecificFeature \| MCOM \| Player \| RingOfFire \| Sector \| SFX \| SpatialObject \| Spawner \| SpawnPoint \| Team \| Vehicle \| VehicleSpawner \| VFX \| VL7Cloud \| VO \| WaypointPath \| WorldIcon, positionDelta: Vector, rotationDelta: Vector)` |
 
 ##### MoveObjectOverTime
 
+Moves the Object by the delta position and rotation over the time provided. Options to loop indefinitely and reverse
+
 | Signature |
 | --- |
-| `(object: Object | Global | AreaTrigger | CapturePoint | EmplacementSpawner | FixedCamera | HQ | InteractPoint | LootSpawner | MapSpecificFeature | MCOM | Player | RingOfFire | Sector | SFX | SpatialObject | Spawner | SpawnPoint | Team | Vehicle | VehicleSpawner | VFX | VL7Cloud | VO | WaypointPath | WorldIcon, positionDelta: Vector, rotationDelta: Vector, timeInSeconds: Number, shouldLoop: Boolean, shouldReverse: Boolean)` |
+| `(object: Object \| Global \| AreaTrigger \| CapturePoint \| EmplacementSpawner \| FixedCamera \| HQ \| InteractPoint \| LootSpawner \| MapSpecificFeature \| MCOM \| Player \| RingOfFire \| Sector \| SFX \| SpatialObject \| Spawner \| SpawnPoint \| Team \| Vehicle \| VehicleSpawner \| VFX \| VL7Cloud \| VO \| WaypointPath \| WorldIcon, positionDelta: Vector, rotationDelta: Vector, timeInSeconds: Number, shouldLoop: Boolean, shouldReverse: Boolean)` |
 
 ##### OrbitObjectOverTime
 
+Orbits the Object around the provided transform over time. Optional orbitAxis otherwise transform's up vector is used
+
 | Signature |
 | --- |
-| `(object: Object | Global | AreaTrigger | CapturePoint | EmplacementSpawner | FixedCamera | HQ | InteractPoint | LootSpawner | MapSpecificFeature | MCOM | Player | RingOfFire | Sector | SFX | SpatialObject | Spawner | SpawnPoint | Team | Vehicle | VehicleSpawner | VFX | VL7Cloud | VO | WaypointPath | WorldIcon, orbitTransform: Transform, timeInSeconds: Number, radius: Number, shouldLoop: Boolean, shouldReverse: Boolean, clockwise: Boolean)` |
-| `(object: Object | Global | AreaTrigger | CapturePoint | EmplacementSpawner | FixedCamera | HQ | InteractPoint | LootSpawner | MapSpecificFeature | MCOM | Player | RingOfFire | Sector | SFX | SpatialObject | Spawner | SpawnPoint | Team | Vehicle | VehicleSpawner | VFX | VL7Cloud | VO | WaypointPath | WorldIcon, orbitTransform: Transform, timeInSeconds: Number, radius: Number, shouldLoop: Boolean, shouldReverse: Boolean, clockwise: Boolean, orbitAxis: Vector)` |
+| `(object: Object \| Global \| AreaTrigger \| CapturePoint \| EmplacementSpawner \| FixedCamera \| HQ \| InteractPoint \| LootSpawner \| MapSpecificFeature \| MCOM \| Player \| RingOfFire \| Sector \| SFX \| SpatialObject \| Spawner \| SpawnPoint \| Team \| Vehicle \| VehicleSpawner \| VFX \| VL7Cloud \| VO \| WaypointPath \| WorldIcon, orbitTransform: Transform, timeInSeconds: Number, radius: Number, shouldLoop: Boolean, shouldReverse: Boolean, clockwise: Boolean)` |
+| `(object: Object \| Global \| AreaTrigger \| CapturePoint \| EmplacementSpawner \| FixedCamera \| HQ \| InteractPoint \| LootSpawner \| MapSpecificFeature \| MCOM \| Player \| RingOfFire \| Sector \| SFX \| SpatialObject \| Spawner \| SpawnPoint \| Team \| Vehicle \| VehicleSpawner \| VFX \| VL7Cloud \| VO \| WaypointPath \| WorldIcon, orbitTransform: Transform, timeInSeconds: Number, radius: Number, shouldLoop: Boolean, shouldReverse: Boolean, clockwise: Boolean, orbitAxis: Vector)` |
 
 ##### RotateObject
 
+Rotate the Object provided using Euler angles
+
 | Signature |
 | --- |
-| `(object: Object | Global | AreaTrigger | CapturePoint | EmplacementSpawner | FixedCamera | HQ | InteractPoint | LootSpawner | MapSpecificFeature | MCOM | Player | RingOfFire | Sector | SFX | SpatialObject | Spawner | SpawnPoint | Team | Vehicle | VehicleSpawner | VFX | VL7Cloud | VO | WaypointPath | WorldIcon, rotationDelta: Vector)` |
+| `(object: Object \| Global \| AreaTrigger \| CapturePoint \| EmplacementSpawner \| FixedCamera \| HQ \| InteractPoint \| LootSpawner \| MapSpecificFeature \| MCOM \| Player \| RingOfFire \| Sector \| SFX \| SpatialObject \| Spawner \| SpawnPoint \| Team \| Vehicle \| VehicleSpawner \| VFX \| VL7Cloud \| VO \| WaypointPath \| WorldIcon, rotationDelta: Vector)` |
 
 ##### SetObjectTransform
 
+Sets the transform of the Object provided
+
 | Signature |
 | --- |
-| `(object: Object | Global | AreaTrigger | CapturePoint | EmplacementSpawner | FixedCamera | HQ | InteractPoint | LootSpawner | MapSpecificFeature | MCOM | Player | RingOfFire | Sector | SFX | SpatialObject | Spawner | SpawnPoint | Team | Vehicle | VehicleSpawner | VFX | VL7Cloud | VO | WaypointPath | WorldIcon, transform: Transform)` |
+| `(object: Object \| Global \| AreaTrigger \| CapturePoint \| EmplacementSpawner \| FixedCamera \| HQ \| InteractPoint \| LootSpawner \| MapSpecificFeature \| MCOM \| Player \| RingOfFire \| Sector \| SFX \| SpatialObject \| Spawner \| SpawnPoint \| Team \| Vehicle \| VehicleSpawner \| VFX \| VL7Cloud \| VO \| WaypointPath \| WorldIcon, transform: Transform)` |
 
 ##### SetObjectTransformOverTime
 
+Sets the transform of the Object provided over the time provided. Options to loop indefinitely and reverse
+
 | Signature |
 | --- |
-| `(object: Object | Global | AreaTrigger | CapturePoint | EmplacementSpawner | FixedCamera | HQ | InteractPoint | LootSpawner | MapSpecificFeature | MCOM | Player | RingOfFire | Sector | SFX | SpatialObject | Spawner | SpawnPoint | Team | Vehicle | VehicleSpawner | VFX | VL7Cloud | VO | WaypointPath | WorldIcon, transform: Transform, timeInSeconds: Number, shouldLoop: Boolean, shouldReverse: Boolean)` |
+| `(object: Object \| Global \| AreaTrigger \| CapturePoint \| EmplacementSpawner \| FixedCamera \| HQ \| InteractPoint \| LootSpawner \| MapSpecificFeature \| MCOM \| Player \| RingOfFire \| Sector \| SFX \| SpatialObject \| Spawner \| SpawnPoint \| Team \| Vehicle \| VehicleSpawner \| VFX \| VL7Cloud \| VO \| WaypointPath \| WorldIcon, transform: Transform, timeInSeconds: Number, shouldLoop: Boolean, shouldReverse: Boolean)` |
 
 ##### StopActiveMovementForObject
 
+Stops the Over Time movement for the provided Object if one is active
+
 | Signature |
 | --- |
-| `(object: Object | Global | AreaTrigger | CapturePoint | EmplacementSpawner | FixedCamera | HQ | InteractPoint | LootSpawner | MapSpecificFeature | MCOM | Player | RingOfFire | Sector | SFX | SpatialObject | Spawner | SpawnPoint | Team | Vehicle | VehicleSpawner | VFX | VL7Cloud | VO | WaypointPath | WorldIcon)` |
+| `(object: Object \| Global \| AreaTrigger \| CapturePoint \| EmplacementSpawner \| FixedCamera \| HQ \| InteractPoint \| LootSpawner \| MapSpecificFeature \| MCOM \| Player \| RingOfFire \| Sector \| SFX \| SpatialObject \| Spawner \| SpawnPoint \| Team \| Vehicle \| VehicleSpawner \| VFX \| VL7Cloud \| VO \| WaypointPath \| WorldIcon)` |
 
 ### UI
 
 ##### AddUIIcon
 
-Creates a new UI Icon Widget.
+Attaches a new UI Icon Widget to an object.
 
 | Signature |
 | --- |
-| `(parentObject: Object | Global | AreaTrigger | CapturePoint | EmplacementSpawner | FixedCamera | HQ | InteractPoint | LootSpawner | MapSpecificFeature | MCOM | Player | RingOfFire | Sector | SFX | SpatialObject | Spawner | SpawnPoint | Team | Vehicle | VehicleSpawner | VFX | VL7Cloud | VO | WaypointPath | WorldIcon, image: Enum_WorldIconImages, verticalOffset: Number, iconColour: Vector, iconText: Message, visibility: Player | Team)` |
-| `(parentObject: Object | Global | AreaTrigger | CapturePoint | EmplacementSpawner | FixedCamera | HQ | InteractPoint | LootSpawner | MapSpecificFeature | MCOM | Player | RingOfFire | Sector | SFX | SpatialObject | Spawner | SpawnPoint | Team | Vehicle | VehicleSpawner | VFX | VL7Cloud | VO | WaypointPath | WorldIcon, image: Enum_WorldIconImages, verticalOffset: Number, iconColour: Vector, iconText: Message)` |
+| `(parentObject: Object \| Global \| AreaTrigger \| CapturePoint \| EmplacementSpawner \| FixedCamera \| HQ \| InteractPoint \| LootSpawner \| MapSpecificFeature \| MCOM \| Player \| RingOfFire \| Sector \| SFX \| SpatialObject \| Spawner \| SpawnPoint \| Team \| Vehicle \| VehicleSpawner \| VFX \| VL7Cloud \| VO \| WaypointPath \| WorldIcon, image: World Icon Images, verticalOffset: Number, iconColour: Vector, iconText: Message, visibility: Player \| Team)` |
+| `(parentObject: Object \| Global \| AreaTrigger \| CapturePoint \| EmplacementSpawner \| FixedCamera \| HQ \| InteractPoint \| LootSpawner \| MapSpecificFeature \| MCOM \| Player \| RingOfFire \| Sector \| SFX \| SpatialObject \| Spawner \| SpawnPoint \| Team \| Vehicle \| VehicleSpawner \| VFX \| VL7Cloud \| VO \| WaypointPath \| WorldIcon, image: World Icon Images, verticalOffset: Number, iconColour: Vector, iconText: Message)` |
 
 ##### EnableWorldIconImage
 
-Enables or disables the image for a provided WorldIcons.
+Enables or disables the image for a provided .
 
 | Signature |
 | --- |
@@ -3603,7 +3949,8 @@ Enables or disables the image for a provided WorldIcons.
 
 ##### EnableWorldIconText
 
-Enables or disables the text for a provided WorldIcons.
+Enables or disables the text for a provided . 
+
 _Note: There is no default text, and will need to be set before or after this property is enabled to appear_.
 
 | Signature |
@@ -3612,14 +3959,16 @@ _Note: There is no default text, and will need to be set before or after this pr
 
 ##### RemoveUIIcon
 
+Removes a UI Icon Widget from an object.
+
 | Signature |
 | --- |
-| `(objectWithIcon: Object | Global | AreaTrigger | CapturePoint | EmplacementSpawner | FixedCamera | HQ | InteractPoint | LootSpawner | MapSpecificFeature | MCOM | Player | RingOfFire | Sector | SFX | SpatialObject | Spawner | SpawnPoint | Team | Vehicle | VehicleSpawner | VFX | VL7Cloud | VO | WaypointPath | WorldIcon)` |
-| `(objectWithIcon: Object | Global | AreaTrigger | CapturePoint | EmplacementSpawner | FixedCamera | HQ | InteractPoint | LootSpawner | MapSpecificFeature | MCOM | Player | RingOfFire | Sector | SFX | SpatialObject | Spawner | SpawnPoint | Team | Vehicle | VehicleSpawner | VFX | VL7Cloud | VO | WaypointPath | WorldIcon, visibility: Player | Team)` |
+| `(objectWithIcon: Object \| Global \| AreaTrigger \| CapturePoint \| EmplacementSpawner \| FixedCamera \| HQ \| InteractPoint \| LootSpawner \| MapSpecificFeature \| MCOM \| Player \| RingOfFire \| Sector \| SFX \| SpatialObject \| Spawner \| SpawnPoint \| Team \| Vehicle \| VehicleSpawner \| VFX \| VL7Cloud \| VO \| WaypointPath \| WorldIcon)` |
+| `(objectWithIcon: Object \| Global \| AreaTrigger \| CapturePoint \| EmplacementSpawner \| FixedCamera \| HQ \| InteractPoint \| LootSpawner \| MapSpecificFeature \| MCOM \| Player \| RingOfFire \| Sector \| SFX \| SpatialObject \| Spawner \| SpawnPoint \| Team \| Vehicle \| VehicleSpawner \| VFX \| VL7Cloud \| VO \| WaypointPath \| WorldIcon, visibility: Player \| Team)` |
 
 ##### SetWorldIconColor
 
-Sets the color property of a WorldIcon.
+Sets the color property of a .
 
 | Signature |
 | --- |
@@ -3627,15 +3976,15 @@ Sets the color property of a WorldIcon.
 
 ##### SetWorldIconImage
 
-Sets the image property of a WorldIcon to the selected WorldIconImages.
+Sets the image property of a to the selected .
 
 | Signature |
 | --- |
-| `(worldIcon: WorldIcon, newImage: Enum_WorldIconImages)` |
+| `(worldIcon: WorldIcon, newImage: World Icon Images)` |
 
 ##### SetWorldIconOwner
 
-Sets the owner Team of the provided WorldIcon.
+Restricts a world icon to be visible only to a specific Player or Team.
 
 | Signature |
 | --- |
@@ -3644,7 +3993,7 @@ Sets the owner Team of the provided WorldIcon.
 
 ##### SetWorldIconPosition
 
-Sets the in-world position of a provided WorldIcon.
+Sets the in-world position of a provided .
 
 | Signature |
 | --- |
@@ -3652,7 +4001,7 @@ Sets the in-world position of a provided WorldIcon.
 
 ##### SetWorldIconText
 
-Sets the text property for a provided WorldIcon.
+Sets the text property for a provided .
 
 | Signature |
 | --- |
@@ -3662,27 +4011,39 @@ Sets the text property for a provided WorldIcon.
 
 ##### ClearAllCustomNotificationMessages
 
+Clears all custom messages for a provided Player or Team. If no Player or Team is provided, it will clear all custom messages for everyone.
+
 | Signature |
 | --- |
 | `(target: Player)` |
 
 ##### ClearCustomNotificationMessage
 
+Clears text from the provided for the provided Player or Team. If no Player or Team is given, it clears all players text at that .
+
 | Signature |
 | --- |
-| `(slot: Enum_CustomNotificationSlots)` |
-| `(slot: Enum_CustomNotificationSlots, target: Player)` |
-| `(slot: Enum_CustomNotificationSlots, target: Team)` |
+| `(slot: Custom Notification Slots)` |
+| `(slot: Custom Notification Slots, target: Player)` |
+| `(slot: Custom Notification Slots, target: Team)` |
 
 ##### DisplayCustomNotificationMessage
 
+Display a on-screen.
+
+_Note: It's your responsibility to ensure a safe and fair experience for others, violating the EA User Agreement by using offensive or inappropriate text may result in account bans._
+
 | Signature |
 | --- |
-| `(msg: Message, slot: Enum_CustomNotificationSlots, duration: Number)` |
-| `(msg: Message, slot: Enum_CustomNotificationSlots, duration: Number, target: Player)` |
-| `(msg: Message, slot: Enum_CustomNotificationSlots, duration: Number, target: Team)` |
+| `(msg: Message, slot: Custom Notification Slots, duration: Number)` |
+| `(msg: Message, slot: Custom Notification Slots, duration: Number, target: Player)` |
+| `(msg: Message, slot: Custom Notification Slots, duration: Number, target: Team)` |
 
 ##### DisplayHighlightedWorldLogMessage
+
+Displays a on the world log above the minimap for 6 seconds. If no target is provided, it will display the to everyone. 
+
+_Note: This will only appear to players that are deployed on the map. It's your responsibility to ensure a safe and fair experience for others, violating the EA User Agreement by using offensive or inappropriate text may result in account bans._
 
 | Signature |
 | --- |
@@ -3692,6 +4053,10 @@ Sets the text property for a provided WorldIcon.
 
 ##### DisplayNotificationMessage
 
+Displays a notification-type on the top-right of the screen for 6 seconds. If no target is provided, it will display the to everyone. 
+
+_Note: It's your responsibility to ensure a safe and fair experience for others, violating the EA User Agreement by using offensive or inappropriate text may result in account bans._
+
 | Signature |
 | --- |
 | `(message: Message)` |
@@ -3700,7 +4065,7 @@ Sets the text property for a provided WorldIcon.
 
 ##### SendErrorReport
 
-Displays a provided Message as an error in the Admin menu.
+Displays a provided as an error in the Admin menu.
 
 | Signature |
 | --- |
@@ -3709,6 +4074,8 @@ Displays a provided Message as an error in the Admin menu.
 **Scoreboard**
 
 ##### SetScoreboardColumnNames
+
+Sets the name displayed at the top of score of each column. Only works for custom scoreboards.
 
 | Signature |
 | --- |
@@ -3720,6 +4087,8 @@ Displays a provided Message as an error in the Admin menu.
 
 ##### SetScoreboardColumnWidths
 
+Sets the relative width of each column. Only works for custom scoreboards.
+
 | Signature |
 | --- |
 | `(column1Width: Number, column2Width: Number, column3Width: Number, column4Width: Number, column5Width: Number)` |
@@ -3730,12 +4099,16 @@ Displays a provided Message as an error in the Admin menu.
 
 ##### SetScoreboardHeader
 
+Sets the name that appears in the top-left corner of the scoreboard
+
 | Signature |
 | --- |
 | `(team1Name: Message, team2Name: Message)` |
 | `(headerName: Message)` |
 
 ##### SetScoreboardPlayerValues
+
+Sets the score in up to five distinct scores for the player. Only works for custom scoreboards.
 
 | Signature |
 | --- |
@@ -3747,6 +4120,8 @@ Displays a provided Message as an error in the Admin menu.
 
 ##### SetScoreboardSorting
 
+Sets which column the scoreboard is sorted on. Only works for custom scoreboards.
+
 | Signature |
 | --- |
 | `(sortingColumn: Number, reverseSorting: Boolean)` |
@@ -3754,9 +4129,11 @@ Displays a provided Message as an error in the Admin menu.
 
 ##### SetScoreboardType
 
+Allows you to change the type of Scoreboard you want.
+
 | Signature |
 | --- |
-| `(scoreboardType: Enum_ScoreboardType)` |
+| `(scoreboardType: Scoreboard Type)` |
 
 **UIWidgets**
 
@@ -3766,12 +4143,12 @@ Creates a UI Button Widget.
 
 | Signature |
 | --- |
-| `(name: String, position: Vector, size: Vector, anchor: Enum_UIAnchor)` |
-| `(name: String, position: Vector, size: Vector, anchor: Enum_UIAnchor, receiver: Player | Team)` |
-| `(name: String, position: Vector, size: Vector, anchor: Enum_UIAnchor, parent: UIWidget, visible: Boolean, padding: Number, bgColor: Vector, bgAlpha: Number, bgFill: Enum_UIBgFill, buttonEnabled: Boolean, baseColor: Vector, baseAlpha: Number, disabledColor: Vector, disabledAlpha: Number, pressedColor: Vector, pressedAlpha: Number, hoverColor: Vector, hoverAlpha: Number, focusedColor: Vector, focusedAlpha: Number)` |
-| `(name: String, position: Vector, size: Vector, anchor: Enum_UIAnchor, parent: UIWidget, visible: Boolean, padding: Number, bgColor: Vector, bgAlpha: Number, bgFill: Enum_UIBgFill, buttonEnabled: Boolean, baseColor: Vector, baseAlpha: Number, disabledColor: Vector, disabledAlpha: Number, pressedColor: Vector, pressedAlpha: Number, hoverColor: Vector, hoverAlpha: Number, focusedColor: Vector, focusedAlpha: Number, receiver: Player | Team)` |
-| `(name: String, position: Vector, size: Vector, anchor: Enum_UIAnchor, parent: UIWidget, visible: Boolean, padding: Number, bgColor: Vector, bgAlpha: Number, bgFill: Enum_UIBgFill, buttonEnabled: Boolean, baseColor: Vector, baseAlpha: Number, disabledColor: Vector, disabledAlpha: Number, pressedColor: Vector, pressedAlpha: Number, hoverColor: Vector, hoverAlpha: Number, focusedColor: Vector, focusedAlpha: Number, depth: Enum_UIDepth)` |
-| `(name: String, position: Vector, size: Vector, anchor: Enum_UIAnchor, parent: UIWidget, visible: Boolean, padding: Number, bgColor: Vector, bgAlpha: Number, bgFill: Enum_UIBgFill, buttonEnabled: Boolean, baseColor: Vector, baseAlpha: Number, disabledColor: Vector, disabledAlpha: Number, pressedColor: Vector, pressedAlpha: Number, hoverColor: Vector, hoverAlpha: Number, focusedColor: Vector, focusedAlpha: Number, depth: Enum_UIDepth, receiver: Player | Team)` |
+| `(name: String, position: Vector, size: Vector, anchor: UI Anchor)` |
+| `(name: String, position: Vector, size: Vector, anchor: UI Anchor, receiver: Player \| Team)` |
+| `(name: String, position: Vector, size: Vector, anchor: UI Anchor, parent: UIWidget, visible: Boolean, padding: Number, bgColor: Vector, bgAlpha: Number, bgFill: UI Bg Fill, buttonEnabled: Boolean, baseColor: Vector, baseAlpha: Number, disabledColor: Vector, disabledAlpha: Number, pressedColor: Vector, pressedAlpha: Number, hoverColor: Vector, hoverAlpha: Number, focusedColor: Vector, focusedAlpha: Number)` |
+| `(name: String, position: Vector, size: Vector, anchor: UI Anchor, parent: UIWidget, visible: Boolean, padding: Number, bgColor: Vector, bgAlpha: Number, bgFill: UI Bg Fill, buttonEnabled: Boolean, baseColor: Vector, baseAlpha: Number, disabledColor: Vector, disabledAlpha: Number, pressedColor: Vector, pressedAlpha: Number, hoverColor: Vector, hoverAlpha: Number, focusedColor: Vector, focusedAlpha: Number, receiver: Player \| Team)` |
+| `(name: String, position: Vector, size: Vector, anchor: UI Anchor, parent: UIWidget, visible: Boolean, padding: Number, bgColor: Vector, bgAlpha: Number, bgFill: UI Bg Fill, buttonEnabled: Boolean, baseColor: Vector, baseAlpha: Number, disabledColor: Vector, disabledAlpha: Number, pressedColor: Vector, pressedAlpha: Number, hoverColor: Vector, hoverAlpha: Number, focusedColor: Vector, focusedAlpha: Number, depth: UI Depth)` |
+| `(name: String, position: Vector, size: Vector, anchor: UI Anchor, parent: UIWidget, visible: Boolean, padding: Number, bgColor: Vector, bgAlpha: Number, bgFill: UI Bg Fill, buttonEnabled: Boolean, baseColor: Vector, baseAlpha: Number, disabledColor: Vector, disabledAlpha: Number, pressedColor: Vector, pressedAlpha: Number, hoverColor: Vector, hoverAlpha: Number, focusedColor: Vector, focusedAlpha: Number, depth: UI Depth, receiver: Player \| Team)` |
 
 ##### AddUIContainer
 
@@ -3779,19 +4156,21 @@ Creates a new UI Container Widget.
 
 | Signature |
 | --- |
-| `(name: String, position: Vector, size: Vector, anchor: Enum_UIAnchor)` |
-| `(name: String, position: Vector, size: Vector, anchor: Enum_UIAnchor, receiver: Player | Team)` |
-| `(name: String, position: Vector, size: Vector, anchor: Enum_UIAnchor, parent: UIWidget, visible: Boolean, padding: Number, bgColor: Vector, bgAlpha: Number, bgFill: Enum_UIBgFill)` |
-| `(name: String, position: Vector, size: Vector, anchor: Enum_UIAnchor, parent: UIWidget, visible: Boolean, padding: Number, bgColor: Vector, bgAlpha: Number, bgFill: Enum_UIBgFill, receiver: Player | Team)` |
-| `(name: String, position: Vector, size: Vector, anchor: Enum_UIAnchor, parent: UIWidget, visible: Boolean, padding: Number, bgColor: Vector, bgAlpha: Number, bgFill: Enum_UIBgFill, depth: Enum_UIDepth)` |
-| `(name: String, position: Vector, size: Vector, anchor: Enum_UIAnchor, parent: UIWidget, visible: Boolean, padding: Number, bgColor: Vector, bgAlpha: Number, bgFill: Enum_UIBgFill, depth: Enum_UIDepth, receiver: Player | Team)` |
+| `(name: String, position: Vector, size: Vector, anchor: UI Anchor)` |
+| `(name: String, position: Vector, size: Vector, anchor: UI Anchor, receiver: Player \| Team)` |
+| `(name: String, position: Vector, size: Vector, anchor: UI Anchor, parent: UIWidget, visible: Boolean, padding: Number, bgColor: Vector, bgAlpha: Number, bgFill: UI Bg Fill)` |
+| `(name: String, position: Vector, size: Vector, anchor: UI Anchor, parent: UIWidget, visible: Boolean, padding: Number, bgColor: Vector, bgAlpha: Number, bgFill: UI Bg Fill, receiver: Player \| Team)` |
+| `(name: String, position: Vector, size: Vector, anchor: UI Anchor, parent: UIWidget, visible: Boolean, padding: Number, bgColor: Vector, bgAlpha: Number, bgFill: UI Bg Fill, depth: UI Depth)` |
+| `(name: String, position: Vector, size: Vector, anchor: UI Anchor, parent: UIWidget, visible: Boolean, padding: Number, bgColor: Vector, bgAlpha: Number, bgFill: UI Bg Fill, depth: UI Depth, receiver: Player \| Team)` |
 
 ##### AddUIGadgetImage
 
+Creates a new UI Image Widget based on a Gadget.
+
 | Signature |
 | --- |
-| `(name: String, position: Vector, size: Vector, anchor: Enum_UIAnchor, gadget: Enum_Gadgets, parent: UIWidget)` |
-| `(name: String, position: Vector, size: Vector, anchor: Enum_UIAnchor, gadget: Enum_Gadgets, parent: UIWidget, visibility: Player | Team)` |
+| `(name: String, position: Vector, size: Vector, anchor: UI Anchor, gadget: Gadgets, parent: UIWidget)` |
+| `(name: String, position: Vector, size: Vector, anchor: UI Anchor, gadget: Gadgets, parent: UIWidget, visibility: Player \| Team)` |
 
 ##### AddUIImage
 
@@ -3799,12 +4178,12 @@ Creates a new UI Image Widget.
 
 | Signature |
 | --- |
-| `(name: String, position: Vector, size: Vector, anchor: Enum_UIAnchor, imageType: Enum_UIImageType)` |
-| `(name: String, position: Vector, size: Vector, anchor: Enum_UIAnchor, imageType: Enum_UIImageType, receiver: Player | Team)` |
-| `(name: String, position: Vector, size: Vector, anchor: Enum_UIAnchor, parent: UIWidget, visible: Boolean, padding: Number, bgColor: Vector, bgAlpha: Number, bgFill: Enum_UIBgFill, imageType: Enum_UIImageType, imageColor: Vector, imageAlpha: Number)` |
-| `(name: String, position: Vector, size: Vector, anchor: Enum_UIAnchor, parent: UIWidget, visible: Boolean, padding: Number, bgColor: Vector, bgAlpha: Number, bgFill: Enum_UIBgFill, imageType: Enum_UIImageType, imageColor: Vector, imageAlpha: Number, receiver: Player | Team)` |
-| `(name: String, position: Vector, size: Vector, anchor: Enum_UIAnchor, parent: UIWidget, visible: Boolean, padding: Number, bgColor: Vector, bgAlpha: Number, bgFill: Enum_UIBgFill, imageType: Enum_UIImageType, imageColor: Vector, imageAlpha: Number, depth: Enum_UIDepth)` |
-| `(name: String, position: Vector, size: Vector, anchor: Enum_UIAnchor, parent: UIWidget, visible: Boolean, padding: Number, bgColor: Vector, bgAlpha: Number, bgFill: Enum_UIBgFill, imageType: Enum_UIImageType, imageColor: Vector, imageAlpha: Number, depth: Enum_UIDepth, receiver: Player | Team)` |
+| `(name: String, position: Vector, size: Vector, anchor: UI Anchor, imageType: UI Image Type)` |
+| `(name: String, position: Vector, size: Vector, anchor: UI Anchor, imageType: UI Image Type, receiver: Player \| Team)` |
+| `(name: String, position: Vector, size: Vector, anchor: UI Anchor, parent: UIWidget, visible: Boolean, padding: Number, bgColor: Vector, bgAlpha: Number, bgFill: UI Bg Fill, imageType: UI Image Type, imageColor: Vector, imageAlpha: Number)` |
+| `(name: String, position: Vector, size: Vector, anchor: UI Anchor, parent: UIWidget, visible: Boolean, padding: Number, bgColor: Vector, bgAlpha: Number, bgFill: UI Bg Fill, imageType: UI Image Type, imageColor: Vector, imageAlpha: Number, receiver: Player \| Team)` |
+| `(name: String, position: Vector, size: Vector, anchor: UI Anchor, parent: UIWidget, visible: Boolean, padding: Number, bgColor: Vector, bgAlpha: Number, bgFill: UI Bg Fill, imageType: UI Image Type, imageColor: Vector, imageAlpha: Number, depth: UI Depth)` |
+| `(name: String, position: Vector, size: Vector, anchor: UI Anchor, parent: UIWidget, visible: Boolean, padding: Number, bgColor: Vector, bgAlpha: Number, bgFill: UI Bg Fill, imageType: UI Image Type, imageColor: Vector, imageAlpha: Number, depth: UI Depth, receiver: Player \| Team)` |
 
 ##### AddUIText
 
@@ -3812,29 +4191,28 @@ Creates a new UI Text Widget.
 
 | Signature |
 | --- |
-| `(name: String, position: Vector, size: Vector, anchor: Enum_UIAnchor, message: Message)` |
-| `(name: String, position: Vector, size: Vector, anchor: Enum_UIAnchor, message: Message, receiver: Player | Team)` |
-| `(name: String, position: Vector, size: Vector, anchor: Enum_UIAnchor, parent: UIWidget, visible: Boolean, padding: Number, bgColor: Vector, bgAlpha: Number, bgFill: Enum_UIBgFill, message: Message, textSize: Number, textColor: Vector, textAlpha: Number, textAnchor: Enum_UIAnchor)` |
-| `(name: String, position: Vector, size: Vector, anchor: Enum_UIAnchor, parent: UIWidget, visible: Boolean, padding: Number, bgColor: Vector, bgAlpha: Number, bgFill: Enum_UIBgFill, message: Message, textSize: Number, textColor: Vector, textAlpha: Number, textAnchor: Enum_UIAnchor, receiver: Player | Team)` |
-| `(name: String, position: Vector, size: Vector, anchor: Enum_UIAnchor, parent: UIWidget, visible: Boolean, padding: Number, bgColor: Vector, bgAlpha: Number, bgFill: Enum_UIBgFill, message: Message, textSize: Number, textColor: Vector, textAlpha: Number, textAnchor: Enum_UIAnchor, depth: Enum_UIDepth)` |
-| `(name: String, position: Vector, size: Vector, anchor: Enum_UIAnchor, parent: UIWidget, visible: Boolean, padding: Number, bgColor: Vector, bgAlpha: Number, bgFill: Enum_UIBgFill, message: Message, textSize: Number, textColor: Vector, textAlpha: Number, textAnchor: Enum_UIAnchor, depth: Enum_UIDepth, receiver: Player | Team)` |
+| `(name: String, position: Vector, size: Vector, anchor: UI Anchor, message: Message)` |
+| `(name: String, position: Vector, size: Vector, anchor: UI Anchor, message: Message, receiver: Player \| Team)` |
+| `(name: String, position: Vector, size: Vector, anchor: UI Anchor, parent: UIWidget, visible: Boolean, padding: Number, bgColor: Vector, bgAlpha: Number, bgFill: UI Bg Fill, message: Message, textSize: Number, textColor: Vector, textAlpha: Number, textAnchor: UI Anchor)` |
+| `(name: String, position: Vector, size: Vector, anchor: UI Anchor, parent: UIWidget, visible: Boolean, padding: Number, bgColor: Vector, bgAlpha: Number, bgFill: UI Bg Fill, message: Message, textSize: Number, textColor: Vector, textAlpha: Number, textAnchor: UI Anchor, receiver: Player \| Team)` |
+| `(name: String, position: Vector, size: Vector, anchor: UI Anchor, parent: UIWidget, visible: Boolean, padding: Number, bgColor: Vector, bgAlpha: Number, bgFill: UI Bg Fill, message: Message, textSize: Number, textColor: Vector, textAlpha: Number, textAnchor: UI Anchor, depth: UI Depth)` |
+| `(name: String, position: Vector, size: Vector, anchor: UI Anchor, parent: UIWidget, visible: Boolean, padding: Number, bgColor: Vector, bgAlpha: Number, bgFill: UI Bg Fill, message: Message, textSize: Number, textColor: Vector, textAlpha: Number, textAnchor: UI Anchor, depth: UI Depth, receiver: Player \| Team)` |
 
 ##### AddUIWeaponImage
 
+Creates a new UI Image Widget based on a Weapon and loadout.
+
 | Signature |
 | --- |
-| `(name: String, position: Vector, size: Vector, anchor: Enum_UIAnchor, weapon: Enum_Weapons, parent: UIWidget)` |
-| `(name: String, position: Vector, size: Vector, anchor: Enum_UIAnchor, weapon: Enum_Weapons, parent: UIWidget, weaponPackage: WeaponPackage)` |
-| `(name: String, position: Vector, size: Vector, anchor: Enum_UIAnchor, weapon: Enum_Weapons, parent: UIWidget, visibility: Player | Team)` |
-| `(name: String, position: Vector, size: Vector, anchor: Enum_UIAnchor, weapon: Enum_Weapons, parent: UIWidget, weaponPackage: WeaponPackage, visibility: Player | Team)` |
+| `(name: String, position: Vector, size: Vector, anchor: UI Anchor, weapon: Weapons, parent: UIWidget)` |
+| `(name: String, position: Vector, size: Vector, anchor: UI Anchor, weapon: Weapons, parent: UIWidget, weaponPackage: WeaponPackage)` |
+| `(name: String, position: Vector, size: Vector, anchor: UI Anchor, weapon: Weapons, parent: UIWidget, visibility: Player \| Team)` |
+| `(name: String, position: Vector, size: Vector, anchor: UI Anchor, weapon: Weapons, parent: UIWidget, weaponPackage: WeaponPackage, visibility: Player \| Team)` |
 
 ##### DeleteAllUIWidgets
 
 Deletes all UI Widgets.
 
-| Signature |
-| --- |
-| `()` |
 
 ##### DeleteUIWidget
 
@@ -3850,7 +4228,7 @@ Determines if UI Button Widgets can send events.
 
 | Signature |
 | --- |
-| `(widget: UIWidget, buttonEvent: Enum_UIButtonEvent, enabled: Boolean)` |
+| `(widget: UIWidget, buttonEvent: UI Button Event, enabled: Boolean)` |
 
 ##### EnableUIInputMode
 
@@ -3859,7 +4237,7 @@ Determines if UI Buttons can be interacted with.
 | Signature |
 | --- |
 | `(enabled: Boolean)` |
-| `(enabled: Boolean, receiver: Player | Team)` |
+| `(enabled: Boolean, receiver: Player \| Team)` |
 
 ##### SetUIButtonAlphaBase
 
@@ -3971,7 +4349,7 @@ Changes the image of an UI Image Widget.
 
 | Signature |
 | --- |
-| `(widget: UIWidget, imageType: Enum_UIImageType)` |
+| `(widget: UIWidget, imageType: UI Image Type)` |
 
 ##### SetUITextAlpha
 
@@ -3987,7 +4365,7 @@ Changes the anchor of the text in an UI Text Widget.
 
 | Signature |
 | --- |
-| `(widget: UIWidget, anchor: Enum_UIAnchor)` |
+| `(widget: UIWidget, anchor: UI Anchor)` |
 
 ##### SetUITextColor
 
@@ -4019,7 +4397,7 @@ Changes the anchor of an UI Widget.
 
 | Signature |
 | --- |
-| `(widget: UIWidget, anchor: Enum_UIAnchor)` |
+| `(widget: UIWidget, anchor: UI Anchor)` |
 
 ##### SetUIWidgetBgAlpha
 
@@ -4043,7 +4421,7 @@ Changes the way the UI Widget's background is rendered.
 
 | Signature |
 | --- |
-| `(widget: UIWidget, bgFill: Enum_UIBgFill)` |
+| `(widget: UIWidget, bgFill: UI Bg Fill)` |
 
 ##### SetUIWidgetDepth
 
@@ -4051,7 +4429,7 @@ Changes the draw order of an UI Widget.
 
 | Signature |
 | --- |
-| `(widget: UIWidget, depth: Enum_UIDepth)` |
+| `(widget: UIWidget, depth: UI Depth)` |
 
 ##### SetUIWidgetName
 
@@ -4105,11 +4483,15 @@ Determines if an UI Widget is visible or not.
 
 ##### ForceVehicleSpawnerSpawn
 
+Cause a vehicle spawner to spawn one vehicle of the type it is currently set to.
+
 | Signature |
 | --- |
 | `(vehicleSpawner: VehicleSpawner)` |
 
 ##### SetAllVehiclesAllowedInSurroundingArea
+
+Sets whether all vehicles are allowed in the Surrounding Area
 
 | Signature |
 | --- |
@@ -4117,23 +4499,31 @@ Determines if an UI Widget is visible or not.
 
 ##### SetMaxVehicleHeightLimitScale
 
+Scales the maximum flight height at which vehicle engines stop providing lift.
+
 | Signature |
 | --- |
 | `(heightScale: Number)` |
 
 ##### SetVehicleAllowedInSurroundingArea
 
+Sets whether a vehicle is allowed in the Surrounding Area
+
 | Signature |
 | --- |
-| `(vehicle: Enum_VehicleList, allowed: Boolean)` |
+| `(vehicle: Vehicle List, allowed: Boolean)` |
 
 ##### SetVehicleCategoryAllowedInSurroundingArea
 
+Sets whether a vehicle category is allowed in the Surrounding Area
+
 | Signature |
 | --- |
-| `(vehicleCategory: Enum_VehicleCategories, allowed: Boolean)` |
+| `(vehicleCategory: Vehicle Categories, allowed: Boolean)` |
 
 ##### SetVehicleSpawnerAbandonVehiclesOutOfCombatArea
+
+Enables or disables the feature to destroy vehicles left outside of the combat area.
 
 | Signature |
 | --- |
@@ -4141,11 +4531,15 @@ Determines if an UI Widget is visible or not.
 
 ##### SetVehicleSpawnerApplyDamageToAbandonVehicle
 
+Enables or disables the feature to destroy abandoned vehicles.
+
 | Signature |
 | --- |
 | `(vehicleSpawner: VehicleSpawner, enabled: Boolean)` |
 
 ##### SetVehicleSpawnerAutoSpawn
+
+Enables or Disables automatic vehicle respawning from the vehicle spawner.
 
 | Signature |
 | --- |
@@ -4153,11 +4547,15 @@ Determines if an UI Widget is visible or not.
 
 ##### SetVehicleSpawnerKeepAliveAbandonRadius
 
+Sets the distance from the nearest player for a vehicle to consider itself abandoned.
+
 | Signature |
 | --- |
 | `(vehicleSpawner: VehicleSpawner, keepAliveAbandonedRadius: Number)` |
 
 ##### SetVehicleSpawnerKeepAliveSpawnerRadius
+
+Sets the distance its vehicle spawner for a vehicle to consider itself abandoned.
 
 | Signature |
 | --- |
@@ -4165,11 +4563,15 @@ Determines if an UI Widget is visible or not.
 
 ##### SetVehicleSpawnerRespawnTime
 
+Sets the delay after destruction before a vehicle automatically respawn, if the feature is activated.
+
 | Signature |
 | --- |
 | `(vehicleSpawner: VehicleSpawner, respawnTime: Number)` |
 
 ##### SetVehicleSpawnerTimeUntilAbandon
+
+Sets the time left idle before a vehicle is considered abandoned.
 
 | Signature |
 | --- |
@@ -4177,15 +4579,18 @@ Determines if an UI Widget is visible or not.
 
 ##### SetVehicleSpawnerVehicleType
 
+Sets the type of vehicle that will spawn from the vehicle spawner.
+
 | Signature |
 | --- |
-| `(vehicleSpawner: VehicleSpawner, vehicleType: Enum_VehicleList)` |
+| `(vehicleSpawner: VehicleSpawner, vehicleType: Vehicle List)` |
 
 **Health**
 
 ##### SetVehicleMaxHealthMultiplier
 
-Multiplies the maximum health of target Vehicle by the provided Number greater than 0 and less than or equal to 4.
+Multiplies the maximum health of target Vehicle by the provided Number greater than 0 and less than or equal to 4. 
+
 _Note: The health of a Vehicle is displayed in-game as a percentage._
 
 | Signature |
@@ -4206,57 +4611,13 @@ Forces the specified Player to exit the target Vehicle.
 
 ##### ForcePlayerToSeat
 
-Forces the specified Player into the target Vehicle at the provided seat Number.
+Forces the specified Player into the target Vehicle at the provided seat Number. 
+
 _Note: If the provided index is -1, that Player will be forced into the first available seat._
 
 | Signature |
 | --- |
 | `(player: Player, vehicle: Vehicle, seatNumber: Number)` |
-
-## Control Actions
-
-Control action blocks manage the flow of execution in a rule.
-
-### Break
-
-Breaks and exits the execution of a looping block, such as While or ForVariable.
-
-| Signature |
-| --- |
-| `()` |
-
-### Continue
-
-Forces the execution of a looping block (such as While or ForVariable) to the start of the next iteration of that block.
-
-| Signature |
-| --- |
-| `()` |
-
-### ForVariable
-
-The start of a series of Actions that will execute in a loop, modifying the control variable on each iteration. If the control Variable reaches or passes the range end value, the loop exits, and execution continues through the remaining Actions in the Rule.
-
-| Signature |
-| --- |
-| `(variable: Variable, start: Number, end: Number, stepSize: Number)` |
-
-### If
-
-A special block which evaluates conditions to control the flow of Actions in the If, Else If, and Else branches.
-
-| Signature |
-| --- |
-| `(condition: Boolean)` |
-
-### While
-
-A block of Actions that will execute in a loop as long as the provided condition is True.
-_Note: You must utilize a Wait block at the beginning or the end of the iteration._
-
-| Signature |
-| --- |
-| `(condition: Boolean)` |
 
 ## Objects
 
@@ -5986,115 +6347,115 @@ List type: `WorldIconImages`
 
 ## Types
 
-| Type | Description |
+| Type | Category |
 | --- | --- |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
-| `undefined` | undefined |
+| `SFX` | Audio/Visual |
+| `VFX` | Audio/Visual |
+| `VO` | Audio/Visual |
+| `Enum_AiInput` | Enumeration — Ai Input |
+| `Enum_AmmoTypes` | Enumeration — Ammo Types |
+| `Enum_ArmorTypes` | Enumeration — Armor Types |
+| `Enum_Cameras` | Enumeration — Cameras |
+| `Enum_CustomNotificationSlots` | Enumeration — Custom Notification Slots |
+| `Enum_Factions` | Enumeration — Factions |
+| `Enum_Gadgets` | Enumeration — Gadgets |
+| `Enum_GolmudTrainMoveCommands` | Enumeration — Golmud Train Move Commands |
+| `Enum_GolmudTrainStopReason` | Enumeration — Golmud Train Stop Reason |
+| `Enum_GolmudTrainVariants` | Enumeration — Golmud Train Variants |
+| `Enum_InventorySlots` | Enumeration — Inventory Slots |
+| `Enum_Maps` | Enumeration — Maps |
+| `Enum_MoveSpeed` | Enumeration — Move Speed |
+| `Enum_MusicEvents` | Enumeration — Music Events |
+| `Enum_MusicPackages` | Enumeration — Music Packages |
+| `Enum_MusicParams` | Enumeration — Music Params |
+| `Enum_PlayerDamageTypes` | Enumeration — Player Damage Types |
+| `Enum_PlayerDeathTypes` | Enumeration — Player Death Types |
+| `Enum_PlayerFilterTypes` | Enumeration — Player Filter Types |
+| `Enum_RestrictedInputs` | Enumeration — Restricted Inputs |
+| `Enum_ResupplyTypes` | Enumeration — Resupply Types |
+| `Enum_RuntimeSpawn_Abbasid` | Enumeration — Runtime Spawn Abbasid |
+| `Enum_RuntimeSpawn_Aftermath` | Enumeration — Runtime Spawn Aftermath |
+| `Enum_RuntimeSpawn_Badlands` | Enumeration — Runtime Spawn Badlands |
+| `Enum_RuntimeSpawn_Battery` | Enumeration — Runtime Spawn Battery |
+| `Enum_RuntimeSpawn_Capstone` | Enumeration — Runtime Spawn Capstone |
+| `Enum_RuntimeSpawn_Common` | Enumeration — Runtime Spawn Common |
+| `Enum_RuntimeSpawn_Contaminated` | Enumeration — Runtime Spawn Contaminated |
+| `Enum_RuntimeSpawn_Dumbo` | Enumeration — Runtime Spawn Dumbo |
+| `Enum_RuntimeSpawn_Eastwood` | Enumeration — Runtime Spawn Eastwood |
+| `Enum_RuntimeSpawn_FireStorm` | Enumeration — Runtime Spawn Fire Storm |
+| `Enum_RuntimeSpawn_GolmudRailway` | Enumeration — Runtime Spawn Golmud Railway |
+| `Enum_RuntimeSpawn_Granite_Downtown` | Enumeration — Runtime Spawn Granite Downtown |
+| `Enum_RuntimeSpawn_Granite_Marina` | Enumeration — Runtime Spawn Granite Marina |
+| `Enum_RuntimeSpawn_Granite_MilitaryRnD` | Enumeration — Runtime Spawn Granite Military Rn D |
+| `Enum_RuntimeSpawn_Granite_MilitaryStorage` | Enumeration — Runtime Spawn Granite Military Storage |
+| `Enum_RuntimeSpawn_Granite_ResidentialNorth` | Enumeration — Runtime Spawn Granite Residential North |
+| `Enum_RuntimeSpawn_Granite_TechCenter` | Enumeration — Runtime Spawn Granite Tech Center |
+| `Enum_RuntimeSpawn_Granite_Underground` | Enumeration — Runtime Spawn Granite Underground |
+| `Enum_RuntimeSpawn_Limestone` | Enumeration — Runtime Spawn Limestone |
+| `Enum_RuntimeSpawn_Outskirts` | Enumeration — Runtime Spawn Outskirts |
+| `Enum_RuntimeSpawn_Sand` | Enumeration — Runtime Spawn Sand |
+| `Enum_RuntimeSpawn_Subsurface` | Enumeration — Runtime Spawn Subsurface |
+| `Enum_RuntimeSpawn_Tungsten` | Enumeration — Runtime Spawn Tungsten |
+| `Enum_ScoreboardType` | Enumeration — Scoreboard Type |
+| `Enum_ScreenEffects` | Enumeration — Screen Effects |
+| `Enum_SoldierClass` | Enumeration — Soldier Class |
+| `Enum_SoldierEffects` | Enumeration — Soldier Effects |
+| `Enum_SoldierStateBool` | Enumeration — Soldier State Bool |
+| `Enum_SoldierStateNumber` | Enumeration — Soldier State Number |
+| `Enum_SoldierStateVector` | Enumeration — Soldier State Vector |
+| `Enum_SpawnModes` | Enumeration — Spawn Modes |
+| `Enum_SpectatingGroup` | Enumeration — Spectating Group |
+| `Enum_SpotStatus` | Enumeration — Spot Status |
+| `Enum_Stance` | Enumeration — Stance |
+| `Enum_StationaryEmplacements` | Enumeration — Stationary Emplacements |
+| `Enum_Types` | Enumeration — Types |
+| `Enum_UIAnchor` | Enumeration — UI Anchor |
+| `Enum_UIBgFill` | Enumeration — UI Bg Fill |
+| `Enum_UIButtonEvent` | Enumeration — UI Button Event |
+| `Enum_UIDepth` | Enumeration — UI Depth |
+| `Enum_UIImageType` | Enumeration — UI Image Type |
+| `Enum_VehicleCategories` | Enumeration — Vehicle Categories |
+| `Enum_VehicleList` | Enumeration — Vehicle List |
+| `Enum_VehicleStateVector` | Enumeration — Vehicle State Vector |
+| `Enum_VoiceOverEvents2D` | Enumeration — Voice Over Events2 D |
+| `Enum_VoiceOverFlags` | Enumeration — Voice Over Flags |
+| `Enum_WeaponAttachments` | Enumeration — Weapon Attachments |
+| `Enum_Weapons` | Enumeration — Weapons |
+| `Enum_WorldIconImages` | Enumeration — World Icon Images |
+| `PortalEnum` | Enumeration |
+| `AreaTrigger` | Game Entity |
+| `CapturePoint` | Game Entity |
+| `DamageType` | Game Entity |
+| `DeathType` | Game Entity |
+| `EmplacementSpawner` | Game Entity |
+| `FixedCamera` | Game Entity |
+| `HQ` | Game Entity |
+| `InteractPoint` | Game Entity |
+| `LootSpawner` | Game Entity |
+| `MCOM` | Game Entity |
+| `MapSpecificFeature` | Game Entity |
+| `Message` | Game Entity |
+| `Player` | Game Entity |
+| `RingOfFire` | Game Entity |
+| `Sector` | Game Entity |
+| `SpatialObject` | Game Entity |
+| `SpawnPoint` | Game Entity |
+| `Spawner` | Game Entity |
+| `Squad` | Game Entity |
+| `Team` | Game Entity |
+| `UIWidget` | Game Entity |
+| `VL7Cloud` | Game Entity |
+| `Vehicle` | Game Entity |
+| `VehicleSpawner` | Game Entity |
+| `WaypointPath` | Game Entity |
+| `WeaponPackage` | Game Entity |
+| `WeaponUnlock` | Game Entity |
+| `WorldIcon` | Game Entity |
+| `Array` | Primitive |
+| `Boolean` | Primitive |
+| `Global` | Primitive |
+| `Number` | Primitive |
+| `Object` | Primitive |
+| `String` | Primitive |
+| `Transform` | Primitive |
+| `Vector` | Primitive |
