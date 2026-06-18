@@ -1018,15 +1018,31 @@ async function main () {
     lines.push(`### ${list.name}`)
     lines.push('')
     lines.push(`List type: \`${list.listType}\``)
-    lines.push('')
-    lines.push(`| Value | ${list.deprecated ? ' (deprecated)' : ''}|`)
-    lines.push(`| --- |`)
-    for (const v of showValues) {
-      const dep = v.deprecated ? ' (deprecated)' : ''
-      lines.push(`| \`${v.name}\`${dep} |`)
+    if (list.deprecated) {
+      lines.push('')
+      lines.push('*This selection list is deprecated.*')
     }
-    if (remaining > 0) {
-      lines.push(`| *... and ${remaining} more* |`)
+    lines.push('')
+
+    const hasDeprecatedValues = values.some(v => v.deprecated)
+    if (hasDeprecatedValues) {
+      lines.push('| Value | Status |')
+      lines.push('| --- | --- |')
+      for (const v of showValues) {
+        lines.push(`| \`${v.name}\` | ${v.deprecated ? 'Deprecated' : ''} |`)
+      }
+      if (remaining > 0) {
+        lines.push(`| *... and ${remaining} more* | |`)
+      }
+    } else {
+      lines.push('| Value |')
+      lines.push('| --- |')
+      for (const v of showValues) {
+        lines.push(`| \`${v.name}\` |`)
+      }
+      if (remaining > 0) {
+        lines.push(`| *... and ${remaining} more* |`)
+      }
     }
     lines.push('')
   }

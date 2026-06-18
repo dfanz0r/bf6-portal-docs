@@ -4659,7 +4659,7 @@ Selection lists are enum-like values used for dropdown parameters.
 
 List type: `AiInput`
 
-| Value | |
+| Value |
 | --- |
 | `Crouch` |
 | `FireWeapon` |
@@ -4679,7 +4679,7 @@ List type: `AiInput`
 
 List type: `AmmoTypes`
 
-| Value | |
+| Value |
 | --- |
 | `AR_Carbine_Ammo` |
 | `Armor_Plate` |
@@ -4692,7 +4692,7 @@ List type: `AmmoTypes`
 
 List type: `ArmorTypes`
 
-| Value | |
+| Value |
 | --- |
 | `CeramicArmor` |
 | `NoArmor` |
@@ -4702,7 +4702,7 @@ List type: `ArmorTypes`
 
 List type: `Cameras`
 
-| Value | |
+| Value |
 | --- |
 | `FirstPerson` |
 | `Fixed` |
@@ -4713,7 +4713,7 @@ List type: `Cameras`
 
 List type: `CustomNotificationSlots`
 
-| Value | |
+| Value |
 | --- |
 | `HeaderText` |
 | `MessageText1` |
@@ -4725,7 +4725,7 @@ List type: `CustomNotificationSlots`
 
 List type: `Factions`
 
-| Value | |
+| Value |
 | --- |
 | `NATO` |
 | `PaxArmata` |
@@ -4734,7 +4734,7 @@ List type: `Factions`
 
 List type: `Gadgets`
 
-| Value | |
+| Value |
 | --- |
 | `CallIn_Air_Strike` |
 | `CallIn_Ammo_Drop` |
@@ -4772,7 +4772,7 @@ List type: `Gadgets`
 
 List type: `GolmudTrainMoveCommands`
 
-| Value | |
+| Value |
 | --- |
 | `MoveEast` |
 | `MoveWest` |
@@ -4782,7 +4782,7 @@ List type: `GolmudTrainMoveCommands`
 
 List type: `GolmudTrainStopReason`
 
-| Value | |
+| Value |
 | --- |
 | `ReachedEastTerminal` |
 | `ReachedWestTerminal` |
@@ -4792,7 +4792,7 @@ List type: `GolmudTrainStopReason`
 
 List type: `GolmudTrainVariants`
 
-| Value | |
+| Value |
 | --- |
 | `MovingTrain` |
 | `None` |
@@ -4803,7 +4803,7 @@ List type: `GolmudTrainVariants`
 
 List type: `InventorySlots`
 
-| Value | |
+| Value |
 | --- |
 | `Callins` |
 | `ClassGadget` |
@@ -4819,7 +4819,7 @@ List type: `InventorySlots`
 
 List type: `Maps`
 
-| Value | |
+| Value |
 | --- |
 | `Abbasid` |
 | `Aftermath` |
@@ -4848,7 +4848,7 @@ List type: `Maps`
 
 List type: `MoveSpeed`
 
-| Value | |
+| Value |
 | --- |
 | `InvestigateRun` |
 | `InvestigateSlowWalk` |
@@ -4862,7 +4862,7 @@ List type: `MoveSpeed`
 
 List type: `MusicEvents`
 
-| Value | |
+| Value |
 | --- |
 | `BR_InsertionCinematic_Dropzone_Loop` |
 | `BR_InsertionCinematic_Loop` |
@@ -4900,7 +4900,7 @@ List type: `MusicEvents`
 
 List type: `MusicPackages`
 
-| Value | |
+| Value |
 | --- |
 | `BR` |
 | `Core` |
@@ -4911,7 +4911,7 @@ List type: `MusicPackages`
 
 List type: `MusicParams`
 
-| Value | |
+| Value |
 | --- |
 | `BR_Amplitude` |
 | `BRGauntlet_LobbyTimerRemaining` |
@@ -4932,7 +4932,7 @@ List type: `MusicParams`
 
 List type: `PlayerDamageTypes`
 
-| Value | |
+| Value |
 | --- |
 | `Default` |
 | `Explosion` |
@@ -4945,7 +4945,7 @@ List type: `PlayerDamageTypes`
 
 List type: `PlayerDeathTypes`
 
-| Value | |
+| Value |
 | --- |
 | `Deserting` |
 | `Drowning` |
@@ -4963,7 +4963,7 @@ List type: `PlayerDeathTypes`
 
 List type: `PlayerFilterTypes`
 
-| Value | |
+| Value |
 | --- |
 | `None` |
 | `Player` |
@@ -4974,7 +4974,7 @@ List type: `PlayerFilterTypes`
 
 List type: `RestrictedInputs`
 
-| Value | |
+| Value |
 | --- |
 | `CameraPitch` |
 | `CameraYaw` |
@@ -5001,7 +5001,7 @@ List type: `RestrictedInputs`
 
 List type: `ResupplyTypes`
 
-| Value | |
+| Value |
 | --- |
 | `AmmoBox` |
 | `AmmoCrate` |
@@ -5011,7 +5011,7 @@ List type: `ResupplyTypes`
 
 List type: `RuntimeSpawn_Abbasid`
 
-| Value | |
+| Value |
 | --- |
 | `ACModule_01` |
 | `ACModule_02` |
@@ -5049,7 +5049,7 @@ List type: `RuntimeSpawn_Abbasid`
 
 List type: `RuntimeSpawn_Aftermath`
 
-| Value | |
+| Value |
 | --- |
 | `ACModule_01` |
 | `ACModule_02` |
@@ -5087,7 +5087,7 @@ List type: `RuntimeSpawn_Aftermath`
 
 List type: `RuntimeSpawn_Badlands`
 
-| Value | |
+| Value |
 | --- |
 | `Abra01_Chassis` |
 | `Abra01_Tracks` |
@@ -5125,7 +5125,7 @@ List type: `RuntimeSpawn_Badlands`
 
 List type: `RuntimeSpawn_Battery`
 
-| Value | |
+| Value |
 | --- |
 | `AAGun_01` |
 | `ACModule_01` |
@@ -5163,7 +5163,7 @@ List type: `RuntimeSpawn_Battery`
 
 List type: `RuntimeSpawn_Capstone`
 
-| Value | |
+| Value |
 | --- |
 | `ACModule_03` |
 | `ACUnit_03` |
@@ -5201,7 +5201,7 @@ List type: `RuntimeSpawn_Capstone`
 
 List type: `RuntimeSpawn_Common`
 
-| Value | |
+| Value |
 | --- |
 | `AI_Spawner` |
 | `AI_WaypointPath` |
@@ -5239,7 +5239,7 @@ List type: `RuntimeSpawn_Common`
 
 List type: `RuntimeSpawn_Contaminated`
 
-| Value | |
+| Value |
 | --- |
 | `ACUnit_03` |
 | `ACUnit_04_Support` |
@@ -5277,7 +5277,7 @@ List type: `RuntimeSpawn_Contaminated`
 
 List type: `RuntimeSpawn_Dumbo`
 
-| Value | |
+| Value |
 | --- |
 | `ACModule_01_VFX` |
 | `ACModule_02` |
@@ -5315,7 +5315,7 @@ List type: `RuntimeSpawn_Dumbo`
 
 List type: `RuntimeSpawn_Eastwood`
 
-| Value | |
+| Value |
 | --- |
 | `AcaciaUrban_01_S` |
 | `ACModule_01` |
@@ -5353,7 +5353,7 @@ List type: `RuntimeSpawn_Eastwood`
 
 List type: `RuntimeSpawn_FireStorm`
 
-| Value | |
+| Value |
 | --- |
 | `AcaciaUrban_01_S` |
 | `ACUnit_04` |
@@ -5391,7 +5391,7 @@ List type: `RuntimeSpawn_FireStorm`
 
 List type: `RuntimeSpawn_GolmudRailway`
 
-| Value | |
+| Value |
 | --- |
 | `ACModule_01` |
 | `ACUnit_03` |
@@ -5429,7 +5429,7 @@ List type: `RuntimeSpawn_GolmudRailway`
 
 List type: `RuntimeSpawn_Granite_Downtown`
 
-| Value | |
+| Value |
 | --- |
 | `_3DSignChavel1883_01` |
 | `_3DSignChavelNoir_01` |
@@ -5467,7 +5467,7 @@ List type: `RuntimeSpawn_Granite_Downtown`
 
 List type: `RuntimeSpawn_Granite_Marina`
 
-| Value | |
+| Value |
 | --- |
 | `_3DSignDoubleDipDonuts_01` |
 | `_3DSignDoubleDipDonuts_02` |
@@ -5505,7 +5505,7 @@ List type: `RuntimeSpawn_Granite_Marina`
 
 List type: `RuntimeSpawn_Granite_MilitaryRnD`
 
-| Value | |
+| Value |
 | --- |
 | `AcaciaUrban_01_S` |
 | `ACModule_01` |
@@ -5543,7 +5543,7 @@ List type: `RuntimeSpawn_Granite_MilitaryRnD`
 
 List type: `RuntimeSpawn_Granite_MilitaryStorage`
 
-| Value | |
+| Value |
 | --- |
 | `Abra01_Chassis` |
 | `Abra01_Chassis_B` |
@@ -5581,7 +5581,7 @@ List type: `RuntimeSpawn_Granite_MilitaryStorage`
 
 List type: `RuntimeSpawn_Granite_ResidentialNorth`
 
-| Value | |
+| Value |
 | --- |
 | `AcaciaUrban_01_S` |
 | `ACModule_04` |
@@ -5619,7 +5619,7 @@ List type: `RuntimeSpawn_Granite_ResidentialNorth`
 
 List type: `RuntimeSpawn_Granite_TechCenter`
 
-| Value | |
+| Value |
 | --- |
 | `AcaciaUrban_01_S` |
 | `AluminumBench_01` |
@@ -5657,7 +5657,7 @@ List type: `RuntimeSpawn_Granite_TechCenter`
 
 List type: `RuntimeSpawn_Granite_Underground`
 
-| Value | |
+| Value |
 | --- |
 | `AcaciaUrban_01_S` |
 | `ACModule_01` |
@@ -5695,7 +5695,7 @@ List type: `RuntimeSpawn_Granite_Underground`
 
 List type: `RuntimeSpawn_Limestone`
 
-| Value | |
+| Value |
 | --- |
 | `ACModule_02` |
 | `ACModule_03` |
@@ -5733,7 +5733,7 @@ List type: `RuntimeSpawn_Limestone`
 
 List type: `RuntimeSpawn_Outskirts`
 
-| Value | |
+| Value |
 | --- |
 | `ACModule_03` |
 | `ACUnit_03` |
@@ -5771,7 +5771,7 @@ List type: `RuntimeSpawn_Outskirts`
 
 List type: `RuntimeSpawn_Sand`
 
-| Value | |
+| Value |
 | --- |
 | `ACModule_01` |
 | `ACModule_02` |
@@ -5809,7 +5809,7 @@ List type: `RuntimeSpawn_Sand`
 
 List type: `RuntimeSpawn_Subsurface`
 
-| Value | |
+| Value |
 | --- |
 | `ACModule_01` |
 | `ACModule_02` |
@@ -5847,7 +5847,7 @@ List type: `RuntimeSpawn_Subsurface`
 
 List type: `RuntimeSpawn_Tungsten`
 
-| Value | |
+| Value |
 | --- |
 | `ACUnit_04` |
 | `AftermathDebrisPileConcrete_Center_120` |
@@ -5885,7 +5885,7 @@ List type: `RuntimeSpawn_Tungsten`
 
 List type: `ScoreboardType`
 
-| Value | |
+| Value |
 | --- |
 | `CustomFFA` |
 | `CustomTwoTeams` |
@@ -5897,7 +5897,7 @@ List type: `ScoreboardType`
 
 List type: `ScreenEffects`
 
-| Value | |
+| Value |
 | --- |
 | `Night` |
 | `Saturated` |
@@ -5908,7 +5908,7 @@ List type: `ScreenEffects`
 
 List type: `SoldierClass`
 
-| Value | |
+| Value |
 | --- |
 | `Assault` |
 | `Engineer` |
@@ -5919,7 +5919,7 @@ List type: `SoldierClass`
 
 List type: `SoldierEffects`
 
-| Value | |
+| Value |
 | --- |
 | `FreezeStatusEffect` |
 | `HeatStatusEffect` |
@@ -5929,7 +5929,7 @@ List type: `SoldierEffects`
 
 List type: `SoldierStateBool`
 
-| Value | |
+| Value |
 | --- |
 | `IsAISoldier` |
 | `IsAlive` |
@@ -5957,7 +5957,7 @@ List type: `SoldierStateBool`
 
 List type: `SoldierStateNumber`
 
-| Value | |
+| Value |
 | --- |
 | `CurrentHealth` |
 | `CurrentWeaponAmmo` |
@@ -5970,7 +5970,7 @@ List type: `SoldierStateNumber`
 
 List type: `SoldierStateVector`
 
-| Value | |
+| Value |
 | --- |
 | `EyePosition` |
 | `GetFacingDirection` |
@@ -5981,7 +5981,7 @@ List type: `SoldierStateVector`
 
 List type: `SpawnModes`
 
-| Value | |
+| Value |
 | --- |
 | `AutoSpawn` |
 | `Deploy` |
@@ -5991,7 +5991,7 @@ List type: `SpawnModes`
 
 List type: `SpectatingGroup`
 
-| Value | |
+| Value |
 | --- |
 | `All` |
 | `Squad` |
@@ -6001,7 +6001,7 @@ List type: `SpectatingGroup`
 
 List type: `SpotStatus`
 
-| Value | |
+| Value |
 | --- |
 | `SpotInBoth` |
 | `SpotInMinimap` |
@@ -6012,7 +6012,7 @@ List type: `SpotStatus`
 
 List type: `Stance`
 
-| Value | |
+| Value |
 | --- |
 | `Crouch` |
 | `Prone` |
@@ -6022,7 +6022,7 @@ List type: `Stance`
 
 List type: `StationaryEmplacements`
 
-| Value | |
+| Value |
 | --- |
 | `BGM71TOW` |
 | `GDF009` |
@@ -6032,7 +6032,7 @@ List type: `StationaryEmplacements`
 
 List type: `Types`
 
-| Value | |
+| Value |
 | --- |
 | `AreaTrigger` |
 | `Array` |
@@ -6070,7 +6070,7 @@ List type: `Types`
 
 List type: `UIAnchor`
 
-| Value | |
+| Value |
 | --- |
 | `BottomCenter` |
 | `BottomLeft` |
@@ -6086,7 +6086,7 @@ List type: `UIAnchor`
 
 List type: `UIBgFill`
 
-| Value | |
+| Value |
 | --- |
 | `Blur` |
 | `GradientBottom` |
@@ -6102,7 +6102,7 @@ List type: `UIBgFill`
 
 List type: `UIButtonEvent`
 
-| Value | |
+| Value |
 | --- |
 | `ButtonDown` |
 | `ButtonUp` |
@@ -6115,7 +6115,7 @@ List type: `UIButtonEvent`
 
 List type: `UIDepth`
 
-| Value | |
+| Value |
 | --- |
 | `AboveGameUI` |
 | `BelowGameUI` |
@@ -6124,7 +6124,7 @@ List type: `UIDepth`
 
 List type: `UIImageType`
 
-| Value | |
+| Value |
 | --- |
 | `CrownOutline` |
 | `CrownSolid` |
@@ -6139,7 +6139,7 @@ List type: `UIImageType`
 
 List type: `VehicleCategories`
 
-| Value | |
+| Value |
 | --- |
 | `Air_All` |
 | `Air_Heli` |
@@ -6153,7 +6153,7 @@ List type: `VehicleCategories`
 
 List type: `VehicleList`
 
-| Value | |
+| Value |
 | --- |
 | `Abrams` |
 | `AH64` |
@@ -6186,7 +6186,7 @@ List type: `VehicleList`
 
 List type: `VehicleStateVector`
 
-| Value | |
+| Value |
 | --- |
 | `FacingDirection` |
 | `LinearVelocity` |
@@ -6196,7 +6196,7 @@ List type: `VehicleStateVector`
 
 List type: `VoiceOverEvents2D`
 
-| Value | |
+| Value |
 | --- |
 | `CheckPointEnemy` |
 | `CheckPointEnemyAnother` |
@@ -6234,7 +6234,7 @@ List type: `VoiceOverEvents2D`
 
 List type: `VoiceOverFlags`
 
-| Value | |
+| Value |
 | --- |
 | `Alpha` |
 | `Bravo` |
@@ -6250,7 +6250,7 @@ List type: `VoiceOverFlags`
 
 List type: `WeaponAttachments`
 
-| Value | |
+| Value |
 | --- |
 | `Ammo_Buckshot` |
 | `Ammo_Flechette` |
@@ -6288,7 +6288,7 @@ List type: `WeaponAttachments`
 
 List type: `Weapons`
 
-| Value | |
+| Value |
 | --- |
 | `AssaultRifle_AK4D` |
 | `AssaultRifle_B36A4` |
@@ -6326,7 +6326,7 @@ List type: `Weapons`
 
 List type: `WorldIconImages`
 
-| Value | |
+| Value |
 | --- |
 | `Alert` |
 | `Assist` |
