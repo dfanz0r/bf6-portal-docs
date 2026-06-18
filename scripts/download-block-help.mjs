@@ -18,25 +18,63 @@ const helpDir = '.cache/blockly-help'
 const manifestFile = path.join(helpDir, 'manifest.json')
 const baseHelpUrl = 'https://portal.battlefield.com/bf6/13979158/assets/blockly/help'
 
+const requestHeaders = {
+  'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36',
+  'Origin': 'https://portal.battlefield.com',
+  'Referer': 'https://portal.battlefield.com/bf6/experiences'
+}
+
 async function main () {
   const force = process.argv.includes('--force') || process.argv.includes('-f')
 
   // ── Check for cached files ────────────────────────────────────────────────
-  // If help files already exist locally, skip the CDN entirely.
-  // Cloudflare Pages build caching preserves .vitepress/ between builds,
-  // so this is fast on subsequent builds.
+  // If help files already exist locally, skip the bulk CDN download.
+  // (Strict mode still issues a single probe request to verify upstream
+  // is reachable.) Cloudflare Pages build caching preserves .vitepress/
+  // between builds, so this is fast on subsequent builds.
 
   if (!force && existsSync(manifestFile)) {
+    let manifest = null
     try {
-      const manifest = JSON.parse(await readFile(manifestFile, 'utf8'))
-      const fileCount = Object.keys(manifest).length - 1 // exclude $schema
-      if (fileCount > 0) {
-        console.log(`Found ${fileCount} cached help files in ${helpDir}/ — skipping download.`)
-        console.log('  Use --force or -f to re-download from the CDN.')
-        return
-      }
+      manifest = JSON.parse(await readFile(manifestFile, 'utf8'))
     } catch {
       // manifest is corrupt, fall through to download
+    }
+
+    if (manifest) {
+      const fileCount = Object.keys(manifest).length - 1 // exclude $schema
+
+      if (fileCount > 0) {
+        // Verify that all manifest-listed files still exist locally.
+        // A missing local file (cache eviction, partial restore, manual
+        // deletion) means the cache is stale — fall through to re-download.
+        const missing = []
+        for (const name of Object.keys(manifest)) {
+          if (name === '$schema') continue
+          if (!existsSync(path.join(helpDir, `${name}.md`))) missing.push(name)
+        }
+
+        if (missing.length > 0) {
+          console.log(`Cache incomplete: ${missing.length} manifest file(s) missing locally — re-downloading.`)
+        } else {
+          // Cache is complete. In strict mode, also verify the upstream
+          // endpoint is still reachable before trusting the cache.
+          if (strict) {
+            const probeRes = await fetch(`${baseHelpUrl}/ruleBlock.md`, { headers: requestHeaders })
+            if (!probeRes.ok) {
+              throw new Error(`Block help endpoint unavailable: HTTP ${probeRes.status}`)
+            }
+            const probeContent = await probeRes.text()
+            if (probeContent.startsWith('<!') || probeContent.startsWith('<html')) {
+              throw new Error('Block help endpoint returned HTML instead of Markdown')
+            }
+          }
+
+          console.log(`Found ${fileCount} cached help files in ${helpDir}/ — skipping download.`)
+          console.log('  Use --force or -f to re-download from the CDN.')
+          return
+        }
+      }
     }
   }
 
@@ -101,18 +139,13 @@ async function main () {
 
   // ── Download from CDN ─────────────────────────────────────────────────────
 
-  const headers = {
-    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36',
-    'Origin': 'https://portal.battlefield.com',
-    'Referer': 'https://portal.battlefield.com/bf6/experiences'
-  }
-
   // Build a fresh manifest
   /** @type {Record<string, string>} */
   const manifest = { $schema: baseHelpUrl }
 
   let downloaded = 0
-  let errors = 0
+  let notFound = 0
+  let failed = 0
   const maxRetries = 2
 
   // Process in parallel batches
@@ -128,11 +161,11 @@ async function main () {
         // Retry loop for transient CDN errors
         for (let attempt = 0; attempt <= maxRetries; attempt++) {
           try {
-            const res = await fetch(url, { headers })
+            const res = await fetch(url, { headers: requestHeaders })
 
-            // 404 — file doesn't exist on the CDN
+            // 404 — file doesn't exist on the CDN (legitimate miss)
             if (res.status === 404) {
-              return null
+              return { name, status: 'notFound' }
             }
 
             // Transient error — retry with backoff
@@ -141,13 +174,14 @@ async function main () {
                 await new Promise(r => setTimeout(r, 1000 * (attempt + 1)))
                 continue
               }
-              return null
+              return { name, status: 'failed' }
             }
 
             const content = await res.text()
-            // Skip HTML error pages
+            // Skip HTML error pages — non-fatal in dev (treat as missing),
+            // but in strict mode this signals a real CDN problem.
             if (content.startsWith('<!') || content.startsWith('<html')) {
-              return null
+              return { name, status: strict ? 'failed' : 'notFound' }
             }
 
             await writeFile(filePath, content, 'utf8')
@@ -156,24 +190,30 @@ async function main () {
             const etag = res.headers.get('etag')
             manifest[name] = etag || ''
 
-            return { name, size: content.length }
+            return { name, status: 'downloaded', size: content.length }
           } catch {
             if (attempt < maxRetries) {
               await new Promise(r => setTimeout(r, 1000 * (attempt + 1)))
               continue
             }
-            return null
+            return { name, status: 'failed' }
           }
         }
 
-        return null
+        return { name, status: 'failed' }
       })
     )
 
     for (const result of results) {
-      if (result.status === 'fulfilled' && result.value) {
+      if (result.status !== 'fulfilled' || !result.value) continue
+      const { status, name, size } = result.value
+      if (status === 'downloaded') {
         downloaded++
-        console.log(`  ✓ ${result.value.name} (${result.value.size} bytes)`)
+        console.log(`  ✓ ${name} (${size} bytes)`)
+      } else if (status === 'notFound') {
+        notFound++
+      } else if (status === 'failed') {
+        failed++
       }
     }
 
@@ -190,8 +230,29 @@ async function main () {
 
   console.log(`\nDone! Downloaded ${downloaded} help files to ${helpDir}/`)
 
-  if (errors > 0) {
-    console.log(`  (${errors} errors encountered)`)
+  if (notFound > 0) {
+    console.log(`  (${notFound} blocks had no help file on the CDN — expected for some block types)`)
+  }
+
+  if (failed > 0) {
+    console.log(`  (${failed} downloads failed after retries)`)
+    if (strict) {
+      throw new Error(`Failed to download ${failed} block help files`)
+    }
+  }
+
+  if (strict) {
+    // Catch the case where the CDN path is broken but every response is
+    // a 200-with-HTML body or a 404 — strict mode should refuse to publish
+    // a near-empty help cache. ruleBlock.md is the source of event
+    // descriptions parsed by generate-block-reference.mjs, so it's the
+    // canary file for the whole batch.
+    if (downloaded === 0) {
+      throw new Error('No block help files were downloaded')
+    }
+    if (!manifest.ruleBlock) {
+      throw new Error('Required block help file missing: ruleBlock.md')
+    }
   }
 }
 
