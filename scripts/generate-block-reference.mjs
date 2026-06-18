@@ -450,6 +450,10 @@ function extractExample (content) {
 
 // ─── Type display ────────────────────────────────────────────────────────────
 
+function spatialObjectAnchor (name) {
+  return `spatial-${String(name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`
+}
+
 function typeToDisplay (type) {
   const map = {
     'Enum_AiInput': 'AI Input',
@@ -1011,37 +1015,34 @@ async function main () {
     const values = list.selectionValues || []
     if (values.length === 0) continue
 
-    const maxShow = 30
-    const showValues = values.slice(0, maxShow)
-    const remaining = values.length - maxShow
-
     lines.push(`### ${list.name}`)
     lines.push('')
     lines.push(`List type: \`${list.listType}\``)
+    lines.push(`Values: **${values.length}**`)
     if (list.deprecated) {
       lines.push('')
       lines.push('*This selection list is deprecated.*')
     }
     lines.push('')
 
+    if (list.name.startsWith('RuntimeSpawn_')) {
+      lines.push(`This is a map-based spatial object list. See [Spatial Object Reference](/spatial-object-reference#${spatialObjectAnchor(list.name)}) for the full combined map-aware reference.`)
+      lines.push('')
+      continue
+    }
+
     const hasDeprecatedValues = values.some(v => v.deprecated)
     if (hasDeprecatedValues) {
       lines.push('| Value | Status |')
       lines.push('| --- | --- |')
-      for (const v of showValues) {
+      for (const v of values) {
         lines.push(`| \`${v.name}\` | ${v.deprecated ? 'Deprecated' : ''} |`)
-      }
-      if (remaining > 0) {
-        lines.push(`| *... and ${remaining} more* | |`)
       }
     } else {
       lines.push('| Value |')
       lines.push('| --- |')
-      for (const v of showValues) {
+      for (const v of values) {
         lines.push(`| \`${v.name}\` |`)
-      }
-      if (remaining > 0) {
-        lines.push(`| *... and ${remaining} more* |`)
       }
     }
     lines.push('')

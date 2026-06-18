@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "Community Battlefield Portal documentation site",
   "scripts": {
-    "docs:dev": "node scripts/fetch-sdk-version.mjs && node scripts/download-block-help.mjs && node scripts/generate-block-reference.mjs && vitepress dev",
-    "docs:build": "node scripts/update-sdk-reference.mjs --strict && node scripts/download-block-help.mjs --strict && node scripts/generate-block-reference.mjs --strict && vitepress build",
+    "docs:dev": "node scripts/fetch-sdk-version.mjs && node scripts/download-block-help.mjs && node scripts/generate-block-reference.mjs && node scripts/generate-spatial-object-reference.mjs && vitepress dev",
+    "docs:build": "node scripts/update-sdk-reference.mjs --strict && node scripts/download-block-help.mjs --strict && node scripts/generate-block-reference.mjs --strict && node scripts/generate-spatial-object-reference.mjs --strict && vitepress build",
     "sdk:update": "node scripts/update-sdk-reference.mjs --strict",
-    "blocks:update": "node scripts/download-block-help.mjs --strict && node scripts/generate-block-reference.mjs --strict",
+    "blocks:update": "node scripts/download-block-help.mjs --strict && node scripts/generate-block-reference.mjs --strict && node scripts/generate-spatial-object-reference.mjs --strict",
     "docs:preview": "vitepress preview"
   },
   "keywords": [],

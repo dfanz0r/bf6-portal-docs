@@ -4,6 +4,10 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: "Portal Docs",
   description: "Battlefield 6 Portal Docs",
+  // Keep local reference material and project notes from becoming site pages.
+  // VitePress uses file-based routing for every Markdown file under the root
+  // unless it is excluded. See vitepress-docs/reference/site-config.md#srcexclude.
+  srcExclude: ['vitepress-docs/**/*.md', 'AUDIT_REMEDIATION_PLAN.md'],
 
   head: [
     ['link', { rel: 'icon', type: 'image/png', href: '/icon.png' }],
@@ -19,7 +23,8 @@ export default defineConfig({
       { text: 'Home', link: '/' },
       { text: 'Introduction', link: '/introduction' },
       { text: 'TypeScript API Reference', link: '/typescript-api-reference' },
-      { text: 'Block Code Reference', link: '/block-code-reference' }
+      { text: 'Block Code Reference', link: '/block-code-reference' },
+      { text: 'Spatial Object Reference', link: '/spatial-object-reference' }
     ],
 
     sidebar: [
@@ -47,7 +52,8 @@ export default defineConfig({
         collapsed: false,
         items: [
           { text: 'TypeScript API Reference', link: '/typescript-api-reference' },
-          { text: 'Block Code Reference', link: '/block-code-reference' }
+          { text: 'Block Code Reference', link: '/block-code-reference' },
+          { text: 'Spatial Object Reference', link: '/spatial-object-reference' }
         ]
       }
     ],

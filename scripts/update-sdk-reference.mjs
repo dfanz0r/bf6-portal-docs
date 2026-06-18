@@ -583,13 +583,19 @@ function renderTypesReference (entries) {
   return `## Types\n\n${[opaqueSection, aliasesSection].filter(Boolean).join('\n\n')}\n`
 }
 
+function spatialObjectAnchor (name) {
+  return `spatial-${String(name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`
+}
+
 function renderEnumReference (entries) {
   if (!entries.length) return '## Enums\n\nNo exported enums found.\n'
 
   return `## Enums\n\n${entries.sort((a, b) => a.name.localeCompare(b.name)).map((entry) => {
-    const values = entry.count > 80
-      ? `${entry.values.slice(0, 80).map((value) => `  ${value},`).join('\n')}\n  // Only the first 80 values are shown.`
-      : entry.values.map((value) => `  ${value},`).join('\n')
+    if (entry.name.startsWith('RuntimeSpawn_')) {
+      return `<details>\n<summary><strong>${entry.name}</strong> (${entry.count} values)</summary>\n\n${entry.description ? `${entry.description}\n\n` : ''}This is a map-based spatial object enum. See [Spatial Object Reference](/spatial-object-reference#${spatialObjectAnchor(entry.name)}) for the full combined map-aware reference.\n\n</details>`
+    }
+
+    const values = entry.values.map((value) => `  ${value},`).join('\n')
 
     return `<details>\n<summary><strong>${entry.name}</strong> (${entry.count} values)</summary>\n\n${entry.description ? `${entry.description}\n\n` : ''}\`\`\`ts\nenum ${entry.name} {\n${values}\n}\n\`\`\`\n\n</details>`
   }).join('\n\n')}\n`

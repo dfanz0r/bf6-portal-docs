@@ -4658,6 +4658,7 @@ Selection lists are enum-like values used for dropdown parameters.
 ### AiInput
 
 List type: `AiInput`
+Values: **13**
 
 | Value |
 | --- |
@@ -4678,6 +4679,7 @@ List type: `AiInput`
 ### AmmoTypes
 
 List type: `AmmoTypes`
+Values: **6**
 
 | Value |
 | --- |
@@ -4691,6 +4693,7 @@ List type: `AmmoTypes`
 ### ArmorType
 
 List type: `ArmorTypes`
+Values: **3**
 
 | Value |
 | --- |
@@ -4701,6 +4704,7 @@ List type: `ArmorTypes`
 ### Cameras
 
 List type: `Cameras`
+Values: **4**
 
 | Value |
 | --- |
@@ -4712,6 +4716,7 @@ List type: `Cameras`
 ### CustomNotificationSlots
 
 List type: `CustomNotificationSlots`
+Values: **5**
 
 | Value |
 | --- |
@@ -4724,6 +4729,7 @@ List type: `CustomNotificationSlots`
 ### Factions
 
 List type: `Factions`
+Values: **2**
 
 | Value |
 | --- |
@@ -4733,6 +4739,7 @@ List type: `Factions`
 ### Gadgets
 
 List type: `Gadgets`
+Values: **61**
 
 | Value |
 | --- |
@@ -4766,11 +4773,42 @@ List type: `Gadgets`
 | `Launcher_Long_Range` |
 | `Launcher_Smoke_Grenade` |
 | `Launcher_Thermobaric_Grenade` |
-| *... and 31 more* |
+| `Launcher_Unguided_Rocket` |
+| `Mask_Gas` |
+| `Mask_NVG` |
+| `Melee_Combat_Knife` |
+| `Melee_Hunting_Knife` |
+| `Melee_Ice_Axe` |
+| `Melee_Serrated_Blade` |
+| `Melee_Sledgehammer` |
+| `Misc_Acoustic_Sensor_AV_Mine` |
+| `Misc_Anti_Personnel_Mine` |
+| `Misc_Anti_Vehicle_Mine` |
+| `Misc_Assault_Ladder` |
+| `Misc_Defibrillator` |
+| `Misc_Demolition_Charge` |
+| `Misc_Incendiary_Round_Shotgun` |
+| `Misc_Laser_Designator` |
+| `Misc_PortalGadget` |
+| `Misc_Sniper_Decoy` |
+| `Misc_Supply_Pouch` |
+| `Misc_Suppression` |
+| `Misc_Tracer_Dart` |
+| `Misc_Tripwire_Sensor_AV_Mine` |
+| `Throwable_Anti_Vehicle_Grenade` |
+| `Throwable_Flash_Grenade` |
+| `Throwable_Fragmentation_Grenade` |
+| `Throwable_Incendiary_Grenade` |
+| `Throwable_Mini_Frag_Grenade` |
+| `Throwable_Proximity_Detector` |
+| `Throwable_Smoke_Grenade` |
+| `Throwable_Stun_Grenade` |
+| `Throwable_Throwing_Knife` |
 
 ### GolmudTrainMoveCommands
 
 List type: `GolmudTrainMoveCommands`
+Values: **3**
 
 | Value |
 | --- |
@@ -4781,6 +4819,7 @@ List type: `GolmudTrainMoveCommands`
 ### GolmudTrainStopReason
 
 List type: `GolmudTrainStopReason`
+Values: **3**
 
 | Value |
 | --- |
@@ -4791,6 +4830,7 @@ List type: `GolmudTrainStopReason`
 ### GolmudTrainVariants
 
 List type: `GolmudTrainVariants`
+Values: **4**
 
 | Value |
 | --- |
@@ -4802,6 +4842,7 @@ List type: `GolmudTrainVariants`
 ### InventorySlots
 
 List type: `InventorySlots`
+Values: **9**
 
 | Value |
 | --- |
@@ -4818,6 +4859,7 @@ List type: `InventorySlots`
 ### Maps
 
 List type: `Maps`
+Values: **22**
 
 | Value |
 | --- |
@@ -4847,6 +4889,7 @@ List type: `Maps`
 ### MoveSpeed
 
 List type: `MoveSpeed`
+Values: **7**
 
 | Value |
 | --- |
@@ -4861,6 +4904,7 @@ List type: `MoveSpeed`
 ### MusicEvents
 
 List type: `MusicEvents`
+Values: **46**
 
 | Value |
 | --- |
@@ -4894,11 +4938,27 @@ List type: `MusicEvents`
 | `Gauntlet_Deploy` |
 | `Gauntlet_Loss_FinalMission_Loop` |
 | `Gauntlet_Loss_Loop` |
-| *... and 16 more* |
+| `Gauntlet_MissionBriefing_Final` |
+| `Gauntlet_MissionBriefing_One` |
+| `Gauntlet_MissionBriefing_Three` |
+| `Gauntlet_MissionBriefing_Two` |
+| `Gauntlet_Pause` |
+| `Gauntlet_Qualified_Loop` |
+| `Gauntlet_Qualified_Outro` |
+| `Gauntlet_Stop` |
+| `Gauntlet_Unpause` |
+| `Gauntlet_Urgency` |
+| `Gauntlet_Urgency_FinalMission` |
+| `Gauntlet_WonOperation_Loop` |
+| `Radio_ClearQueue` |
+| `Radio_NextQueuedTrack` |
+| `Radio_Play` |
+| `Radio_Stop` |
 
 ### MusicPackages
 
 List type: `MusicPackages`
+Values: **4**
 
 | Value |
 | --- |
@@ -4910,6 +4970,7 @@ List type: `MusicPackages`
 ### MusicParams
 
 List type: `MusicParams`
+Values: **14**
 
 | Value |
 | --- |
@@ -4931,6 +4992,7 @@ List type: `MusicParams`
 ### PlayerDamageTypes
 
 List type: `PlayerDamageTypes`
+Values: **6**
 
 | Value |
 | --- |
@@ -4944,6 +5006,7 @@ List type: `PlayerDamageTypes`
 ### PlayerDeathTypes
 
 List type: `PlayerDeathTypes`
+Values: **11**
 
 | Value |
 | --- |
@@ -4962,6 +5025,7 @@ List type: `PlayerDeathTypes`
 ### PlayerFilterTypes
 
 List type: `PlayerFilterTypes`
+Values: **4**
 
 | Value |
 | --- |
@@ -4973,6 +5037,7 @@ List type: `PlayerFilterTypes`
 ### RestrictedInputs
 
 List type: `RestrictedInputs`
+Values: **20**
 
 | Value |
 | --- |
@@ -5000,6 +5065,7 @@ List type: `RestrictedInputs`
 ### ResupplyTypes
 
 List type: `ResupplyTypes`
+Values: **3**
 
 | Value |
 | --- |
@@ -5010,880 +5076,168 @@ List type: `ResupplyTypes`
 ### RuntimeSpawn_Abbasid
 
 List type: `RuntimeSpawn_Abbasid`
+Values: **1346**
 
-| Value |
-| --- |
-| `ACModule_01` |
-| `ACModule_02` |
-| `ACModule_03` |
-| `ACModule_03_animated` |
-| `ACModule_03_Running` |
-| `ACUnit_03` |
-| `ACUnit_03_animated` |
-| `ACUnit_03_cover` |
-| `ACUnit_03_Running` |
-| `ACUnit_04` |
-| `ACUnit_04_cover` |
-| `ACUnitWindow_01_B` |
-| `AftermathDebrisPileConcrete_Skew_210_B` |
-| `AftermathDebrisPileConcrete_Skew_210_D` |
-| `AirConClusterBuildingSide_01` |
-| `AirConClusterBuildingSide_02` |
-| `AirConClusterBuildingSide_03` |
-| `AirConClusterBuildingSide_04` |
-| `AirConClusterBuildingSide_05` |
-| `AirConClusterBuildingSide_06` |
-| `Anemometer_01` |
-| `AntennaMast_01_BD` |
-| `AntennaMastMetal_01` |
-| `AntennareciverMetal_01` |
-| `AntennaRooftop_01` |
-| `AntennaSmall_01_A` |
-| `AntennaSmall_01_B` |
-| `Apple_01` |
-| `AppleCluster_01` |
-| `AppleCluster_02` |
-| *... and 1316 more* |
+This is a map-based spatial object list. See [Spatial Object Reference](/spatial-object-reference#spatial-runtimespawn-abbasid) for the full combined map-aware reference.
 
 ### RuntimeSpawn_Aftermath
 
 List type: `RuntimeSpawn_Aftermath`
+Values: **1496**
 
-| Value |
-| --- |
-| `ACModule_01` |
-| `ACModule_02` |
-| `ACModule_03` |
-| `ACModule_04` |
-| `ACUnit_01` |
-| `ACUnit_03` |
-| `ACUnit_03_animated` |
-| `ACUnit_03_Running` |
-| `ACUnit_04` |
-| `ACUnit_04_cover` |
-| `ACUnitInterior_01` |
-| `ACUnitWindow_01_A` |
-| `ACUnitWindow_01_C` |
-| `ACUnitWindow_logo_01` |
-| `Aftermath_DebrisPileConcrete_Skew_210_A_1` |
-| `AftermathDebrisPileBrickPlaster_120_01` |
-| `AftermathDebrisPileBrickPlaster_120_A_1` |
-| `AftermathDebrisPileBrickPlaster_210_01` |
-| `AftermathDebrisPileBrickPlaster_210_A_1` |
-| `AftermathDebrisPileConcrete_Skew_210_D` |
-| `AftermathDebrisPileRedBrick_01_A` |
-| `AftermathDebrisPileRedBrick_01_B` |
-| `AirDuct_02_A_256` |
-| `AirDuct_02_A_512` |
-| `AirDuct_02_A_Corner` |
-| `AirDuct_02_A_End` |
-| `AirDuct_1024_A` |
-| `AirDuct_1024_B` |
-| `AirDuct_256` |
-| `AirDuct_512_A` |
-| *... and 1466 more* |
+This is a map-based spatial object list. See [Spatial Object Reference](/spatial-object-reference#spatial-runtimespawn-aftermath) for the full combined map-aware reference.
 
 ### RuntimeSpawn_Badlands
 
 List type: `RuntimeSpawn_Badlands`
+Values: **891**
 
-| Value |
-| --- |
-| `Abra01_Chassis` |
-| `Abra01_Tracks` |
-| `Abra01_Turret` |
-| `AbraCoveredTarp` |
-| `AcaciaUrban_01_S` |
-| `ACUnit_04` |
-| `ACUnit_04_Off` |
-| `ACUnitWindow_01_A` |
-| `ACUnitWindow_01_C` |
-| `ACUnitWindow_logo_01` |
-| `AftermathDebrisPileConcrete_Center_120` |
-| `AftermathDebrisPileConcrete_Center_120_B` |
-| `AftermathDebrisPileConcrete_Center_60` |
-| `AftermathDebrisPileConcrete_Center_60_B` |
-| `AftermathDebrisPileConcrete_Skew_120` |
-| `AftermathDebrisPileConcrete_Skew_120_B` |
-| `AftermathDebrisPileConcrete_Skew_210_C` |
-| `AftermathDebrisPileConcrete_Skew_210_E` |
-| `AftermathDebrisPileDrywall_Center_120_01` |
-| `AftermathDebrisPileDrywall_Center_120_01_B` |
-| `AftermathDebrisPileDrywall_Center_60_01` |
-| `AftermathDebrisPileDrywall_Center_60_01_B` |
-| `AftermathDebrisPileDrywall_Ramp_210_01` |
-| `AftermathDebrisPileDrywall_Ramp_210_01_B` |
-| `AirfieldBlastBarrier_01` |
-| `AlleyTrash_01` |
-| `AlleyTrash_02` |
-| `AntennaMast_01` |
-| `AntennaMastMetal_01` |
-| `AntennareciverMetal_01` |
-| *... and 861 more* |
+This is a map-based spatial object list. See [Spatial Object Reference](/spatial-object-reference#spatial-runtimespawn-badlands) for the full combined map-aware reference.
 
 ### RuntimeSpawn_Battery
 
 List type: `RuntimeSpawn_Battery`
+Values: **1232**
 
-| Value |
-| --- |
-| `AAGun_01` |
-| `ACModule_01` |
-| `ACModule_02` |
-| `ACModule_03` |
-| `ACModule_04` |
-| `ACUnit_03` |
-| `ACUnit_03_animated` |
-| `ACUnit_03_Running` |
-| `ACUnit_04` |
-| `AftermathDebrisPileBrickPlaster_120` |
-| `AftermathDebrisPileBrickPlaster_120_01` |
-| `AftermathDebrisPileBrickPlaster_210` |
-| `AftermathDebrisPileBrickPlaster_210_01` |
-| `AgaveAmericana_01_S_A` |
-| `AgaveAmericana_01_S_B` |
-| `AgaveAmericanaPotted_01_S_B` |
-| `AirControlTower_02` |
-| `AirportTerminalLarge_01` |
-| `AirportTerminalStorage_01` |
-| `Anemometer_01` |
-| `AntennaRooftop_01` |
-| `AntennaSmall_01_A` |
-| `AntennaSmall_01_B` |
-| `Architecture_01_A` |
-| `Architecture_01_B` |
-| `Architecture_01_C` |
-| `Architecture_01_D` |
-| `AsphaltChunks_01` |
-| `AsphaltChunks_02` |
-| `AsphaltChunks_03` |
-| *... and 1202 more* |
+This is a map-based spatial object list. See [Spatial Object Reference](/spatial-object-reference#spatial-runtimespawn-battery) for the full combined map-aware reference.
 
 ### RuntimeSpawn_Capstone
 
 List type: `RuntimeSpawn_Capstone`
+Values: **610**
 
-| Value |
-| --- |
-| `ACModule_03` |
-| `ACUnit_03` |
-| `ACUnit_04` |
-| `ACUnit_04_Support` |
-| `AftermathDebrisPileVillage_120_01` |
-| `AntennaRooftop_01` |
-| `AntennaSmall_01_A` |
-| `AntennaTall_01` |
-| `AsphaltChunks_01` |
-| `AsphaltChunks_02` |
-| `AsphaltChunks_03` |
-| `Awning_02_A` |
-| `Awning_02_B` |
-| `Awning_02_C` |
-| `Awning_02_D` |
-| `BarrelBurned_01` |
-| `BarrelOil_01_B` |
-| `BarrelOil_01_D` |
-| `BarrelOil_01_group_05` |
-| `BarrelOilExplosive_01_DDPF_B` |
-| `BarrierBlockConcrete_01_256x60` |
-| `BarrierBlockConcrete_02_128_60` |
-| `BarrierBlockConcrete_03_128_120` |
-| `BarrierConcreteRoadSide_01_A` |
-| `BarrierConcreteRoadSide_01_A_DDPF` |
-| `BarrierConcreteRoadSide_01_B` |
-| `BarrierConcreteRoadSide_01_B_DDPF` |
-| `BarrierConcreteRoadSide_02_A` |
-| `BarrierConcreteRoadSide_02_B` |
-| `BarrierConcreteWall_01_192x320` |
-| *... and 580 more* |
+This is a map-based spatial object list. See [Spatial Object Reference](/spatial-object-reference#spatial-runtimespawn-capstone) for the full combined map-aware reference.
 
 ### RuntimeSpawn_Common
 
 List type: `RuntimeSpawn_Common`
+Values: **1471**
 
-| Value |
-| --- |
-| `AI_Spawner` |
-| `AI_WaypointPath` |
-| `AmmoChest_Small_01` |
-| `AmmoChest_Small_Ext_01` |
-| `AmmoChest_Small_Int_01` |
-| `AmmoChest_Small_Lid_01` |
-| `AreaTrigger` |
-| `BallGo01` |
-| `BarbedWire_01_B` |
-| `BarrelOil_01_A` |
-| `BarrelOilExplosive_01` |
-| `BarrelOilFire_01` |
-| `BarriersPedestrian_01_B` |
-| `BarrierStoneBlock_01_A` |
-| `BarrierStoneBlock_01_B` |
-| `BarrierStoneBlock_01_C` |
-| `BarrierStoneBlock_01_D` |
-| `BarrierStoneBlock_01_E` |
-| `BarrierStoneBlock_01_F` |
-| `BarrierStoneBlock_01_G` |
-| `BarrierStoneBlock_01_H` |
-| `Basketball_01` |
-| `BeverageFridge_01_B` |
-| `BroadleafUrban_01_L_A` |
-| `BroadleafUrban_01_M_B` |
-| `CameraSurveillance_01_B` |
-| `CapturePoint` |
-| `CautionSticker_01` |
-| `CCTVSign_01` |
-| `ChairPlastic_01_A` |
-| *... and 1441 more* |
+This is a map-based spatial object list. See [Spatial Object Reference](/spatial-object-reference#spatial-runtimespawn-common) for the full combined map-aware reference.
 
 ### RuntimeSpawn_Contaminated
 
 List type: `RuntimeSpawn_Contaminated`
+Values: **1346**
 
-| Value |
-| --- |
-| `ACUnit_03` |
-| `ACUnit_04_Support` |
-| `AftermathDebrisPileMetal_210_01` |
-| `AftermathDebrisRocks_310` |
-| `AftermathDebrisRocks_310_B` |
-| `AircraftWreckage_Jas39_01_Body` |
-| `AirDuct_02_A_256` |
-| `AirDuct_02_A_512` |
-| `AirDuct_02_A_Corner` |
-| `AirDuct_02_A_End` |
-| `AirDuct_02_A_Joint` |
-| `AirDuctPipe_01` |
-| `AirDuctPipe_01_C90` |
-| `AirDuctPipe_1024_01` |
-| `AirDuctPipe_256_01` |
-| `AirDuctPipe_256_C90_01` |
-| `AirDuctPipe_512_01` |
-| `AirDuctPipeCap_01` |
-| `AirplaneJAS39_01` |
-| `AirplaneJAS39_01_B` |
-| `AirplaneJAS39_01_C` |
-| `AirplaneJAS39_Repair_01` |
-| `AirplaneJAS39Body` |
-| `AirplaneJAS39Cab_01_Contaminated` |
-| `AirplaneJAS39Cloth_01` |
-| `AirplaneJAS39Cockpit_01` |
-| `AirplaneJAS39EnginePlugsBack_01` |
-| `AirplaneJAS39EnginePlugsLeft_01` |
-| `AirplaneJAS39EnginePlugsRight_01` |
-| `AirplaneJAS39Frame_01` |
-| *... and 1316 more* |
+This is a map-based spatial object list. See [Spatial Object Reference](/spatial-object-reference#spatial-runtimespawn-contaminated) for the full combined map-aware reference.
 
 ### RuntimeSpawn_Dumbo
 
 List type: `RuntimeSpawn_Dumbo`
+Values: **1499**
 
-| Value |
-| --- |
-| `ACModule_01_VFX` |
-| `ACModule_02` |
-| `ACModule_02_VFX` |
-| `ACModule_03` |
-| `ACModule_04` |
-| `ACUnit_03_animated` |
-| `ACUnit_03_cover` |
-| `ACUnit_03_Running` |
-| `ACUnit_04` |
-| `ACUnit_04_cover` |
-| `ACUnitWindow_01_D` |
-| `Aftermath_DebrisPileConcrete_Skew_210_A_1` |
-| `AftermathDebrisPileBrickPlaster_120` |
-| `AftermathDebrisPileBrickPlaster_120_01` |
-| `AftermathDebrisPileBrickPlaster_120_A_1` |
-| `AftermathDebrisPileBrickPlaster_210` |
-| `AftermathDebrisPileBrickPlaster_210_01` |
-| `AftermathDebrisPileBrickPlaster_210_A_1` |
-| `AftermathDebrisPileConcrete_Skew_210_A` |
-| `AftermathDebrisPileConcrete_Skew_210_B` |
-| `AftermathDebrisPileConcrete_Skew_210_D` |
-| `AftermathDebrisPileRedBrick_01_A` |
-| `AftermathDebrisPileRedBrick_01_B` |
-| `AgaveAmericana_01_S_A` |
-| `AgaveAmericanaPotted_01_S_A` |
-| `Ailanthis_01_S` |
-| `Ailanthis_01_S_B` |
-| `Ailanthis_01_S_C` |
-| `Ailanthis_01_S_D` |
-| `Ailanthis_01_S_E` |
-| *... and 1469 more* |
+This is a map-based spatial object list. See [Spatial Object Reference](/spatial-object-reference#spatial-runtimespawn-dumbo) for the full combined map-aware reference.
 
 ### RuntimeSpawn_Eastwood
 
 List type: `RuntimeSpawn_Eastwood`
+Values: **944**
 
-| Value |
-| --- |
-| `AcaciaUrban_01_S` |
-| `ACModule_01` |
-| `ACModule_03_animated` |
-| `AdirondackChair_01` |
-| `AftermathDebrisPileDrywall_Center_120_01` |
-| `AftermathDebrisPileDrywall_Center_120_01_B` |
-| `AftermathDebrisPileDrywall_Center_60_01` |
-| `AftermathDebrisPileDrywall_Center_60_01_B` |
-| `AftermathDebrisPileDrywall_Ramp_210_01` |
-| `AftermathDebrisPileDrywall_Ramp_210_01_B` |
-| `AgaveAmericana_01_S_A` |
-| `AgaveAmericana_01_S_B` |
-| `AgaveAmericanaPotted_01_S_A` |
-| `AntennaMast_01` |
-| `AntennaMastMetal_01` |
-| `AntennareciverMetal_01` |
-| `AshTray_01_B` |
-| `AshTray_01_VFX` |
-| `AshTrayCigarettes_01` |
-| `AsphaltChunks_01` |
-| `AsphaltChunks_02` |
-| `AsphaltChunks_03` |
-| `BackroomStorageShe01` |
-| `BagTarp_01` |
-| `BananaPlant_01_S_A` |
-| `BananaPlant_01_S_B` |
-| `BananaPotted_01_S_B` |
-| `BananaWi01_M` |
-| `BananaWildPotted_01_M` |
-| `BananaWildPotted_01_M_A_Oriental` |
-| *... and 914 more* |
+This is a map-based spatial object list. See [Spatial Object Reference](/spatial-object-reference#spatial-runtimespawn-eastwood) for the full combined map-aware reference.
 
 ### RuntimeSpawn_FireStorm
 
 List type: `RuntimeSpawn_FireStorm`
+Values: **746**
 
-| Value |
-| --- |
-| `AcaciaUrban_01_S` |
-| `ACUnit_04` |
-| `AftermathDebrisPileConcrete_Center_120` |
-| `AftermathDebrisPileConcrete_Center_120_B` |
-| `AftermathDebrisPileConcrete_Skew_120` |
-| `AftermathDebrisPileConcrete_Skew_120_B` |
-| `AftermathDebrisPileConcrete_Skew_210_C` |
-| `AftermathDebrisPileConcrete_Skew_210_E` |
-| `AirDuct_02_A_256` |
-| `AirDuct_02_A_512` |
-| `AirDuct_02_A_End` |
-| `Antenna_01` |
-| `AntennaTall_01` |
-| `AsphaltChunks_01` |
-| `AsphaltChunks_02` |
-| `AsphaltChunks_03` |
-| `AviationLight_01` |
-| `Barrack_01_A_Firestorm` |
-| `BarrelBurned_01` |
-| `BarrelOil_03` |
-| `BarricadeboardsWood_01_B` |
-| `BarrierBlockConcrete_01_256x60` |
-| `BarrierBlockConcrete_03_128_120` |
-| `BarrierConcreteWall_01_160x385` |
-| `BarrierConcreteWall_01_192x320` |
-| `BarrierConcreteWall_01_192x320_A_DDPF` |
-| `BarrierConcreteWall_01_Row2` |
-| `BarrierConcreteWall_01_Row3` |
-| `BarrierConcreteWall_01_Row4` |
-| `BarrierConstruction_01_256_120` |
-| *... and 716 more* |
+This is a map-based spatial object list. See [Spatial Object Reference](/spatial-object-reference#spatial-runtimespawn-firestorm) for the full combined map-aware reference.
 
 ### RuntimeSpawn_GolmudRailway
 
 List type: `RuntimeSpawn_GolmudRailway`
+Values: **1189**
 
-| Value |
-| --- |
-| `ACModule_01` |
-| `ACUnit_03` |
-| `ACUnit_03_animated` |
-| `ACUnit_03_Running` |
-| `ACUnit_04_Support` |
-| `ACUnitInterior_01` |
-| `AftermathDebrisPileBrickPlaster_120` |
-| `AftermathDebrisPileConcrete_Skew_120` |
-| `AftermathDebrisPileConcrete_Skew_120_B` |
-| `AftermathDebrisPileConcrete_Skew_210_A` |
-| `AftermathDebrisPileVillage_120_01` |
-| `AgaveAmericanaPotted_01_S_A` |
-| `AgaveAmericanaPotted_01_S_B` |
-| `AirConClusterBuildingSide_01` |
-| `AirplaneJAS39_Repair_01` |
-| `AlleyTrash_01` |
-| `AlleyTrash_02` |
-| `AlleyTrash_03` |
-| `AlleyTrash_04` |
-| `AlleyTrash_05` |
-| `AlleyTrash_06` |
-| `AlleyTrash_07` |
-| `AlleyTrash_08` |
-| `AluminumBench_01` |
-| `AmmoStack_01` |
-| `AnimalDungLarge_01` |
-| `Antenna_01` |
-| `Antenna_01_B` |
-| `Antenna_02` |
-| `AntennaMast_01` |
-| *... and 1159 more* |
+This is a map-based spatial object list. See [Spatial Object Reference](/spatial-object-reference#spatial-runtimespawn-golmudrailway) for the full combined map-aware reference.
 
 ### RuntimeSpawn_Granite_Downtown
 
 List type: `RuntimeSpawn_Granite_Downtown`
+Values: **1456**
 
-| Value |
-| --- |
-| `_3DSignChavel1883_01` |
-| `_3DSignChavelNoir_01` |
-| `_3DSignDoubleDipDonuts_01` |
-| `_3DSignDoubleDipDonuts_02` |
-| `_3DSignFleurDeForet_01` |
-| `_3DSignImperia_01` |
-| `_3DSignKoada_01` |
-| `_3DSignLAtelier_01` |
-| `_3DSignLussore_01` |
-| `_3DSignSantoVernne_01` |
-| `_3DSignVisteria_01` |
-| `AcaciaUrban_01_S` |
-| `ACModule_01` |
-| `ACModule_02` |
-| `ACModule_03` |
-| `ACModule_04` |
-| `AgaveAmericana_01_S_A` |
-| `AgaveAmericana_01_S_B` |
-| `AirDuct_02_A_256` |
-| `AirDuct_02_A_512` |
-| `AirDuct_02_A_Corner` |
-| `AirDuct_02_A_End` |
-| `AirDuct_1024_A` |
-| `AirDuct_256` |
-| `AirDuct_512_A` |
-| `AirDuct_768` |
-| `AirDuct_Bend_90_128` |
-| `AirDuct_Bend_90_128_B` |
-| `AirDuct_End` |
-| `AirDuct_End_Bend_Up` |
-| *... and 1426 more* |
+This is a map-based spatial object list. See [Spatial Object Reference](/spatial-object-reference#spatial-runtimespawn-granite-downtown) for the full combined map-aware reference.
 
 ### RuntimeSpawn_Granite_Marina
 
 List type: `RuntimeSpawn_Granite_Marina`
+Values: **1417**
 
-| Value |
-| --- |
-| `_3DSignDoubleDipDonuts_01` |
-| `_3DSignDoubleDipDonuts_02` |
-| `_3DSignLussore_01` |
-| `_3DSignSantoVernne_01` |
-| `_3DSignVisteria_01` |
-| `AcaciaUrban_01_S` |
-| `ACModule_01` |
-| `ACModule_02` |
-| `ACModule_04` |
-| `AdirondackChair_01` |
-| `AgaveAmericana_01_S_A` |
-| `AgaveAmericana_01_S_B` |
-| `Airconditioner_01_B` |
-| `AirDuct_1024_A` |
-| `AirDuct_256` |
-| `AirDuct_512_A` |
-| `AirDuct_768` |
-| `AirDuct_Bend_90_128` |
-| `AirDuct_Bend_90_128_B` |
-| `AirDuct_End` |
-| `AirDuct_End_Bend_Up` |
-| `AlleyTrash_01` |
-| `AlleyTrash_02` |
-| `AlleyTrash_03` |
-| `AlleyTrash_04` |
-| `AlleyTrash_05` |
-| `AlleyTrash_07` |
-| `AlleyTrash_08` |
-| `AluminumGangway_01_1024` |
-| `AntennaRooftop_01` |
-| *... and 1387 more* |
+This is a map-based spatial object list. See [Spatial Object Reference](/spatial-object-reference#spatial-runtimespawn-granite-marina) for the full combined map-aware reference.
 
 ### RuntimeSpawn_Granite_MilitaryRnD
 
 List type: `RuntimeSpawn_Granite_MilitaryRnD`
+Values: **1064**
 
-| Value |
-| --- |
-| `AcaciaUrban_01_S` |
-| `ACModule_01` |
-| `ACModule_02` |
-| `ACModule_04` |
-| `ACUnit_04` |
-| `ACUnitInterior_01` |
-| `Airconditioner_01` |
-| `Airconditioner_01_B` |
-| `AirDuct_1024_A` |
-| `AirDuct_256` |
-| `AirDuct_512_A` |
-| `AirDuct_512_B` |
-| `AirDuct_Bend_90_128` |
-| `AirDuct_Bend_90_128_B` |
-| `AirDuct_Bend_T_90_128` |
-| `AirDuct_End` |
-| `AirDuct_End_Bend_Up` |
-| `AirDuct_TShape` |
-| `AirDuct_Vent` |
-| `AirfieldBlastBarrier_01` |
-| `AluminumBench_01` |
-| `AluminumGangway_01_1024` |
-| `Antenna_02` |
-| `AntennaMast_01` |
-| `AntennaMastMetal_01` |
-| `AntennareciverMetal_01` |
-| `AntennaRooftop_01` |
-| `AntennaSmall_01_B` |
-| `AntennaTall_01` |
-| `AsphaltBrokenThick_01_512x512` |
-| *... and 1034 more* |
+This is a map-based spatial object list. See [Spatial Object Reference](/spatial-object-reference#spatial-runtimespawn-granite-militaryrnd) for the full combined map-aware reference.
 
 ### RuntimeSpawn_Granite_MilitaryStorage
 
 List type: `RuntimeSpawn_Granite_MilitaryStorage`
+Values: **1128**
 
-| Value |
-| --- |
-| `Abra01_Chassis` |
-| `Abra01_Chassis_B` |
-| `Abra01_Tracks` |
-| `Abra01_Turret` |
-| `Abra01_Turret_B` |
-| `AbraCoveredTarp` |
-| `AcaciaUrban_01_S` |
-| `ACModule_01` |
-| `ACModule_02` |
-| `AluminumBench_01` |
-| `AmmoStack_01` |
-| `AntennaMast_01` |
-| `AntennaMastMetal_01` |
-| `AntennareciverMetal_01` |
-| `AntennaSmall_01_B` |
-| `AntennaTall_01` |
-| `AsphaltRubblePile_01` |
-| `AutoCapture_Terrain` |
-| `BackroomStorageShe01` |
-| `Barrack_01_A_Props_F` |
-| `Barrack_02_A_Props` |
-| `Barrack_02_A_SecurityCheckPoint` |
-| `Barrack_02_C` |
-| `Barrack_02_D` |
-| `Barrack_02_LightingProps` |
-| `BarrackStair_01` |
-| `BarrackStair_01_B` |
-| `BarrelLabratory_01_115` |
-| `BarrelLabratory_01_115_DDPF` |
-| `BarrelLabratory_01_cluster_A_2x3` |
-| *... and 1098 more* |
+This is a map-based spatial object list. See [Spatial Object Reference](/spatial-object-reference#spatial-runtimespawn-granite-militarystorage) for the full combined map-aware reference.
 
 ### RuntimeSpawn_Granite_ResidentialNorth
 
 List type: `RuntimeSpawn_Granite_ResidentialNorth`
+Values: **909**
 
-| Value |
-| --- |
-| `AcaciaUrban_01_S` |
-| `ACModule_04` |
-| `ACUnit_03` |
-| `AgaveAmericana_01_S_A` |
-| `AgaveAmericana_01_S_B` |
-| `AlleyTrash_02` |
-| `AsphaltBrokenThick_01_512x512` |
-| `AsphaltBrokenThick_01_512x512_CullSonner` |
-| `AsphaltChunks_01` |
-| `AutoCapture_Terrain` |
-| `BackroomStorageShe01` |
-| `BackroomStorageShe01_B` |
-| `BananaPlant_01_S_A` |
-| `BananaWi01_M` |
-| `BananaWildPotted_01_M` |
-| `BarCounter_01_128` |
-| `BarCounter_01_128_B` |
-| `BarCounter_01_256` |
-| `BarCounter_01_256_B` |
-| `BarCounter_01_512` |
-| `BarCounter_01_512_B` |
-| `BarCounterCabinet_01_A` |
-| `BarCounterCabinet_01_B` |
-| `BarCounterCabinet_03_128` |
-| `BarCounterCabinet_03_256` |
-| `BarCounterCorner_01` |
-| `BarCounterCorner_01_B` |
-| `BarCounterCorner_03` |
-| `BarCounterDrywall_01_A_Bottom_192x16x16` |
-| `BarCounterDrywall_01_A_Side_128x32x16` |
-| *... and 879 more* |
+This is a map-based spatial object list. See [Spatial Object Reference](/spatial-object-reference#spatial-runtimespawn-granite-residentialnorth) for the full combined map-aware reference.
 
 ### RuntimeSpawn_Granite_TechCenter
 
 List type: `RuntimeSpawn_Granite_TechCenter`
+Values: **834**
 
-| Value |
-| --- |
-| `AcaciaUrban_01_S` |
-| `AluminumBench_01` |
-| `AP_Planter_Grass_02` |
-| `AP_Planter_PurpleFlowers_01` |
-| `AP_PolyPlane_01` |
-| `ArtExhibitBase_128x128x128_01` |
-| `AsphaltBrokenThick_01_512x512` |
-| `AsphaltChunks_01` |
-| `AsphaltChunks_03` |
-| `AutoCapture_Terrain` |
-| `BackroomStorageShe01` |
-| `BananaWi01_M` |
-| `BarbedWire_01_A` |
-| `BarbedWire_01_C` |
-| `BarGantry_01` |
-| `BarrelOil_01_C` |
-| `BarrelOil_01_D` |
-| `BarrelOil_01_group_04` |
-| `BarrelOil_01_group_05` |
-| `BarrelOil_01_group_06` |
-| `BarrelOil_03` |
-| `BarrelOilExplosive_01_DDPF_B` |
-| `BarrierConstruction_01_256_120_B` |
-| `BarrierConstruction_01_256_120_DDPF` |
-| `BarrierHesco_01_128x120` |
-| `BarrierHesco_01_128x120_DDPF` |
-| `BarrierHesco_01_Row03` |
-| `BarrierJersey_01_256x124_B` |
-| `BarrierJerseyFence_01_ENKARE_Blue` |
-| `BarrierJerseyFence_01_ENKARE_Blue_B` |
-| *... and 804 more* |
+This is a map-based spatial object list. See [Spatial Object Reference](/spatial-object-reference#spatial-runtimespawn-granite-techcenter) for the full combined map-aware reference.
 
 ### RuntimeSpawn_Granite_Underground
 
 List type: `RuntimeSpawn_Granite_Underground`
+Values: **1430**
 
-| Value |
-| --- |
-| `AcaciaUrban_01_S` |
-| `ACModule_01` |
-| `ACModule_02` |
-| `ACModule_03` |
-| `ACModule_04` |
-| `AirDuct_01_A_1024` |
-| `AirDuct_01_C135` |
-| `AirDuct_02_A_256` |
-| `AirDuct_02_A_512` |
-| `AirDuct_02_A_512_NBRK` |
-| `AirDuct_02_A_Corner_NBRK` |
-| `AirDuct_02_A_End` |
-| `AirDuct_02_A_End_NBRK` |
-| `AirDuct_02_A_Joint` |
-| `AirDuct_1024_A` |
-| `AirDuct_1024_B` |
-| `AirDuct_256` |
-| `AirDuct_512_A` |
-| `AirDuct_512_B` |
-| `AirDuct_768` |
-| `AirDuct_Bend_90_128` |
-| `AirDuct_Bend_90_128_B` |
-| `AirDuct_Bend_T_90_128` |
-| `AirDuct_End` |
-| `AirDuct_End_Bend_Up` |
-| `AirDuct_End_Vent` |
-| `AirDuct_TShape` |
-| `AirDuct_Vent` |
-| `AirDuctDamaged_B_1024` |
-| `AirDuctPipe_01` |
-| *... and 1400 more* |
+This is a map-based spatial object list. See [Spatial Object Reference](/spatial-object-reference#spatial-runtimespawn-granite-underground) for the full combined map-aware reference.
 
 ### RuntimeSpawn_Limestone
 
 List type: `RuntimeSpawn_Limestone`
+Values: **927**
 
-| Value |
-| --- |
-| `ACModule_02` |
-| `ACModule_03` |
-| `ACModule_04` |
-| `ACUnit_03` |
-| `ACUnit_03_animated` |
-| `ACUnit_03_Running` |
-| `ACUnit_04` |
-| `ACUnit_04_Off` |
-| `AftermathDebrisPileBrickPlaster_120` |
-| `AftermathDebrisPileBrickPlaster_120_01` |
-| `AftermathDebrisPileConcrete_Skew_210_A` |
-| `AftermathDebrisPileConcrete_Skew_210_D` |
-| `AgaveAmericana_01_S_A` |
-| `AgaveAmericana_01_S_B` |
-| `AgaveAmericanaPotted_01_S_A` |
-| `AirControlTower_02` |
-| `AirportTerminalStorage_01` |
-| `Anemometer_01` |
-| `AntennaRooftop_01` |
-| `AntennaSmall_01_A` |
-| `AntennaSmall_01_B` |
-| `Apple_01` |
-| `AppleCluster_01` |
-| `AppleCluster_02` |
-| `Architecture_01_A` |
-| `Architecture_01_B` |
-| `Architecture_01_C` |
-| `Architecture_01_D` |
-| `Architecture_01_E` |
-| `Architecture_01_F` |
-| *... and 897 more* |
+This is a map-based spatial object list. See [Spatial Object Reference](/spatial-object-reference#spatial-runtimespawn-limestone) for the full combined map-aware reference.
 
 ### RuntimeSpawn_Outskirts
 
 List type: `RuntimeSpawn_Outskirts`
+Values: **842**
 
-| Value |
-| --- |
-| `ACModule_03` |
-| `ACUnit_03` |
-| `ACUnit_03_animated` |
-| `ACUnit_03_Running` |
-| `AftermathDebrisPileConcrete_Skew_210_A` |
-| `AftermathDebrisPileConcrete_Skew_210_D` |
-| `Airconditioner_01` |
-| `AlleyTrash_02` |
-| `AntennaRooftop_01` |
-| `Apple_01` |
-| `AppleCluster_01` |
-| `AppleCluster_02` |
-| `Area02_Scaffolding_01` |
-| `AsphaltChunks_01` |
-| `AsphaltChunks_02` |
-| `AsphaltChunks_03` |
-| `Awning_02_B` |
-| `Awning_02_C` |
-| `AwningPlastic_01_256` |
-| `AwningPlastic_01_512` |
-| `Barrack_01_A_Outskirts` |
-| `Barrack_01_B` |
-| `Barrack_01_B_Outskirts` |
-| `BarrackFoundation_01` |
-| `BarrackStair_01` |
-| `BarrelBurned_01` |
-| `BarrelOil_01_B` |
-| `BarrelOil_01_C` |
-| `BarrelOil_01_D` |
-| `BarrelOil_01_group_04` |
-| *... and 812 more* |
+This is a map-based spatial object list. See [Spatial Object Reference](/spatial-object-reference#spatial-runtimespawn-outskirts) for the full combined map-aware reference.
 
 ### RuntimeSpawn_Sand
 
 List type: `RuntimeSpawn_Sand`
+Values: **1346**
 
-| Value |
-| --- |
-| `ACModule_01` |
-| `ACModule_02` |
-| `ACModule_03` |
-| `ACModule_03_animated` |
-| `ACModule_03_Running` |
-| `ACUnit_03` |
-| `ACUnit_03_animated` |
-| `ACUnit_03_cover` |
-| `ACUnit_03_Running` |
-| `ACUnit_04` |
-| `ACUnit_04_cover` |
-| `ACUnitWindow_01_B` |
-| `AftermathDebrisPileConcrete_Skew_210_B` |
-| `AftermathDebrisPileConcrete_Skew_210_D` |
-| `AirConClusterBuildingSide_01` |
-| `AirConClusterBuildingSide_02` |
-| `AirConClusterBuildingSide_03` |
-| `AirConClusterBuildingSide_04` |
-| `AirConClusterBuildingSide_05` |
-| `AirConClusterBuildingSide_06` |
-| `Anemometer_01` |
-| `AntennaMast_01_BD` |
-| `AntennaMastMetal_01` |
-| `AntennareciverMetal_01` |
-| `AntennaRooftop_01` |
-| `AntennaSmall_01_A` |
-| `AntennaSmall_01_B` |
-| `Apple_01` |
-| `AppleCluster_01` |
-| `AppleCluster_02` |
-| *... and 1316 more* |
+This is a map-based spatial object list. See [Spatial Object Reference](/spatial-object-reference#spatial-runtimespawn-sand) for the full combined map-aware reference.
 
 ### RuntimeSpawn_Subsurface
 
 List type: `RuntimeSpawn_Subsurface`
+Values: **980**
 
-| Value |
-| --- |
-| `ACModule_01` |
-| `ACModule_02` |
-| `ACUnit_03_animated` |
-| `ACUnit_03_Running` |
-| `ACUnit_04_Support` |
-| `AftermathDebrisPileConcrete_Center_120` |
-| `AftermathDebrisPileConcrete_Skew_120_C` |
-| `AftermathDebrisRocks_210` |
-| `AftermathJet_Skew_210` |
-| `AircraftWreckage_Jas39_01_Body` |
-| `AirDuct_01_C135` |
-| `AirDuct_02_A_256` |
-| `AirDuct_02_A_256_B` |
-| `AirDuct_02_A_Corner` |
-| `AirDuct_02_A_End` |
-| `AirDuct_02_A_Joint` |
-| `AirDuct_02_C135` |
-| `AirDuct_1024_A` |
-| `AirDuct_1024_B` |
-| `AirDuct_1024_C` |
-| `AirDuct_256` |
-| `AirDuct_256_B` |
-| `AirDuct_512_A` |
-| `AirDuct_512_B` |
-| `AirDuct_768` |
-| `AirDuct_Bend_90_128` |
-| `AirDuct_Bend_90_128_B` |
-| `AirDuct_Bend_T_90_128` |
-| `AirDuct_End` |
-| `AirDuct_End_Bend_Up` |
-| *... and 950 more* |
+This is a map-based spatial object list. See [Spatial Object Reference](/spatial-object-reference#spatial-runtimespawn-subsurface) for the full combined map-aware reference.
 
 ### RuntimeSpawn_Tungsten
 
 List type: `RuntimeSpawn_Tungsten`
+Values: **877**
 
-| Value |
-| --- |
-| `ACUnit_04` |
-| `AftermathDebrisPileConcrete_Center_120` |
-| `AftermathDebrisPileConcrete_Center_60` |
-| `AftermathDebrisPileConcrete_Skew_120` |
-| `AftermathDebrisPileConcrete_Skew_210_C` |
-| `AftermathDebrisPileConstruction_Ramp_512_01` |
-| `AftermathDebrisPileConstruction_Ramp_512_01_B` |
-| `AftermathDebrisPileVillage_120_01` |
-| `AntennaRooftop_01` |
-| `Apple_01` |
-| `AppleCluster_02` |
-| `Awning_02_B` |
-| `Awning_02_C` |
-| `Barrack_01_A_Tungsten_1` |
-| `Barrack_01_Props_B` |
-| `Barrack_01_Props_C` |
-| `BarrelBurned_01` |
-| `BarrelOil_01_B` |
-| `BarrelOil_01_D` |
-| `BarrelOil_03` |
-| `BarrelOilExplosive_01_DDPF_B` |
-| `BarrelTools_01` |
-| `BarrelWater_01` |
-| `BarrierHesco_01_128x120` |
-| `BarrierHesco_01_128x240` |
-| `BarrierJersey_01_256x124_B` |
-| `Bedding_Set_01_Sheet` |
-| `Bedding_Set_02` |
-| `Bedding_Set_02_A_02` |
-| `Bedding_Set_02_B` |
-| *... and 847 more* |
+This is a map-based spatial object list. See [Spatial Object Reference](/spatial-object-reference#spatial-runtimespawn-tungsten) for the full combined map-aware reference.
 
 ### ScoreboardType
 
 List type: `ScoreboardType`
+Values: **5**
 
 | Value |
 | --- |
@@ -5896,6 +5250,7 @@ List type: `ScoreboardType`
 ### ScreenEffects
 
 List type: `ScreenEffects`
+Values: **4**
 
 | Value |
 | --- |
@@ -5907,6 +5262,7 @@ List type: `ScreenEffects`
 ### SoldierClass
 
 List type: `SoldierClass`
+Values: **4**
 
 | Value |
 | --- |
@@ -5918,6 +5274,7 @@ List type: `SoldierClass`
 ### SoldierEffects
 
 List type: `SoldierEffects`
+Values: **3**
 
 | Value |
 | --- |
@@ -5928,6 +5285,7 @@ List type: `SoldierEffects`
 ### SoldierStateBool
 
 List type: `SoldierStateBool`
+Values: **21**
 
 | Value |
 | --- |
@@ -5956,6 +5314,7 @@ List type: `SoldierStateBool`
 ### SoldierStateNumber
 
 List type: `SoldierStateNumber`
+Values: **6**
 
 | Value |
 | --- |
@@ -5969,6 +5328,7 @@ List type: `SoldierStateNumber`
 ### SoldierStateVector
 
 List type: `SoldierStateVector`
+Values: **4**
 
 | Value |
 | --- |
@@ -5980,6 +5340,7 @@ List type: `SoldierStateVector`
 ### SpawnModes
 
 List type: `SpawnModes`
+Values: **3**
 
 | Value |
 | --- |
@@ -5990,6 +5351,7 @@ List type: `SpawnModes`
 ### SpectatingGroup
 
 List type: `SpectatingGroup`
+Values: **3**
 
 | Value |
 | --- |
@@ -6000,6 +5362,7 @@ List type: `SpectatingGroup`
 ### SpotStatus
 
 List type: `SpotStatus`
+Values: **4**
 
 | Value |
 | --- |
@@ -6011,6 +5374,7 @@ List type: `SpotStatus`
 ### Stance
 
 List type: `Stance`
+Values: **3**
 
 | Value |
 | --- |
@@ -6021,6 +5385,7 @@ List type: `Stance`
 ### StationaryEmplacementsList
 
 List type: `StationaryEmplacements`
+Values: **3**
 
 | Value |
 | --- |
@@ -6031,6 +5396,7 @@ List type: `StationaryEmplacements`
 ### Types
 
 List type: `Types`
+Values: **112**
 
 | Value |
 | --- |
@@ -6064,11 +5430,93 @@ List type: `Types`
 | `Enum_RuntimeSpawn_Abbasid` |
 | `Enum_RuntimeSpawn_Aftermath` |
 | `Enum_RuntimeSpawn_Badlands` |
-| *... and 82 more* |
+| `Enum_RuntimeSpawn_Battery` |
+| `Enum_RuntimeSpawn_Capstone` |
+| `Enum_RuntimeSpawn_Common` |
+| `Enum_RuntimeSpawn_Contaminated` |
+| `Enum_RuntimeSpawn_Dumbo` |
+| `Enum_RuntimeSpawn_Eastwood` |
+| `Enum_RuntimeSpawn_FireStorm` |
+| `Enum_RuntimeSpawn_GolmudRailway` |
+| `Enum_RuntimeSpawn_Granite_Downtown` |
+| `Enum_RuntimeSpawn_Granite_Marina` |
+| `Enum_RuntimeSpawn_Granite_MilitaryRnD` |
+| `Enum_RuntimeSpawn_Granite_MilitaryStorage` |
+| `Enum_RuntimeSpawn_Granite_ResidentialNorth` |
+| `Enum_RuntimeSpawn_Granite_TechCenter` |
+| `Enum_RuntimeSpawn_Granite_Underground` |
+| `Enum_RuntimeSpawn_Limestone` |
+| `Enum_RuntimeSpawn_Outskirts` |
+| `Enum_RuntimeSpawn_Sand` |
+| `Enum_RuntimeSpawn_Subsurface` |
+| `Enum_RuntimeSpawn_Tungsten` |
+| `Enum_ScoreboardType` |
+| `Enum_ScreenEffects` |
+| `Enum_SoldierClass` |
+| `Enum_SoldierEffects` |
+| `Enum_SoldierStateBool` |
+| `Enum_SoldierStateNumber` |
+| `Enum_SoldierStateVector` |
+| `Enum_SpawnModes` |
+| `Enum_SpectatingGroup` |
+| `Enum_SpotStatus` |
+| `Enum_Stance` |
+| `Enum_StationaryEmplacements` |
+| `Enum_Types` |
+| `Enum_UIAnchor` |
+| `Enum_UIBgFill` |
+| `Enum_UIButtonEvent` |
+| `Enum_UIDepth` |
+| `Enum_UIImageType` |
+| `Enum_VehicleCategories` |
+| `Enum_VehicleList` |
+| `Enum_VehicleStateVector` |
+| `Enum_VoiceOverEvents2D` |
+| `Enum_VoiceOverFlags` |
+| `Enum_WeaponAttachments` |
+| `Enum_Weapons` |
+| `Enum_WorldIconImages` |
+| `FixedCamera` |
+| `HQ` |
+| `InteractPoint` |
+| `LootMissionObjectManager` |
+| `LootSpawner` |
+| `MapSpecificFeature` |
+| `MCOM` |
+| `Message` |
+| `Number` |
+| `Object` |
+| `Player` |
+| `PortalEnum` |
+| `RingOfFire` |
+| `ScoreboardType` |
+| `ScreenEffect` |
+| `Sector` |
+| `SFX` |
+| `SpatialObject` |
+| `Spawner` |
+| `SpawnPoint` |
+| `Squad` |
+| `String` |
+| `Team` |
+| `Transform` |
+| `UIWidget` |
+| `Variable` |
+| `Vector` |
+| `Vehicle` |
+| `VehicleSpawner` |
+| `VFX` |
+| `VL7Cloud` |
+| `VO` |
+| `WaypointPath` |
+| `WeaponPackage` |
+| `WeaponUnlock` |
+| `WorldIcon` |
 
 ### UIAnchor
 
 List type: `UIAnchor`
+Values: **9**
 
 | Value |
 | --- |
@@ -6085,6 +5533,7 @@ List type: `UIAnchor`
 ### UIBgFill
 
 List type: `UIBgFill`
+Values: **9**
 
 | Value |
 | --- |
@@ -6101,6 +5550,7 @@ List type: `UIBgFill`
 ### UIButtonEvent
 
 List type: `UIButtonEvent`
+Values: **6**
 
 | Value |
 | --- |
@@ -6114,6 +5564,7 @@ List type: `UIButtonEvent`
 ### UIDepth
 
 List type: `UIDepth`
+Values: **2**
 
 | Value |
 | --- |
@@ -6123,6 +5574,7 @@ List type: `UIDepth`
 ### UIImageType
 
 List type: `UIImageType`
+Values: **8**
 
 | Value |
 | --- |
@@ -6138,6 +5590,7 @@ List type: `UIImageType`
 ### VehicleCategories
 
 List type: `VehicleCategories`
+Values: **7**
 
 | Value |
 | --- |
@@ -6152,6 +5605,7 @@ List type: `VehicleCategories`
 ### VehicleList
 
 List type: `VehicleList`
+Values: **26**
 
 | Value |
 | --- |
@@ -6185,6 +5639,7 @@ List type: `VehicleList`
 ### VehicleStateVector
 
 List type: `VehicleStateVector`
+Values: **3**
 
 | Value |
 | --- |
@@ -6195,6 +5650,7 @@ List type: `VehicleStateVector`
 ### VoiceOverEvents2D
 
 List type: `VoiceOverEvents2D`
+Values: **61**
 
 | Value |
 | --- |
@@ -6228,11 +5684,42 @@ List type: `VoiceOverEvents2D`
 | `ObjectiveLocated` |
 | `ObjectiveLockdownEnemy` |
 | `ObjectiveLockdownFriendly` |
-| *... and 31 more* |
+| `ObjectiveLost` |
+| `ObjectiveNeutralised` |
+| `ObjectiveTerritoryLost` |
+| `ObjectiveTerritoryLostGeneric` |
+| `ObjectiveTerritoryTaken` |
+| `ObjectiveTerritoryTakenGeneric` |
+| `PlayerCountEnemyLow` |
+| `PlayerCountFriendlyLow` |
+| `ProgressEarlyLosing` |
+| `ProgressEarlyWinning` |
+| `ProgressLateLosing` |
+| `ProgressLateWinning` |
+| `ProgressMidLosing` |
+| `ProgressMidWinning` |
+| `RoundEndEnemyCapture` |
+| `RoundEndEnemyKills` |
+| `RoundEndFriendlyCapture` |
+| `RoundEndFriendlyKills` |
+| `RoundLastRound` |
+| `RoundStartGeneric` |
+| `RoundSuddenDeath` |
+| `RoundSwitchSides` |
+| `SectorTakenAttacker` |
+| `SectorTakenDefender` |
+| `Time120Left` |
+| `Time30Left` |
+| `Time60Left` |
+| `TimeLow` |
+| `TimeOvertime` |
+| `VehicleArmoredSpawn` |
+| `VehicleTankSpawn` |
 
 ### VoiceOverFlags
 
 List type: `VoiceOverFlags`
+Values: **9**
 
 | Value |
 | --- |
@@ -6249,6 +5736,7 @@ List type: `VoiceOverFlags`
 ### WeaponAttachments
 
 List type: `WeaponAttachments`
+Values: **329**
 
 | Value |
 | --- |
@@ -6282,11 +5770,310 @@ List type: `WeaponAttachments`
 | `Barrel_13_Fluted` |
 | `Barrel_13_Prototype` |
 | `Barrel_13_Standard` |
-| *... and 299 more* |
+| `Barrel_135mm_Long` |
+| `Barrel_145_Alt` |
+| `Barrel_145_Carbine` |
+| `Barrel_145_Common` |
+| `Barrel_145_Factory` |
+| `Barrel_145_Standard` |
+| `Barrel_16_Custom` |
+| `Barrel_16_Factory` |
+| `Barrel_16_Pencil` |
+| `Barrel_16_Rifle` |
+| `Barrel_16_Short` |
+| `Barrel_16_US` |
+| `Barrel_165_Basic` |
+| `Barrel_165_Fluted` |
+| `Barrel_165_LSW` |
+| `Barrel_165_Rifle` |
+| `Barrel_17_Cut` |
+| `Barrel_17_Factory` |
+| `Barrel_17_Fluted` |
+| `Barrel_18_Custom` |
+| `Barrel_18_EBR` |
+| `Barrel_18_Extended` |
+| `Barrel_18_US_LB` |
+| `Barrel_180mm_Prototype` |
+| `Barrel_180mm_Standard` |
+| `Barrel_185_Factory` |
+| `Barrel_189_Factory` |
+| `Barrel_189_Prototype` |
+| `Barrel_20_Factory` |
+| `Barrel_20_LE` |
+| `Barrel_20_Lima` |
+| `Barrel_20_Long` |
+| `Barrel_20_OH` |
+| `Barrel_20_SDM_R` |
+| `Barrel_200mm_Custom` |
+| `Barrel_200mm_Custom_H` |
+| `Barrel_200mm_Factory` |
+| `Barrel_200mm_Fluted` |
+| `Barrel_215_Factory` |
+| `Barrel_215_Fluted` |
+| `Barrel_22_E3_Long` |
+| `Barrel_22_Factory` |
+| `Barrel_225mm_Factory` |
+| `Barrel_24_Bravo` |
+| `Barrel_24_Extended` |
+| `Barrel_24_Fluted` |
+| `Barrel_24_Full` |
+| `Barrel_240mm_Fluted` |
+| `Barrel_240mm_SB` |
+| `Barrel_245mm_Custom` |
+| `Barrel_26_Carbon` |
+| `Barrel_26_Factory` |
+| `Barrel_264mm_Factory` |
+| `Barrel_264mm_Fluted` |
+| `Barrel_264mm_Prototype` |
+| `Barrel_27_MK22` |
+| `Barrel_303mm_LB` |
+| `Barrel_305mm_Custom` |
+| `Barrel_305mm_Custom_H` |
+| `Barrel_314mm_Factory` |
+| `Barrel_314mm_Fluted` |
+| `Barrel_314mm_Prototype` |
+| `Barrel_330mm_Mk3` |
+| `Barrel_349mm_Fluted` |
+| `Barrel_349mm_SB` |
+| `Barrel_370mm_Compact` |
+| `Barrel_39_Factory` |
+| `Barrel_39_Pencil` |
+| `Barrel_391mm_CQB` |
+| `Barrel_406mm_Standard` |
+| `Barrel_407mm_Civ_S` |
+| `Barrel_409mm_Cut` |
+| `Barrel_409mm_Factory` |
+| `Barrel_409mm_Fluted` |
+| `Barrel_409mm_US` |
+| `Barrel_415mm_Factory` |
+| `Barrel_415mm_Fluted` |
+| `Barrel_415mm_Prototype` |
+| `Barrel_419mm_Boar_F` |
+| `Barrel_430mm_Cut` |
+| `Barrel_430mm_Factory` |
+| `Barrel_442_mm_CQB` |
+| `Barrel_45_Compact` |
+| `Barrel_450mm_Factory` |
+| `Barrel_450mm_Standard` |
+| `Barrel_457mm_Mk9` |
+| `Barrel_457mm_Urban` |
+| `Barrel_458mm_Custom` |
+| `Barrel_465mm_LB` |
+| `Barrel_480mm_Factory` |
+| `Barrel_480mm_Fluted` |
+| `Barrel_480mm_MG` |
+| `Barrel_5_Factory` |
+| `Barrel_5_Pencil` |
+| `Barrel_508mm_Mk8` |
+| `Barrel_510mm_DMR` |
+| `Barrel_510mm_Fluted` |
+| `Barrel_512_Compact` |
+| `Barrel_514mm_Carbine` |
+| `Barrel_518mm_Factory` |
+| `Barrel_518mm_Fluted` |
+| `Barrel_521mm_Boar` |
+| `Barrel_521mm_Boar_F` |
+| `Barrel_55_Factory` |
+| `Barrel_55_Fluted` |
+| `Barrel_550mm_Factory` |
+| `Barrel_556mm_Prototype` |
+| `Barrel_560mm_Cut` |
+| `Barrel_560mm_Factory` |
+| `Barrel_565mm_Fluted` |
+| `Barrel_565mm_Para` |
+| `Barrel_590mm_Factory` |
+| `Barrel_6_Fluted` |
+| `Barrel_6_Standard` |
+| `Barrel_600mm_Cut` |
+| `Barrel_600mm_DMR` |
+| `Barrel_600mm_Fluted` |
+| `Barrel_600mm_Tabuk` |
+| `Barrel_612mm_VMW` |
+| `Barrel_620mm_Classic` |
+| `Barrel_646mm_Cut` |
+| `Barrel_646mm_Fluted` |
+| `Barrel_646mm_LSW` |
+| `Barrel_65_Extended` |
+| `Barrel_650mm_Factory` |
+| `Barrel_650mm_Fluted` |
+| `Barrel_675_Factory` |
+| `Barrel_68_Factory` |
+| `Barrel_68_Fluted` |
+| `Barrel_730mm_3LR` |
+| `Barrel_75_Compact` |
+| `Barrel_8_Extended` |
+| `Barrel_837_Long` |
+| `Barrel_9_Factory` |
+| `Barrel_9_Fluted` |
+| `Barrel_9_Heavy` |
+| `Barrel_IAR_Heavy` |
+| `Bottom_5_mW_Green` |
+| `Bottom_5_mW_Red` |
+| `Bottom_50_mW_Green` |
+| `Bottom_6H64_Vertical` |
+| `Bottom_Adjustable_Angled` |
+| `Bottom_Alloy_Vertical` |
+| `Bottom_Bipod` |
+| `Bottom_Canted_Stubby` |
+| `Bottom_Classic_Grip_Pod` |
+| `Bottom_Classic_Vertical` |
+| `Bottom_Compact_Handstop` |
+| `Bottom_Factory_Angled` |
+| `Bottom_Flashlight` |
+| `Bottom_Folding_Stubby` |
+| `Bottom_Folding_Vertical` |
+| `Bottom_Full_Angled` |
+| `Bottom_Laser_Light_Combo_Green` |
+| `Bottom_Laser_Light_Combo_Red` |
+| `Bottom_Low_Profile_Stubby` |
+| `Bottom_PTT_Grip_Pod` |
+| `Bottom_QD_Grip_Pod` |
+| `Bottom_Ribbed_Stubby` |
+| `Bottom_Ribbed_Vertical` |
+| `Bottom_Slim_Angled` |
+| `Bottom_Slim_Handstop` |
+| `Bottom_Stippled_Stubby` |
+| `Bottom_Underslung_Mount` |
+| `Bottom_VIS_IR_Light` |
+| `Ergonomic_DLC_Bolt` |
+| `Ergonomic_Improved_Mag_Catch` |
+| `Ergonomic_Magwell_Flare` |
+| `Ergonomic_Match_Trigger` |
+| `Ergonomic_Rail_Cover` |
+| `Left_120_mW_Blue` |
+| `Left_5_mW_Green` |
+| `Left_5_mW_Red` |
+| `Left_50_mW_Blue` |
+| `Left_50_mW_Green` |
+| `Left_Flashlight` |
+| `Left_Range_Finder` |
+| `Left_VIS_IR_Light` |
+| `Magazine_100rnd_Belt_Box` |
+| `Magazine_100rnd_Belt_Pouch` |
+| `Magazine_100rnd_Drum_Mag` |
+| `Magazine_10rnd_Fast_Mag` |
+| `Magazine_10rnd_Magazine` |
+| `Magazine_11rnd_Magazine` |
+| `Magazine_15rnd_Fast_Mag` |
+| `Magazine_15rnd_Magazine` |
+| `Magazine_17rnd_Fast_Mag` |
+| `Magazine_17rnd_Magazine` |
+| `Magazine_200rnd_Belt_Box` |
+| `Magazine_20rnd_Fast_Mag` |
+| `Magazine_20rnd_Magazine` |
+| `Magazine_21rnd_Magazine` |
+| `Magazine_22rnd_Magazine` |
+| `Magazine_23rnd_Magazine` |
+| `Magazine_25rnd_Fast_Mag` |
+| `Magazine_25rnd_Magazine` |
+| `Magazine_27rnd_Magazine` |
+| `Magazine_30rnd_Fast_Mag` |
+| `Magazine_30rnd_Magazine` |
+| `Magazine_36rnd_Magazine` |
+| `Magazine_4_Shell_Tube` |
+| `Magazine_40rnd_Fast_Mag` |
+| `Magazine_40rnd_Magazine` |
+| `Magazine_41rnd_Magazine` |
+| `Magazine_45rnd_Fast_Mag` |
+| `Magazine_45rnd_Magazine` |
+| `Magazine_4rnd_Fast_Mag` |
+| `Magazine_4rnd_Magazine` |
+| `Magazine_5_Shell_Tube` |
+| `Magazine_50rnd_Belt_Pouch` |
+| `Magazine_50rnd_Loose_Belt` |
+| `Magazine_50rnd_Magazine` |
+| `Magazine_5rnd_Fast_Mag` |
+| `Magazine_5rnd_Magazine` |
+| `Magazine_6_Shell_Tube` |
+| `Magazine_60rnd_Drum_Mag` |
+| `Magazine_60rnd_Magazine` |
+| `Magazine_6rnd_Speedloader` |
+| `Magazine_7_Shell_Dual_Tubes` |
+| `Magazine_7_Shell_Tube` |
+| `Magazine_75rnd_Belt_Box` |
+| `Magazine_75rnd_Drum` |
+| `Magazine_7rnd_Magazine` |
+| `Magazine_8rnd_Fast_Mag` |
+| `Magazine_8rnd_Magazine` |
+| `Magazine_8rnd_Moon_Clip` |
+| `Magazine_8rnd_Speedloader` |
+| `Muzzle_Compensated_Brake` |
+| `Muzzle_CQB_Suppressor` |
+| `Muzzle_Double_port_Brake` |
+| `Muzzle_Flash_Hider` |
+| `Muzzle_Lightened_Suppressor` |
+| `Muzzle_Linear_Comp` |
+| `Muzzle_Long_Suppressor` |
+| `Muzzle_Single_port_Brake` |
+| `Muzzle_Slant_Brake` |
+| `Muzzle_Standard_Suppressor` |
+| `Muzzle_Thread_Protector` |
+| `Muzzle_Triple_port_Brake` |
+| `Right_120_mW_Blue` |
+| `Right_5_mW_Green` |
+| `Right_5_mW_Red` |
+| `Right_50_mW_Blue` |
+| `Right_50_mW_Green` |
+| `Right_Flashlight` |
+| `Right_Laser_Light_Combo_Green` |
+| `Right_Laser_Light_Combo_Red` |
+| `Right_Range_Finder` |
+| `Right_VIS_IR_Light` |
+| `Scope_1p87_150x` |
+| `Scope_1p88_Variable` |
+| `Scope_2Pro_125x` |
+| `Scope_3VZR_175x` |
+| `Scope_A_P2_175x` |
+| `Scope_Adjustable_Magnification_200x` |
+| `Scope_Adjustable_Magnification_300x` |
+| `Scope_Adjustable_Magnification_400x` |
+| `Scope_Anti_Glare_Coating` |
+| `Scope_Aperture_Sight` |
+| `Scope_Baker_300x` |
+| `Scope_BF_2M_250x` |
+| `Scope_Canted_Iron_Sights` |
+| `Scope_CCO_200x` |
+| `Scope_CQ_RDS_125x` |
+| `Scope_CQB_Sights` |
+| `Scope_DVO_LPVO` |
+| `Scope_GRIM_150x` |
+| `Scope_Iron_Sights` |
+| `Scope_LDS_450x` |
+| `Scope_LERT_800x` |
+| `Scope_Mars_F_LPVO` |
+| `Scope_MC_CO_LPVO` |
+| `Scope_Mini_Flex_100x` |
+| `Scope_NFX_800x` |
+| `Scope_NGFC_LPVO` |
+| `Scope_Osa_7_100x` |
+| `Scope_PAS_35_300x` |
+| `Scope_Piggyback_Reflex` |
+| `Scope_PVQ_31_400x` |
+| `Scope_R_MR_100x` |
+| `Scope_R_VPS_1000x` |
+| `Scope_R4T_200x` |
+| `Scope_RO_M_175x` |
+| `Scope_RO_S_125x` |
+| `Scope_ROX_150x` |
+| `Scope_S_VPS_600x` |
+| `Scope_SDO_350x` |
+| `Scope_SF_G2_500x` |
+| `Scope_SM_Rifle_Variable` |
+| `Scope_SSDS_600x` |
+| `Scope_ST_Prism_500x` |
+| `Scope_SU_123_150x` |
+| `Scope_SU_230_LPVO` |
+| `Scope_TS_HD_600x` |
+| `Top_120_mW_Blue` |
+| `Top_5_mW_Green` |
+| `Top_5_mW_Red` |
+| `Top_50_mW_Blue` |
+| `Top_50_mW_Green` |
 
 ### Weapons
 
 List type: `Weapons`
+Values: **57**
 
 | Value |
 | --- |
@@ -6320,11 +6107,38 @@ List type: `Weapons`
 | `LMG_M_60` |
 | `LMG_M121_A2` |
 | `LMG_M123K` |
-| *... and 27 more* |
+| `LMG_M240L` |
+| `LMG_M250` |
+| `LMG_RPKM` |
+| `Shotgun__185KS_K` |
+| `Shotgun_DB_12` |
+| `Shotgun_M1014` |
+| `Shotgun_M87A1` |
+| `Sidearm_ES_57` |
+| `Sidearm_GGH_22` |
+| `Sidearm_M357_Trait` |
+| `Sidearm_M44` |
+| `Sidearm_M45A1` |
+| `Sidearm_P18` |
+| `Sidearm_VZ_61` |
+| `SMG_CZ3A1` |
+| `SMG_KV9` |
+| `SMG_PW5A3` |
+| `SMG_PW7A2` |
+| `SMG_SCW_10` |
+| `SMG_SGX` |
+| `SMG_SL9` |
+| `SMG_UMG_40` |
+| `SMG_USG_90` |
+| `Sniper_M2010_ESR` |
+| `Sniper_Mini_Scout` |
+| `Sniper_PSR` |
+| `Sniper_SV_98` |
 
 ### WorldIconImages
 
 List type: `WorldIconImages`
+Values: **16**
 
 | Value |
 | --- |

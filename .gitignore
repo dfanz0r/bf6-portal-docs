@@ -12,7 +12,12 @@
 # - .vitepress/cache: VitePress deps cache (regenerated on each build)
 # - .cache: portal-sdk/<version>/PortalSDK.zip, blockly-help/<name>.md,
 #   blockly-help/manifest.json, blockly-help/i18n-cache.json, sdk-version.json
+# - public/spatial-thumbnails: extracted SDK thumbnail PNGs generated at build time
+# - public/spatial-object-data.json: generated data for the thumbnail browser
 node_modules
 .vitepress/dist
 .vitepress/cache
 .cache
+public/spatial-thumbnails
+public/spatial-object-data.json
+vitepress-docs
