@@ -37,6 +37,7 @@ export default defineConfig({
         collapsed: false,
         items: [
           { text: 'Scripting', link: '/scripting' },
+          { text: 'Block Code', link: '/block-code' },
           { text: 'TypeScript', link: '/typescript' },
           { text: 'Optimization', link: '/optimization' }
         ]
