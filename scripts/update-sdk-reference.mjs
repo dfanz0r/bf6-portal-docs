@@ -9,6 +9,8 @@ import { dirname, join } from 'node:path'
 
 const execFileAsync = promisify(execFile)
 
+const strict = process.argv.includes('--strict')
+
 const versionsUrl = 'https://download.portal.battlefield.com/versions.json'
 const sdkDownloadUrl = 'https://download.portal.battlefield.com/PortalSDK.zip'
 const cacheRoot = '.cache/portal-sdk'
@@ -91,6 +93,19 @@ async function listZipFiles (zipPath) {
 async function readZipFile (zipPath, filePath) {
   const { stdout } = await execFileAsync('unzip', ['-p', zipPath, filePath], { maxBuffer: 1024 * 1024 * 5 })
   return stdout
+}
+
+async function assertSdkContainsRequiredFiles (zipPath) {
+  const files = await listZipFiles(zipPath)
+  const required = [
+    'code/types/mod/index.d.ts',
+    'code/modlib/index.ts'
+  ]
+
+  const missing = required.filter((file) => !files.includes(file))
+  if (missing.length) {
+    throw new Error(`SDK zip is missing required files: ${missing.join(', ')}`)
+  }
 }
 
 function normalizeSignature (value) {
@@ -602,10 +617,14 @@ async function generateApiReference (zipPath, release) {
   let modlib = ''
 
   try {
+    await assertSdkContainsRequiredFiles(zipPath)
     modTypes = await readZipFile(zipPath, 'code/types/mod/index.d.ts')
     modlib = await readZipFile(zipPath, 'code/modlib/index.ts')
   } catch (err) {
-    await writeFile(apiReferenceOut, `# TypeScript API Reference\n\nSDK version: **${release.version}**\n\nCould not inspect the SDK zip. Make sure \`unzip\` is installed.\n\nError: ${err instanceof Error ? err.message : String(err)}\n`, 'utf8')
+    const message = `Could not inspect the SDK zip. Make sure \`unzip\` is installed. ${err instanceof Error ? err.message : String(err)}`
+    if (strict) throw new Error(message)
+
+    await writeFile(apiReferenceOut, `# TypeScript API Reference\n\nSDK version: **${release.version}**\n\n${message}\n`, 'utf8')
     return
   }
 
@@ -618,6 +637,11 @@ async function generateApiReference (zipPath, release) {
   const modEnums = parseExportedEnums(modTypes, 'code/types/mod/index.d.ts')
   const modlibFunctions = parseExportedFunctions(modlib, 'code/modlib/index.ts', true)
   const modlibClasses = parseExportedClasses(modlib, 'code/modlib/index.ts')
+
+  if (modFunctions.length === 0) throw new Error('No mod functions parsed from SDK')
+  if (eventHandlers.length === 0) throw new Error('No event handlers parsed from SDK')
+  if (modEnums.length === 0) throw new Error('No enums parsed from SDK')
+
   const modlibInterfaces = parseLocalInterfaces(modlib)
   const modlibLocalTypes = parseLocalTypes(modlib)
   const modlibInterfaceLookup = Object.fromEntries(modlibInterfaces.map((iface) => [iface.name, { kind: 'interface', members: iface.members }]))

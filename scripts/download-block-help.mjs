@@ -2,6 +2,8 @@ import { mkdir, writeFile, readFile } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
 import path from 'node:path'
 
+const strict = process.argv.includes('--strict')
+
 const definitionsFile = '.vitepress/block-definitions.json'
 // Cached blockly help files live under `.cache/blockly-help/` rather than
 // `.vitepress/blockly-help/`. Cloudflare Pages' Build Cache automatically

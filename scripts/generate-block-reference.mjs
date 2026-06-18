@@ -2,6 +2,8 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
 import path from 'node:path'
 
+const strict = process.argv.includes('--strict')
+
 const definitionsFile = '.vitepress/block-definitions.json'
 const helpDir = '.cache/blockly-help'
 const i18nUrl = 'https://portal.battlefield.com/bf6/13637837/i18n/en-US.json'
