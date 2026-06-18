@@ -1,10 +1,8 @@
 {
   "name": "portaldocs",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Community Battlefield Portal documentation site",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "docs:dev": "node scripts/fetch-sdk-version.mjs && node scripts/download-block-help.mjs && node scripts/generate-block-reference.mjs && vitepress dev",
     "docs:build": "node scripts/update-sdk-reference.mjs && node scripts/download-block-help.mjs && node scripts/generate-block-reference.mjs && vitepress build",
     "docs:build:sdk": "node scripts/update-sdk-reference.mjs && node scripts/download-block-help.mjs && node scripts/generate-block-reference.mjs && vitepress build",
@@ -14,7 +12,12 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dfanz0r/bf6-portal-docs.git"
+  },
+  "homepage": "https://portaldoc.site/",
   "type": "module",
   "devDependencies": {
     "vitepress": "^1.6.4"
