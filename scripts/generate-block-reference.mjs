@@ -20,9 +20,11 @@ let i18nData = null
 async function loadI18n () {
   const force = process.argv.includes('--force') || process.argv.includes('-f')
 
-  // Try loading from cache first
+  // Try loading from cache first — strict builds always fetch fresh
+  // i18n to verify the upstream endpoint is reachable, per the strict
+  // rebuild policy.
   const { existsSync } = await import('node:fs')
-  if (!force && existsSync(i18nCacheFile)) {
+  if (!strict && !force && existsSync(i18nCacheFile)) {
     try {
       i18nData = JSON.parse(await readFile(i18nCacheFile, 'utf8'))
       console.log('Using cached i18n data from', i18nCacheFile)
@@ -53,7 +55,11 @@ async function loadI18n () {
     await writeFile(i18nCacheFile, JSON.stringify(i18nData, null, 2) + '\n', 'utf8')
     console.log('Fetched and cached i18n data')
   } catch (err) {
-    console.warn(`Warning: Failed to fetch i18n data (${err.message})`)
+    const detail = err instanceof Error ? err.message : String(err)
+    const message = `Failed to fetch i18n data (${detail})`
+    if (strict) throw new Error(message)
+
+    console.warn(`Warning: ${message}`)
     i18nData = { help: {}, common: {} } // empty fallback
     console.warn('  Block descriptions will show raw i18n tokens. Use --force to retry.')
   }
@@ -644,6 +650,8 @@ async function main () {
   const ruleBlockPath = path.join(helpDir, 'ruleBlock.md')
   if (existsSync(ruleBlockPath)) {
     ruleBlockContent = await readFile(ruleBlockPath, 'utf8')
+  } else if (strict) {
+    throw new Error(`Missing required help file: ${ruleBlockPath}`)
   }
   const eventData = parseRuleBlockEvents(ruleBlockContent)
   console.log(`  Parsed ${eventData.size} events from ruleBlock.md`)
@@ -1075,7 +1083,24 @@ async function main () {
   }
   lines.push('')
 
-  await writeFile(outFile, lines.join('\n'), 'utf8')
+  const output = lines.join('\n')
+
+  if (strict) {
+    if (!output.includes('## Events')) {
+      throw new Error('Generated block reference is missing the Events section')
+    }
+    if (!output.includes('## Values')) {
+      throw new Error('Generated block reference is missing the Values section')
+    }
+    if (!output.includes('## Actions')) {
+      throw new Error('Generated block reference is missing the Actions section')
+    }
+    if (output.includes('%{')) {
+      throw new Error('Generated block reference contains unresolved i18n tokens')
+    }
+  }
+
+  await writeFile(outFile, output, 'utf8')
   console.log(`Generated ${outFile}`)
 }
 
