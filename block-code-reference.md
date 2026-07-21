@@ -95,10 +95,10 @@ This page documents all available Blocky scripting blocks in Battlefield Portal.
 | Category | Count |
 | --- | ---:|
 | Objects | 25 |
-| Events | 53 |
-| Values | 286 |
-| Actions | 210 |
-| Selection Lists | 70 |
+| Events | 55 |
+| Values | 303 |
+| Actions | 237 |
+| Selection Lists | 75 |
 | Control Actions | 5 |
 | Types | 110 |
 
@@ -467,6 +467,33 @@ No payload parameters.
 
 ### Other
 
+#### OnBombDropped
+
+This will trigger when a player drops the bomb.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| [`EventBomb`](#eventbomb) | Bomb | Bomb That Was Dropped |
+| [`EventPlayer`](#eventplayer) | Player | Player Who Dropped |
+
+#### OnBombPickedUp
+
+This will trigger when a player picks up a bomb.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| [`EventBomb`](#eventbomb) | Bomb | Bomb That Was Picked Up |
+| [`EventPlayer`](#eventplayer) | Player | Player Who Picked Up |
+
+#### OnBombStateChanged
+
+This will trigger when a bomb changes state.
+
+| Payload | Type | Description |
+| --- | --- | --- |
+| [`EventBomb`](#eventbomb) | Bomb | Bomb That Changed State |
+| [`EventBombState`](#eventbombstate) | BombState | New Bomb State |
+
 #### OnGolmudTrainStopped
 
 This will trigger when the Golmud train stops.
@@ -590,7 +617,7 @@ Returns the waypoint path object corresponding to the provided id.
 
 | Signature | Return Type |
 | --- | --- |
-| `(waypointPathNumber: Number)` | WaypointPath |
+| `(objId: Number)` | WaypointPath |
 
 ### Arrays
 
@@ -726,7 +753,7 @@ Returns the SFX object corresponding to the provided id.
 
 | Signature | Return Type |
 | --- | --- |
-| `(number: Number)` | SFX |
+| `(objId: Number)` | SFX |
 
 ##### GetVO
 
@@ -734,7 +761,7 @@ Returns the VO object corresponding to the provided id.
 
 | Signature | Return Type |
 | --- | --- |
-| `(number: Number)` | VO |
+| `(objId: Number)` | VO |
 
 ### Camera
 
@@ -744,7 +771,7 @@ Returns a Fixed Camera.
 
 | Signature | Return Type |
 | --- | --- |
-| `(number: Number)` | FixedCamera |
+| `(objId: Number)` | FixedCamera |
 
 ### Effects
 
@@ -756,9 +783,24 @@ Returns the VFX object corresponding to the provided id.
 
 | Signature | Return Type |
 | --- | --- |
-| `(vfxNumber: Number)` | VFX |
+| `(objId: Number)` | VFX |
 
 ### Event Payloads
+
+**Gamemode**
+
+##### EventBomb
+
+Returns the Bomb payload from the [OnBombDropped](#onbombdropped), [OnBombPickedUp](#onbombpickedup) and [OnBombStateChanged](#onbombstatechanged) Event contexts.
+
+
+##### EventBombState
+
+Part of the [OnBombStateChanged](#onbombstatechanged) Payload to specify the new state of the bomb.
+
+
+##### 
+
 
 ##### EventAreaTrigger
 
@@ -787,7 +829,7 @@ Returns the PlayerDeathTypesItem payload from the [OnPlayerDied](#onplayerdied) 
 
 ##### EventEmplacementSpawner
 
-Returns the EmplacementSpawner payload from the [Ongoing](#ongoing) (EmplacementSpawner) Event context.
+Returns the EmplacementSpawner payload from the Ongoing (EmplacementSpawner) Event context.
 
 
 ##### EventFixedCamera
@@ -802,7 +844,7 @@ Part of the [OnGolmudTrainStopped](#ongolmudtrainstopped) Payload to specify why
 
 ##### EventHQ
 
-Returns the HQ payload from the [Ongoing](#ongoing) (HQ) Event context.
+Returns the HQ payload from the Ongoing (HQ) Event context.
 
 
 ##### EventInteractPoint
@@ -852,7 +894,7 @@ Returns the Seat payload from the [OnPlayerExitVehicleSeat](#onplayerexitvehicle
 
 ##### EventSector
 
-Returns the Sector payload from the [Ongoing](#ongoing) (Sector) Event context.
+Returns the Sector payload from the Ongoing (Sector) Event context.
 
 
 ##### EventSpawner
@@ -862,7 +904,7 @@ Returns the Spawner payload from the [OnSpawnerSpawned](#onspawnerspawned) Event
 
 ##### EventSpawnPoint
 
-Returns the SpawnPoint payload from the [Ongoing](#ongoing) (SpawnPoint) Event context.
+Returns the SpawnPoint payload from the Ongoing (SpawnPoint) Event context.
 
 
 ##### EventTeam
@@ -887,7 +929,7 @@ Returns the Vehicle payload from the [OnVehicleSpawned](#onvehiclespawned), [OnV
 
 ##### EventVehicleSpawner
 
-Returns the VehicleSpawner payload from the [Ongoing](#ongoing) (VehicleSpawner) Event context.
+Returns the VehicleSpawner payload from the Ongoing (VehicleSpawner) Event context.
 
 
 ##### EventVL7Cloud
@@ -897,7 +939,7 @@ Returns the VL7 from the [OnPlayerEnterVL7Cloud](#onplayerentervl7cloud) and [On
 
 ##### EventWaypointPath
 
-Returns the WaypointPath payload from the [Ongoing](#ongoing) (WaypointPath) Event context.
+Returns the WaypointPath payload from the Ongoing (WaypointPath) Event context.
 
 
 ##### EventWeapon
@@ -907,7 +949,7 @@ Returns the Weapon payload from the [OnPlayerDied](#onplayerdied), [OnPlayerDama
 
 ##### EventWorldIcon
 
-Returns the WorldIcon payload from the [Ongoing](#ongoing) (WorldIcon) Event context.
+Returns the WorldIcon payload from the Ongoing (WorldIcon) Event context.
 
 
 ### Gameplay
@@ -920,7 +962,7 @@ Returns the spawn point object corresponding to the provided id.
 
 | Signature | Return Type |
 | --- | --- |
-| `(number: Number)` | SpawnPoint |
+| `(objId: Number)` | SpawnPoint |
 
 **Gamemode**
 
@@ -949,7 +991,7 @@ Returns the ring of fire object corresponding to the provided id.
 
 | Signature | Return Type |
 | --- | --- |
-| `(number: Number)` | RingOfFire |
+| `(objId: Number)` | RingOfFire |
 
 ##### GetRoundTime
 
@@ -969,13 +1011,21 @@ Returns True if the provided Team is using soldiers from the specified Faction.
 | --- | --- |
 | `(team: Team, factions: Factions)` | Boolean |
 
+##### ScoreCriteriaItem
+
+Returns a Score Criteria that can be used to set how the scoring is evaluated.
+
+| Signature | Return Type |
+| --- | --- |
+| `(String, String)` | Score Criteria |
+
 ##### GetAreaTrigger
 
 Returns the area trigger object corresponding to the provided id.
 
 | Signature | Return Type |
 | --- | --- |
-| `(areaTriggerNumber: Number)` | AreaTrigger |
+| `(objId: Number)` | AreaTrigger |
 
 ##### GetEmplacementSpawner
 
@@ -983,7 +1033,7 @@ Returns the emplacement spawner object corresponding to the provided id.
 
 | Signature | Return Type |
 | --- | --- |
-| `(number: Number)` | EmplacementSpawner |
+| `(objId: Number)` | EmplacementSpawner |
 
 ##### GetGolmudTrainLocation
 
@@ -996,7 +1046,7 @@ Returns the interact point object corresponding to the provided id.
 
 | Signature | Return Type |
 | --- | --- |
-| `(interactPointNumber: Number)` | InteractPoint |
+| `(objId: Number)` | InteractPoint |
 
 ##### GetLootSpawner
 
@@ -1004,7 +1054,7 @@ Returns the loot spawner object corresponding to the provided id.
 
 | Signature | Return Type |
 | --- | --- |
-| `(number: Number)` | LootSpawner |
+| `(objId: Number)` | LootSpawner |
 
 ##### GetObjId
 
@@ -1012,7 +1062,7 @@ Returns the id corresponding to the provided object.
 
 | Signature | Return Type |
 | --- | --- |
-| `(object: Object \| Global \| AreaTrigger \| CapturePoint \| EmplacementSpawner \| FixedCamera \| HQ \| InteractPoint \| LootSpawner \| MapSpecificFeature \| MCOM \| Player \| RingOfFire \| Sector \| SFX \| SpatialObject \| Spawner \| SpawnPoint \| Team \| Vehicle \| VehicleSpawner \| VFX \| VL7Cloud \| VO \| WaypointPath \| WorldIcon)` | Number |
+| `(object: Object)` | Number |
 
 ##### GetSpatialObject
 
@@ -1028,7 +1078,7 @@ Returns the spawner object corresponding to the provided id.
 
 | Signature | Return Type |
 | --- | --- |
-| `(number: Number)` | Spawner |
+| `(objId: Number)` | Spawner |
 
 ##### GetVehicleSpawner
 
@@ -1036,7 +1086,7 @@ Returns the vehicle spawner object corresponding to the provided id.
 
 | Signature | Return Type |
 | --- | --- |
-| `(number: Number)` | VehicleSpawner |
+| `(objId: Number)` | VehicleSpawner |
 
 ##### GetVL7Cloud
 
@@ -1044,7 +1094,7 @@ Returns the VL7Cloud object corresponding to the provided id.
 
 | Signature | Return Type |
 | --- | --- |
-| `(vl7CloudId: Number)` | VL7Cloud |
+| `(objId: Number)` | VL7Cloud |
 
 ##### IsCurrentMap
 
@@ -1060,8 +1110,8 @@ Spawns an object at runtime. Returns an object id if the object supports it, oth
 
 | Signature | Return Type |
 | --- | --- |
-| `(prefabEnum: Runtime Spawn Common \| Runtime Spawn Abbasid \| Runtime Spawn Aftermath \| Runtime Spawn Badlands \| Runtime Spawn Battery \| Runtime Spawn Capstone \| Runtime Spawn Contaminated \| Runtime Spawn Dumbo \| Runtime Spawn Eastwood \| Runtime Spawn Fire Storm \| Runtime Spawn Limestone \| Runtime Spawn Outskirts \| Runtime Spawn Subsurface \| Runtime Spawn Tungsten \| Runtime Spawn Granite Downtown \| Runtime Spawn Granite Marina \| Runtime Spawn Granite Military Rn D \| Runtime Spawn Granite Military Storage \| Runtime Spawn Granite Residential North \| Runtime Spawn Granite Tech Center \| Runtime Spawn Granite Underground \| Runtime Spawn Sand \| Runtime Spawn Golmud Railway, position: Vector, rotation: Vector, scale: Vector)` | void |
-| `(prefabEnum: Runtime Spawn Common \| Runtime Spawn Abbasid \| Runtime Spawn Aftermath \| Runtime Spawn Badlands \| Runtime Spawn Battery \| Runtime Spawn Capstone \| Runtime Spawn Contaminated \| Runtime Spawn Dumbo \| Runtime Spawn Eastwood \| Runtime Spawn Fire Storm \| Runtime Spawn Limestone \| Runtime Spawn Outskirts \| Runtime Spawn Subsurface \| Runtime Spawn Tungsten \| Runtime Spawn Granite Downtown \| Runtime Spawn Granite Marina \| Runtime Spawn Granite Military Rn D \| Runtime Spawn Granite Military Storage \| Runtime Spawn Granite Residential North \| Runtime Spawn Granite Tech Center \| Runtime Spawn Granite Underground \| Runtime Spawn Sand \| Runtime Spawn Golmud Railway, position: Vector, rotation: Vector)` | void |
+| `(prefabEnum: Runtime Spawn Common \| Runtime Spawn Abbasid \| Runtime Spawn Aftermath \| Runtime Spawn Badlands \| Runtime Spawn Battery \| Runtime Spawn Capstone \| Runtime Spawn Contaminated \| Runtime Spawn Dumbo \| Runtime Spawn Eastwood \| Runtime Spawn Fire Storm \| Runtime Spawn Limestone \| Runtime Spawn Outskirts \| Runtime Spawn Subsurface \| Runtime Spawn Tungsten \| Runtime Spawn Granite Downtown \| Runtime Spawn Granite Marina \| Runtime Spawn Granite Military Rn D \| Runtime Spawn Granite Military Storage \| Runtime Spawn Granite Residential North \| Runtime Spawn Granite Tech Center \| Runtime Spawn Granite Underground \| Runtime Spawn Sand \| Runtime Spawn Golmud Railway \| Runtime Spawn Plaza, position: Vector, rotation: Vector, scale: Vector)` | void |
+| `(prefabEnum: Runtime Spawn Common \| Runtime Spawn Abbasid \| Runtime Spawn Aftermath \| Runtime Spawn Badlands \| Runtime Spawn Battery \| Runtime Spawn Capstone \| Runtime Spawn Contaminated \| Runtime Spawn Dumbo \| Runtime Spawn Eastwood \| Runtime Spawn Fire Storm \| Runtime Spawn Limestone \| Runtime Spawn Outskirts \| Runtime Spawn Subsurface \| Runtime Spawn Tungsten \| Runtime Spawn Granite Downtown \| Runtime Spawn Granite Marina \| Runtime Spawn Granite Military Rn D \| Runtime Spawn Granite Military Storage \| Runtime Spawn Granite Residential North \| Runtime Spawn Granite Tech Center \| Runtime Spawn Granite Underground \| Runtime Spawn Sand \| Runtime Spawn Golmud Railway \| Runtime Spawn Plaza, position: Vector, rotation: Vector)` | void |
 
 ### Logic
 
@@ -1112,6 +1162,22 @@ Returns True if the provided value is equal to the specified Type.
 | Signature | Return Type |
 | --- | --- |
 | `(any, type: Types)` | Boolean |
+
+##### IsUndefined
+
+Returns whether a value is undefined, such as when a function cannot return a valid value.
+
+| Signature | Return Type |
+| --- | --- |
+| `(any)` | Boolean |
+
+##### IsValid
+
+Returns whether a value is defined and if object reference is valid for object values.
+
+| Signature | Return Type |
+| --- | --- |
+| `(any)` | Boolean |
 
 ##### JsValue
 
@@ -1501,7 +1567,7 @@ Returns the CapturePoint or MCOM corresponding to the provided Capture Point or 
 
 | Signature | Return Type |
 | --- | --- |
-| `(id: Number)` | CapturePoint |
+| `(objId: Number)` | CapturePoint |
 
 ##### GetCaptureProgress
 
@@ -1551,9 +1617,17 @@ Returns the HQ object corresponding to the provided id.
 
 | Signature | Return Type |
 | --- | --- |
-| `(number: Number)` | HQ |
+| `(objId: Number)` | HQ |
 
 **Gamemode**
+
+##### GetBomb
+
+Returns the Bomb object corresponding to the provided id.
+
+| Signature | Return Type |
+| --- | --- |
+| `(objId: Number)` | Bomb |
 
 ##### GetMCOM
 
@@ -1561,7 +1635,7 @@ Returns the MCOM object corresponding to the provided id.
 
 | Signature | Return Type |
 | --- | --- |
-| `(number: Number)` | MCOM |
+| `(objId: Number)` | MCOM |
 
 ##### GetSector
 
@@ -1569,7 +1643,7 @@ Returns the sector object corresponding to the provided id.
 
 | Signature | Return Type |
 | --- | --- |
-| `(number: Number)` | Sector |
+| `(objId: Number)` | Sector |
 
 ### Other
 
@@ -1588,6 +1662,14 @@ Returns an ArmorTypes Item which can be used with SpawnLoot and AddEquipment.
 | Signature | Return Type |
 | --- | --- |
 | `(String, String)` | Armor Types |
+
+##### BombStateItem
+
+Returns a BombState to use with the [OnBombStateChanged](#onbombstatechanged) Event.
+
+| Signature | Return Type |
+| --- | --- |
+| `(String, String)` | Bomb State |
 
 ##### CamerasItem
 
@@ -1637,6 +1719,14 @@ Returns the value of a Variable.
 | --- | --- |
 | `(variable: Variable)` | void |
 
+##### GlobalVariable
+
+Returns the variable specified by a number.
+
+| Signature | Return Type |
+| --- | --- |
+| `(variableIndex: Number)` | Variable |
+
 ##### GolmudTrainMoveCommandsItem
 
 Returns a GolmudTrainMoveCommands for use with GolmudTrainSendMoveCommand.
@@ -1677,6 +1767,14 @@ Returns a Maps Item which can be used with IsCurrentMap.
 | --- | --- |
 | `(String, String)` | Maps |
 
+##### MCOMArmTypeItem
+
+Returns a MCOMArmType that can be used with SetMCOMArmType.
+
+| Signature | Return Type |
+| --- | --- |
+| `(String, String)` | MCOM Arm Type |
+
 ##### MoveSpeedItem
 
 Returns a MoveSpeed Item which can be used with AISetMoveSpeed.
@@ -1708,6 +1806,14 @@ Returns a parameter that controls different parts of the music.
 | Signature | Return Type |
 | --- | --- |
 | `(String, String)` | Music Params |
+
+##### ObjectVariable
+
+Returns the variable specified by an object.
+
+| Signature | Return Type |
+| --- | --- |
+| `(ownerObject: Object, variableIndex: Number)` | Variable |
 
 ##### PlayerDamageTypesItem
 
@@ -1884,6 +1990,14 @@ Returns an object which can used with SpawnObject.
 | Signature | Return Type |
 | --- | --- |
 | `(String, String)` | Runtime Spawn Outskirts |
+
+##### RuntimeSpawn_PlazaItem
+
+Returns an object which can used with SpawnObject.
+
+| Signature | Return Type |
+| --- | --- |
+| `(String, String)` | Runtime Spawn Plaza |
 
 ##### RuntimeSpawn_SandItem
 
@@ -2117,6 +2231,18 @@ Returns a WorldIconImages Item which can be used with SetWorldIconImage.
 | --- | --- |
 | `(String, String)` | World Icon Images |
 
+### Performance
+
+##### GetPortalAverageFrameTime
+
+Return the average Portal processing frame time
+
+
+##### GetServerAverageFrameTime
+
+Return average Server side frame time
+
+
 ### Player
 
 ##### AllPlayers
@@ -2145,6 +2271,12 @@ _Note: If no players are alive when this block is called, the returned Player wi
 | --- | --- |
 | `(vector: Vector)` | Player |
 | `(vector: Vector, team: Team)` | Player |
+
+##### GetPlayer
+
+| Signature | Return Type |
+| --- | --- |
+| `(objId: Number)` | Player |
 
 ##### GetPlayerDeaths
 
@@ -2312,7 +2444,7 @@ Returns the position vector of the provided object.
 
 | Signature | Return Type |
 | --- | --- |
-| `(object: Object \| Global \| AreaTrigger \| CapturePoint \| EmplacementSpawner \| FixedCamera \| HQ \| InteractPoint \| LootSpawner \| MapSpecificFeature \| MCOM \| Player \| RingOfFire \| Sector \| SFX \| SpatialObject \| Spawner \| SpawnPoint \| Team \| Vehicle \| VehicleSpawner \| VFX \| VL7Cloud \| VO \| WaypointPath \| WorldIcon)` | Vector |
+| `(object: Object)` | Vector |
 
 ##### GetObjectRotation
 
@@ -2320,7 +2452,7 @@ Returns the rotation vector of the provided object.
 
 | Signature | Return Type |
 | --- | --- |
-| `(object: Object \| Global \| AreaTrigger \| CapturePoint \| EmplacementSpawner \| FixedCamera \| HQ \| InteractPoint \| LootSpawner \| MapSpecificFeature \| MCOM \| Player \| RingOfFire \| Sector \| SFX \| SpatialObject \| Spawner \| SpawnPoint \| Team \| Vehicle \| VehicleSpawner \| VFX \| VL7Cloud \| VO \| WaypointPath \| WorldIcon)` | Vector |
+| `(object: Object)` | Vector |
 
 ##### GetObjectTransform
 
@@ -2328,7 +2460,7 @@ Returns the transform vector of the provided object.
 
 | Signature | Return Type |
 | --- | --- |
-| `(object: Object \| Global \| AreaTrigger \| CapturePoint \| EmplacementSpawner \| FixedCamera \| HQ \| InteractPoint \| LootSpawner \| MapSpecificFeature \| MCOM \| Player \| RingOfFire \| Sector \| SFX \| SpatialObject \| Spawner \| SpawnPoint \| Team \| Vehicle \| VehicleSpawner \| VFX \| VL7Cloud \| VO \| WaypointPath \| WorldIcon)` | Transform |
+| `(object: Object)` | Transform |
 
 ##### GetTransformPosition
 
@@ -2427,13 +2559,23 @@ Returns the 'Z' component of a provided Vector.
 
 ### UI
 
+**Gamemode**
+
+##### GameModeTickerItem
+
+Returns a GameMode Ticker that can be used to set different gamemode tickers.
+
+| Signature | Return Type |
+| --- | --- |
+| `(String, String)` | Game Mode Ticker |
+
 ##### GetWorldIcon
 
 Returns the world icon object corresponding to the provided id.
 
 | Signature | Return Type |
 | --- | --- |
-| `(worldIconNumber: Number)` | WorldIcon |
+| `(objId: Number)` | WorldIcon |
 
 **Messages**
 
@@ -2722,6 +2864,12 @@ Returns a Boolean indicating if the target Vehicle has the same name as the prov
 | Signature | Return Type |
 | --- | --- |
 | `(vehicle: Vehicle, vehicleList: Vehicle List)` | Boolean |
+
+##### GetVehicle
+
+| Signature | Return Type |
+| --- | --- |
+| `(objId: Number)` | Vehicle |
 
 ##### GetVehicleFromPlayer
 
@@ -3094,6 +3242,22 @@ Sets CameraType for provided Player.
 | `(player: Player, cameraType: Cameras)` |
 | `(player: Player, cameraType: Cameras, cameraIndex: Number)` |
 
+##### SetFreeCameraCollisionForAll
+
+Set whether collision is enabled for the Free Camera. (Default true)
+
+| Signature |
+| --- |
+| `(enabled: Boolean)` |
+
+##### SetFreeCameraCollisionForPlayer
+
+Set whether collision is enabled for the Free Camera. (Default true)
+
+| Signature |
+| --- |
+| `(player: Player, enabled: Boolean)` |
+
 ##### SetSpectatingFiltersForAll
 
 Sets the spectating filters. SpectatingGroup sets the selectable players in the spectating UI. ownSquadOnly and ownTeamOnly limit whether a player can spectate other squads/teams after currently spectated one is eliminated
@@ -3109,6 +3273,22 @@ Sets the spectating filters. SpectatingGroup sets the selectable players in the 
 | Signature |
 | --- |
 | `(player: Player, group: Spectating Group, ownSquadOnly: Boolean, ownTeamOnly: Boolean)` |
+
+##### SetThirdPersonCameraPositionForAll
+
+Set the FollowDistance, FollowHeight, and ShoulderOffset for the Third Person Camera. (Default 2.5, 0.2, 0.6)
+
+| Signature |
+| --- |
+| `(followDistance: Number, followHeight: Number, shoulderOffset: Number)` |
+
+##### SetThirdPersonCameraPositionForPlayer
+
+Set the FollowDistance, FollowHeight, and ShoulderOffset for the Third Person Camera. (Default 2.5, 0.2, 0.6)
+
+| Signature |
+| --- |
+| `(player: Player, followDistance: Number, followHeight: Number, shoulderOffset: Number)` |
 
 ### Effects
 
@@ -3333,6 +3513,22 @@ Enables of disables friendly fire.
 | --- |
 | `(enableFriendlyFire: Boolean)` |
 
+##### SetGameModeCriteria
+
+Sets the type of criteria used to check the score for winning teams.
+
+| Signature |
+| --- |
+| `(criteria: Score Criteria)` |
+
+##### SetGameModeInitialScore
+
+Sets the Initial Score for teams.
+
+| Signature |
+| --- |
+| `(team: Team, initialscore: Number)` |
+
 ##### SetGameModeScore
 
 Sets the gamemode score of the provided Player or Team.
@@ -3381,6 +3577,23 @@ Sets the duration the RingOfFire remains stable before Shrinking again.
 | Signature |
 | --- |
 | `(ringOfFireId: RingOfFire, ringOfFireStableTime: Number)` |
+
+##### ApplyAreaImpulseAndDamage
+
+Apply impulse and damage to objects within set radius of given point. Impulse direction from center point, unless specified with ImpulseDirection
+
+| Signature |
+| --- |
+| `(center: Vector, radius: Number, impulseStrength: Number, damageAmount: Number)` |
+| `(center: Vector, radius: Number, impulseStrength: Number, damageAmount: Number, impulseDirection: Vector)` |
+
+##### ApplyImpulse
+
+Apply impulse with given world position, direction and magnitude
+
+| Signature |
+| --- |
+| `(vehicle: Vehicle, worldPosition: Vector, direction: Vector, magnitude: Number)` |
 
 ##### AutoBalanceTeams
 
@@ -3473,7 +3686,7 @@ Unspawn an Object spawned using SpawnObject.
 
 | Signature |
 | --- |
-| `(obj: Object \| Global \| AreaTrigger \| CapturePoint \| EmplacementSpawner \| FixedCamera \| HQ \| InteractPoint \| LootSpawner \| MapSpecificFeature \| MCOM \| Player \| RingOfFire \| Sector \| SFX \| SpatialObject \| Spawner \| SpawnPoint \| Team \| Vehicle \| VehicleSpawner \| VFX \| VL7Cloud \| VO \| WaypointPath \| WorldIcon)` |
+| `(obj: Object)` |
 
 **Health**
 
@@ -3553,6 +3766,17 @@ Stops the execution of a list of Actions in a Rule if the provided Boolean is Tr
 | --- |
 | `(condition: Boolean)` |
 
+##### Break
+
+Breaks and exits the execution of a looping block, such as While or ForVariable.
+
+
+##### CallSubroutine
+
+| Signature |
+| --- |
+| `(subroutineIndex: Number)` |
+
 ##### ChaseVariableAtRate
 
 Gradually modifies the value of a Variable at a specified rate (value/second) until it reaches the provided limit.
@@ -3568,6 +3792,39 @@ Gradually modifies the value of a Variable over time (in seconds). The variable'
 | Signature |
 | --- |
 | `(variable: Variable, limit: Number, durationSeconds: Number)` |
+
+##### Continue
+
+Forces the execution of a looping block (such as While or ForVariable) to the start of the next iteration of that block.
+
+
+##### Else
+
+
+##### ElseIf
+
+| Signature |
+| --- |
+| `(condition: Boolean)` |
+
+##### End
+
+
+##### ForVariable
+
+The start of a series of Actions that will execute in a loop, modifying the control variable on each iteration. If the control Variable reaches or passes the range end value, the loop exits, and execution continues through the remaining Actions in the Rule.
+
+| Signature |
+| --- |
+| `(variable: Variable, start: Number, end: Number, stepSize: Number)` |
+
+##### If
+
+A special block which evaluates conditions to control the flow of Actions in the If, Else If, and Else branches.
+
+| Signature |
+| --- |
+| `(condition: Boolean)` |
 
 ##### JsAction
 
@@ -3616,6 +3873,14 @@ Pauses the execution of Actions in a Rule for a provided Number of seconds or if
 | Signature |
 | --- |
 | `(seconds: Number, condition: Boolean)` |
+
+##### While
+
+A block of Actions that will execute in a loop as long as the provided condition is True.
+
+| Signature |
+| --- |
+| `(condition: Boolean)` |
 
 ### Objectives
 
@@ -3678,6 +3943,78 @@ Enables or disables the provided Objective.
 | Signature |
 | --- |
 | `(objective: CapturePoint \| HQ \| Sector \| MCOM, enable: Boolean)` |
+
+##### ForceBombDrop
+
+Forces the bomb drop to be dropped from its carrier.
+
+| Signature |
+| --- |
+| `(bomb: Bomb)` |
+
+##### ForceBombReset
+
+Force resets the bomb to its initial location.
+
+| Signature |
+| --- |
+| `(bomb: Bomb)` |
+
+##### ForceBombSpawn
+
+Forces the bomb to spawn at the original location.
+
+| Signature |
+| --- |
+| `(bomb: Bomb)` |
+
+##### ForceBombUnspawn
+
+Forces the bomb to unspawn.
+
+| Signature |
+| --- |
+| `(bomb: Bomb)` |
+
+##### GiveBombToPlayer
+
+Gives the Bomb to the chosen Player.
+
+| Signature |
+| --- |
+| `(player: Player, bomb: Bomb)` |
+
+##### SetBombDropFuseTime
+
+Sets the fuse time for when the bomb is dropped to the ground before it blows up.
+
+| Signature |
+| --- |
+| `(bomb: Bomb, dropfusetime: Number)` |
+
+##### SetBombTeam
+
+Changes the Team that can pick-up the bomb.
+
+| Signature |
+| --- |
+| `(bomb: Bomb, team: Team)` |
+
+##### SetBombWorldIconGlobalVisibility
+
+Sets the world Icon global visibility, if set to enabled all teams can see the bomb carrier Icon, if set to disabled only the attacking team can.
+
+| Signature |
+| --- |
+| `(bomb: Bomb, Enabled: Boolean)` |
+
+##### SetMCOMArmType
+
+Sets the MCOM arm type, if set to default anyone on the opposing team can arm it, otherwise only the bomb carrier can.
+
+| Signature |
+| --- |
+| `(mcom: MCOM, mcomarmtype: MCOM Arm Type)` |
 
 ##### SetMCOMFuseTime
 
@@ -3876,8 +4213,8 @@ Move the Object provided, Euler rotation optional
 
 | Signature |
 | --- |
-| `(object: Object \| Global \| AreaTrigger \| CapturePoint \| EmplacementSpawner \| FixedCamera \| HQ \| InteractPoint \| LootSpawner \| MapSpecificFeature \| MCOM \| Player \| RingOfFire \| Sector \| SFX \| SpatialObject \| Spawner \| SpawnPoint \| Team \| Vehicle \| VehicleSpawner \| VFX \| VL7Cloud \| VO \| WaypointPath \| WorldIcon, positionDelta: Vector)` |
-| `(object: Object \| Global \| AreaTrigger \| CapturePoint \| EmplacementSpawner \| FixedCamera \| HQ \| InteractPoint \| LootSpawner \| MapSpecificFeature \| MCOM \| Player \| RingOfFire \| Sector \| SFX \| SpatialObject \| Spawner \| SpawnPoint \| Team \| Vehicle \| VehicleSpawner \| VFX \| VL7Cloud \| VO \| WaypointPath \| WorldIcon, positionDelta: Vector, rotationDelta: Vector)` |
+| `(object: Bomb \| EmplacementSpawner \| FixedCamera \| InteractPoint \| LootSpawner \| MCOM \| SFX \| SpatialObject \| Spawner \| VehicleSpawner \| VL7Cloud \| VO \| WorldIcon, positionDelta: Vector)` |
+| `(object: Bomb \| EmplacementSpawner \| FixedCamera \| InteractPoint \| LootSpawner \| MCOM \| SFX \| SpatialObject \| Spawner \| VehicleSpawner \| VL7Cloud \| VO \| WorldIcon, positionDelta: Vector, rotationDelta: Vector)` |
 
 ##### MoveObjectOverTime
 
@@ -3885,7 +4222,7 @@ Moves the Object by the delta position and rotation over the time provided. Opti
 
 | Signature |
 | --- |
-| `(object: Object \| Global \| AreaTrigger \| CapturePoint \| EmplacementSpawner \| FixedCamera \| HQ \| InteractPoint \| LootSpawner \| MapSpecificFeature \| MCOM \| Player \| RingOfFire \| Sector \| SFX \| SpatialObject \| Spawner \| SpawnPoint \| Team \| Vehicle \| VehicleSpawner \| VFX \| VL7Cloud \| VO \| WaypointPath \| WorldIcon, positionDelta: Vector, rotationDelta: Vector, timeInSeconds: Number, shouldLoop: Boolean, shouldReverse: Boolean)` |
+| `(object: Bomb \| EmplacementSpawner \| FixedCamera \| InteractPoint \| LootSpawner \| MCOM \| SFX \| SpatialObject \| Spawner \| VehicleSpawner \| VL7Cloud \| VO \| WorldIcon, positionDelta: Vector, rotationDelta: Vector, timeInSeconds: Number, shouldLoop: Boolean, shouldReverse: Boolean)` |
 
 ##### OrbitObjectOverTime
 
@@ -3893,8 +4230,8 @@ Orbits the Object around the provided transform over time. Optional orbitAxis ot
 
 | Signature |
 | --- |
-| `(object: Object \| Global \| AreaTrigger \| CapturePoint \| EmplacementSpawner \| FixedCamera \| HQ \| InteractPoint \| LootSpawner \| MapSpecificFeature \| MCOM \| Player \| RingOfFire \| Sector \| SFX \| SpatialObject \| Spawner \| SpawnPoint \| Team \| Vehicle \| VehicleSpawner \| VFX \| VL7Cloud \| VO \| WaypointPath \| WorldIcon, orbitTransform: Transform, timeInSeconds: Number, radius: Number, shouldLoop: Boolean, shouldReverse: Boolean, clockwise: Boolean)` |
-| `(object: Object \| Global \| AreaTrigger \| CapturePoint \| EmplacementSpawner \| FixedCamera \| HQ \| InteractPoint \| LootSpawner \| MapSpecificFeature \| MCOM \| Player \| RingOfFire \| Sector \| SFX \| SpatialObject \| Spawner \| SpawnPoint \| Team \| Vehicle \| VehicleSpawner \| VFX \| VL7Cloud \| VO \| WaypointPath \| WorldIcon, orbitTransform: Transform, timeInSeconds: Number, radius: Number, shouldLoop: Boolean, shouldReverse: Boolean, clockwise: Boolean, orbitAxis: Vector)` |
+| `(object: Bomb \| EmplacementSpawner \| FixedCamera \| InteractPoint \| LootSpawner \| MCOM \| SFX \| SpatialObject \| Spawner \| VehicleSpawner \| VL7Cloud \| VO \| WorldIcon, orbitTransform: Transform, timeInSeconds: Number, radius: Number, shouldLoop: Boolean, shouldReverse: Boolean, clockwise: Boolean)` |
+| `(object: Bomb \| EmplacementSpawner \| FixedCamera \| InteractPoint \| LootSpawner \| MCOM \| SFX \| SpatialObject \| Spawner \| VehicleSpawner \| VL7Cloud \| VO \| WorldIcon, orbitTransform: Transform, timeInSeconds: Number, radius: Number, shouldLoop: Boolean, shouldReverse: Boolean, clockwise: Boolean, orbitAxis: Vector)` |
 
 ##### RotateObject
 
@@ -3902,7 +4239,7 @@ Rotate the Object provided using Euler angles
 
 | Signature |
 | --- |
-| `(object: Object \| Global \| AreaTrigger \| CapturePoint \| EmplacementSpawner \| FixedCamera \| HQ \| InteractPoint \| LootSpawner \| MapSpecificFeature \| MCOM \| Player \| RingOfFire \| Sector \| SFX \| SpatialObject \| Spawner \| SpawnPoint \| Team \| Vehicle \| VehicleSpawner \| VFX \| VL7Cloud \| VO \| WaypointPath \| WorldIcon, rotationDelta: Vector)` |
+| `(Bomb \| EmplacementSpawner \| FixedCamera \| InteractPoint \| LootSpawner \| MCOM \| SFX \| SpatialObject \| Spawner \| VehicleSpawner \| VL7Cloud \| VO \| WorldIcon, rotationDelta: Vector)` |
 
 ##### SetObjectTransform
 
@@ -3910,7 +4247,7 @@ Sets the transform of the Object provided
 
 | Signature |
 | --- |
-| `(object: Object \| Global \| AreaTrigger \| CapturePoint \| EmplacementSpawner \| FixedCamera \| HQ \| InteractPoint \| LootSpawner \| MapSpecificFeature \| MCOM \| Player \| RingOfFire \| Sector \| SFX \| SpatialObject \| Spawner \| SpawnPoint \| Team \| Vehicle \| VehicleSpawner \| VFX \| VL7Cloud \| VO \| WaypointPath \| WorldIcon, transform: Transform)` |
+| `(object: Bomb \| EmplacementSpawner \| FixedCamera \| InteractPoint \| LootSpawner \| MCOM \| SFX \| SpatialObject \| Spawner \| VehicleSpawner \| VL7Cloud \| VO \| WorldIcon, transform: Transform)` |
 
 ##### SetObjectTransformOverTime
 
@@ -3918,7 +4255,7 @@ Sets the transform of the Object provided over the time provided. Options to loo
 
 | Signature |
 | --- |
-| `(object: Object \| Global \| AreaTrigger \| CapturePoint \| EmplacementSpawner \| FixedCamera \| HQ \| InteractPoint \| LootSpawner \| MapSpecificFeature \| MCOM \| Player \| RingOfFire \| Sector \| SFX \| SpatialObject \| Spawner \| SpawnPoint \| Team \| Vehicle \| VehicleSpawner \| VFX \| VL7Cloud \| VO \| WaypointPath \| WorldIcon, transform: Transform, timeInSeconds: Number, shouldLoop: Boolean, shouldReverse: Boolean)` |
+| `(object: Bomb \| EmplacementSpawner \| FixedCamera \| InteractPoint \| LootSpawner \| MCOM \| SFX \| SpatialObject \| Spawner \| VehicleSpawner \| VL7Cloud \| VO \| WorldIcon, transform: Transform, timeInSeconds: Number, shouldLoop: Boolean, shouldReverse: Boolean)` |
 
 ##### StopActiveMovementForObject
 
@@ -3926,9 +4263,19 @@ Stops the Over Time movement for the provided Object if one is active
 
 | Signature |
 | --- |
-| `(object: Object \| Global \| AreaTrigger \| CapturePoint \| EmplacementSpawner \| FixedCamera \| HQ \| InteractPoint \| LootSpawner \| MapSpecificFeature \| MCOM \| Player \| RingOfFire \| Sector \| SFX \| SpatialObject \| Spawner \| SpawnPoint \| Team \| Vehicle \| VehicleSpawner \| VFX \| VL7Cloud \| VO \| WaypointPath \| WorldIcon)` |
+| `(object: Bomb \| EmplacementSpawner \| FixedCamera \| InteractPoint \| LootSpawner \| MCOM \| SFX \| SpatialObject \| Spawner \| VehicleSpawner \| VL7Cloud \| VO \| WorldIcon)` |
 
 ### UI
+
+**Gamemode**
+
+##### SetHUDTicker
+
+Sets the type of HUD ticker to use.
+
+| Signature |
+| --- |
+| `(ticker: Game Mode Ticker)` |
 
 ##### AddUIIcon
 
@@ -3936,8 +4283,8 @@ Attaches a new UI Icon Widget to an object.
 
 | Signature |
 | --- |
-| `(parentObject: Object \| Global \| AreaTrigger \| CapturePoint \| EmplacementSpawner \| FixedCamera \| HQ \| InteractPoint \| LootSpawner \| MapSpecificFeature \| MCOM \| Player \| RingOfFire \| Sector \| SFX \| SpatialObject \| Spawner \| SpawnPoint \| Team \| Vehicle \| VehicleSpawner \| VFX \| VL7Cloud \| VO \| WaypointPath \| WorldIcon, image: World Icon Images, verticalOffset: Number, iconColour: Vector, iconText: Message, visibility: Player \| Team)` |
-| `(parentObject: Object \| Global \| AreaTrigger \| CapturePoint \| EmplacementSpawner \| FixedCamera \| HQ \| InteractPoint \| LootSpawner \| MapSpecificFeature \| MCOM \| Player \| RingOfFire \| Sector \| SFX \| SpatialObject \| Spawner \| SpawnPoint \| Team \| Vehicle \| VehicleSpawner \| VFX \| VL7Cloud \| VO \| WaypointPath \| WorldIcon, image: World Icon Images, verticalOffset: Number, iconColour: Vector, iconText: Message)` |
+| `(parentObject: Object, image: World Icon Images, verticalOffset: Number, iconColour: Vector, iconText: Message, visibility: Player \| Team)` |
+| `(parentObject: Object, image: World Icon Images, verticalOffset: Number, iconColour: Vector, iconText: Message)` |
 
 ##### EnableWorldIconImage
 
@@ -3963,8 +4310,8 @@ Removes a UI Icon Widget from an object.
 
 | Signature |
 | --- |
-| `(objectWithIcon: Object \| Global \| AreaTrigger \| CapturePoint \| EmplacementSpawner \| FixedCamera \| HQ \| InteractPoint \| LootSpawner \| MapSpecificFeature \| MCOM \| Player \| RingOfFire \| Sector \| SFX \| SpatialObject \| Spawner \| SpawnPoint \| Team \| Vehicle \| VehicleSpawner \| VFX \| VL7Cloud \| VO \| WaypointPath \| WorldIcon)` |
-| `(objectWithIcon: Object \| Global \| AreaTrigger \| CapturePoint \| EmplacementSpawner \| FixedCamera \| HQ \| InteractPoint \| LootSpawner \| MapSpecificFeature \| MCOM \| Player \| RingOfFire \| Sector \| SFX \| SpatialObject \| Spawner \| SpawnPoint \| Team \| Vehicle \| VehicleSpawner \| VFX \| VL7Cloud \| VO \| WaypointPath \| WorldIcon, visibility: Player \| Team)` |
+| `(objectWithIcon: Object)` |
+| `(objectWithIcon: Object, visibility: Player \| Team)` |
 
 ##### SetWorldIconColor
 
@@ -3990,14 +4337,6 @@ Restricts a world icon to be visible only to a specific Player or Team.
 | --- |
 | `(worldIcon: WorldIcon, newTeamOwner: Team)` |
 | `(worldIcon: WorldIcon, newPlayerOwner: Player)` |
-
-##### SetWorldIconPosition
-
-Sets the in-world position of a provided WorldIcon.
-
-| Signature |
-| --- |
-| `(worldIcon: WorldIcon, newPosition: Vector)` |
 
 ##### SetWorldIconText
 
@@ -4625,8 +4964,8 @@ Object blocks represent game entities and can be used as inputs to other blocks.
 
 | Object | Type |
 | --- | --- |
-| `Global` | `Global` |
 | `AreaTrigger` | `AreaTrigger` |
+| `Bomb` | `Bomb` |
 | `CapturePoint` | `CapturePoint` |
 | `EmplacementSpawner` | `EmplacementSpawner` |
 | `FixedCamera` | `FixedCamera` |
@@ -4701,6 +5040,24 @@ Values: **3**
 | `NoArmor` |
 | `SoftArmor` |
 
+### BombState
+
+List type: `BombState`
+Values: **10**
+
+| Value |
+| --- |
+| `Carried` |
+| `Defusing` |
+| `Dropped` |
+| `Inactive` |
+| `ObjectiveCompleted` |
+| `Planted` |
+| `Planting` |
+| `Resetting` |
+| `Spawned` |
+| `Unspawned` |
+
 ### Cameras
 
 List type: `Cameras`
@@ -4739,7 +5096,7 @@ Values: **2**
 ### Gadgets
 
 List type: `Gadgets`
-Values: **61**
+Values: **62**
 
 | Value |
 | --- |
@@ -4752,6 +5109,7 @@ Values: **61**
 | `CallIn_UAV_Overwatch` |
 | `CallIn_Weapon_Drop` |
 | `Class_Adrenaline_Injector` |
+| `Class_Handheld_Jammer` |
 | `Class_Motion_Sensor` |
 | `Class_Repair_Tool` |
 | `Class_Supply_Bag` |
@@ -4804,6 +5162,16 @@ Values: **61**
 | `Throwable_Smoke_Grenade` |
 | `Throwable_Stun_Grenade` |
 | `Throwable_Throwing_Knife` |
+
+### GameModeTicker
+
+List type: `GameModeTicker`
+Values: **2**
+
+| Value |
+| --- |
+| `None` |
+| `Ticker_Conquest` |
 
 ### GolmudTrainMoveCommands
 
@@ -4859,7 +5227,7 @@ Values: **9**
 ### Maps
 
 List type: `Maps`
-Values: **22**
+Values: **23**
 
 | Value |
 | --- |
@@ -4882,9 +5250,20 @@ Values: **22**
 | `Granite_Underground` |
 | `Limestone` |
 | `Outskirts` |
+| `Plaza` |
 | `Sand` |
 | `Subsurface` |
 | `Tungsten` |
+
+### MCOMArmType
+
+List type: `MCOMArmType`
+Values: **2**
+
+| Value |
+| --- |
+| `Bomb` |
+| `Default` |
 
 ### MoveSpeed
 
@@ -5111,7 +5490,7 @@ This is a map-based spatial object list. See [Spatial Object Reference](/spatial
 ### RuntimeSpawn_Common
 
 List type: `RuntimeSpawn_Common`
-Values: **1471**
+Values: **1473**
 
 This is a map-based spatial object list. See [Spatial Object Reference](/spatial-object-reference#spatial-runtimespawn-common) for the full combined map-aware reference.
 
@@ -5213,6 +5592,13 @@ Values: **842**
 
 This is a map-based spatial object list. See [Spatial Object Reference](/spatial-object-reference#spatial-runtimespawn-outskirts) for the full combined map-aware reference.
 
+### RuntimeSpawn_Plaza
+
+List type: `RuntimeSpawn_Plaza`
+Values: **1376**
+
+This is a map-based spatial object list. See [Spatial Object Reference](/spatial-object-reference#spatial-runtimespawn-plaza) for the full combined map-aware reference.
+
 ### RuntimeSpawn_Sand
 
 List type: `RuntimeSpawn_Sand`
@@ -5246,6 +5632,16 @@ Values: **5**
 | `DefaultFFA` |
 | `NotSet` |
 | `Off` |
+
+### ScoreCriteria
+
+List type: `ScoreCriteria`
+Values: **2**
+
+| Value |
+| --- |
+| `HighestProgress` |
+| `LowestProgress` |
 
 ### ScreenEffects
 
@@ -5285,15 +5681,17 @@ Values: **3**
 ### SoldierStateBool
 
 List type: `SoldierStateBool`
-Values: **21**
+Values: **23**
 
 | Value |
 | --- |
+| `HasBomb` |
 | `IsAISoldier` |
 | `IsAlive` |
 | `IsBeingRevived` |
 | `IsCrouching` |
 | `IsDead` |
+| `IsDiving` |
 | `IsFiring` |
 | `IsInAir` |
 | `IsInteracting` |
@@ -5396,12 +5794,13 @@ Values: **3**
 ### Types
 
 List type: `Types`
-Values: **112**
+Values: **118**
 
 | Value |
 | --- |
 | `AreaTrigger` |
 | `Array` |
+| `Bomb` |
 | `Boolean` |
 | `CapturePoint` |
 | `DamageType` |
@@ -5409,15 +5808,18 @@ Values: **112**
 | `EmplacementSpawner` |
 | `Enum_AiInput` |
 | `Enum_AmmoTypes` |
+| `Enum_BombState` |
 | `Enum_Cameras` |
 | `Enum_CustomNotificationSlots` |
 | `Enum_Factions` |
 | `Enum_Gadgets` |
+| `Enum_GameModeTicker` |
 | `Enum_GolmudTrainMoveCommands` |
 | `Enum_GolmudTrainStopReason` |
 | `Enum_GolmudTrainVariants` |
 | `Enum_InventorySlots` |
 | `Enum_Maps` |
+| `Enum_MCOMArmType` |
 | `Enum_MoveSpeed` |
 | `Enum_MusicEvents` |
 | `Enum_MusicPackages` |
@@ -5447,10 +5849,12 @@ Values: **112**
 | `Enum_RuntimeSpawn_Granite_Underground` |
 | `Enum_RuntimeSpawn_Limestone` |
 | `Enum_RuntimeSpawn_Outskirts` |
+| `Enum_RuntimeSpawn_Plaza` |
 | `Enum_RuntimeSpawn_Sand` |
 | `Enum_RuntimeSpawn_Subsurface` |
 | `Enum_RuntimeSpawn_Tungsten` |
 | `Enum_ScoreboardType` |
+| `Enum_ScoreCriteria` |
 | `Enum_ScreenEffects` |
 | `Enum_SoldierClass` |
 | `Enum_SoldierEffects` |
@@ -5736,7 +6140,7 @@ Values: **9**
 ### WeaponAttachments
 
 List type: `WeaponAttachments`
-Values: **329**
+Values: **371**
 
 | Value |
 | --- |
@@ -5748,6 +6152,9 @@ Values: **329**
 | `Ammo_Match_Grade` |
 | `Ammo_Polymer_Case` |
 | `Ammo_Slugs` |
+| `Ammo_Subsonic` |
+| `Ammo_Subsonic_Frangible` |
+| `Ammo_Subsonic_HP` |
 | `Ammo_Synthetic_Tip` |
 | `Ammo_Tungsten_Core` |
 | `Barrel_10_Factory` |
@@ -5777,6 +6184,7 @@ Values: **329**
 | `Barrel_145_Factory` |
 | `Barrel_145_Standard` |
 | `Barrel_16_Custom` |
+| `Barrel_16_Dissipator` |
 | `Barrel_16_Factory` |
 | `Barrel_16_Pencil` |
 | `Barrel_16_Rifle` |
@@ -5789,16 +6197,22 @@ Values: **329**
 | `Barrel_17_Cut` |
 | `Barrel_17_Factory` |
 | `Barrel_17_Fluted` |
+| `Barrel_18_Cryogenic` |
 | `Barrel_18_Custom` |
 | `Barrel_18_EBR` |
 | `Barrel_18_Extended` |
+| `Barrel_18_Govt` |
+| `Barrel_18_Pencil` |
+| `Barrel_18_SPR` |
 | `Barrel_18_US_LB` |
 | `Barrel_180mm_Prototype` |
 | `Barrel_180mm_Standard` |
 | `Barrel_185_Factory` |
 | `Barrel_189_Factory` |
 | `Barrel_189_Prototype` |
+| `Barrel_20_Custom_Covert` |
 | `Barrel_20_Factory` |
+| `Barrel_20_HBAR` |
 | `Barrel_20_LE` |
 | `Barrel_20_Lima` |
 | `Barrel_20_Long` |
@@ -5813,6 +6227,9 @@ Values: **329**
 | `Barrel_22_E3_Long` |
 | `Barrel_22_Factory` |
 | `Barrel_225mm_Factory` |
+| `Barrel_238mm_Cryogenic` |
+| `Barrel_238mm_Factory` |
+| `Barrel_238mm_Pencil` |
 | `Barrel_24_Bravo` |
 | `Barrel_24_Extended` |
 | `Barrel_24_Fluted` |
@@ -5825,6 +6242,8 @@ Values: **329**
 | `Barrel_264mm_Factory` |
 | `Barrel_264mm_Fluted` |
 | `Barrel_264mm_Prototype` |
+| `Barrel_27_Factory` |
+| `Barrel_27_Full` |
 | `Barrel_27_MK22` |
 | `Barrel_303mm_LB` |
 | `Barrel_305mm_Custom` |
@@ -5832,9 +6251,11 @@ Values: **329**
 | `Barrel_314mm_Factory` |
 | `Barrel_314mm_Fluted` |
 | `Barrel_314mm_Prototype` |
+| `Barrel_32_Custom` |
 | `Barrel_330mm_Mk3` |
 | `Barrel_349mm_Fluted` |
 | `Barrel_349mm_SB` |
+| `Barrel_367mm_Civ` |
 | `Barrel_370mm_Compact` |
 | `Barrel_39_Factory` |
 | `Barrel_39_Pencil` |
@@ -5915,6 +6336,7 @@ Values: **329**
 | `Bottom_Alloy_Vertical` |
 | `Bottom_Bipod` |
 | `Bottom_Canted_Stubby` |
+| `Bottom_Canted_Vertical` |
 | `Bottom_Classic_Grip_Pod` |
 | `Bottom_Classic_Vertical` |
 | `Bottom_Compact_Handstop` |
@@ -5935,6 +6357,8 @@ Values: **329**
 | `Bottom_Stippled_Stubby` |
 | `Bottom_Underslung_Mount` |
 | `Bottom_VIS_IR_Light` |
+| `Ergonomic_A3_Receiver` |
+| `Ergonomic_Aftermarket_Buffer` |
 | `Ergonomic_DLC_Bolt` |
 | `Ergonomic_Improved_Mag_Catch` |
 | `Ergonomic_Magwell_Flare` |
@@ -5947,6 +6371,7 @@ Values: **329**
 | `Left_50_mW_Green` |
 | `Left_Flashlight` |
 | `Left_Range_Finder` |
+| `Left_Taclight__Aimed` |
 | `Left_VIS_IR_Light` |
 | `Magazine_100rnd_Belt_Box` |
 | `Magazine_100rnd_Belt_Pouch` |
@@ -5969,6 +6394,7 @@ Values: **329**
 | `Magazine_27rnd_Magazine` |
 | `Magazine_30rnd_Fast_Mag` |
 | `Magazine_30rnd_Magazine` |
+| `Magazine_35rnd_Magazine` |
 | `Magazine_36rnd_Magazine` |
 | `Magazine_4_Shell_Tube` |
 | `Magazine_40rnd_Fast_Mag` |
@@ -5982,6 +6408,7 @@ Values: **329**
 | `Magazine_50rnd_Belt_Pouch` |
 | `Magazine_50rnd_Loose_Belt` |
 | `Magazine_50rnd_Magazine` |
+| `Magazine_53rnd_Drum` |
 | `Magazine_5rnd_Fast_Mag` |
 | `Magazine_5rnd_Magazine` |
 | `Magazine_6_Shell_Tube` |
@@ -5992,15 +6419,23 @@ Values: **329**
 | `Magazine_7_Shell_Tube` |
 | `Magazine_75rnd_Belt_Box` |
 | `Magazine_75rnd_Drum` |
+| `Magazine_7rnd_Fast_Mag` |
 | `Magazine_7rnd_Magazine` |
 | `Magazine_8rnd_Fast_Mag` |
 | `Magazine_8rnd_Magazine` |
 | `Magazine_8rnd_Moon_Clip` |
 | `Magazine_8rnd_Speedloader` |
+| `Magazine_95rnd_Drum` |
 | `Muzzle_Compensated_Brake` |
+| `Muzzle_Compensator` |
 | `Muzzle_CQB_Suppressor` |
 | `Muzzle_Double_port_Brake` |
+| `Muzzle_Double_Port_Brake` |
+| `Muzzle_Flash_Comp` |
 | `Muzzle_Flash_Hider` |
+| `Muzzle_Hybrid_Suppressor_K` |
+| `Muzzle_Hybrid_Suppressor_L` |
+| `Muzzle_Hybrid_Suppressor_S` |
 | `Muzzle_Lightened_Suppressor` |
 | `Muzzle_Linear_Comp` |
 | `Muzzle_Long_Suppressor` |
@@ -6014,11 +6449,14 @@ Values: **329**
 | `Right_5_mW_Red` |
 | `Right_50_mW_Blue` |
 | `Right_50_mW_Green` |
+| `Right_50_MW_Violet` |
 | `Right_Flashlight` |
 | `Right_Laser_Light_Combo_Green` |
 | `Right_Laser_Light_Combo_Red` |
 | `Right_Range_Finder` |
+| `Right_Taclight__Aimed` |
 | `Right_VIS_IR_Light` |
+| `Scope_1P86_LPVO` |
 | `Scope_1p87_150x` |
 | `Scope_1p88_Variable` |
 | `Scope_2Pro_125x` |
@@ -6032,14 +6470,19 @@ Values: **329**
 | `Scope_Baker_300x` |
 | `Scope_BF_2M_250x` |
 | `Scope_Canted_Iron_Sights` |
+| `Scope_Canted_Reflex` |
+| `Scope_Carry_Handle_Irons` |
 | `Scope_CCO_200x` |
 | `Scope_CQ_RDS_125x` |
 | `Scope_CQB_Sights` |
 | `Scope_DVO_LPVO` |
+| `Scope_Flip_Up_Irons` |
 | `Scope_GRIM_150x` |
 | `Scope_Iron_Sights` |
 | `Scope_LDS_450x` |
 | `Scope_LERT_800x` |
+| `Scope_M145_MGO_350x` |
+| `Scope_Magnifier` |
 | `Scope_Mars_F_LPVO` |
 | `Scope_MC_CO_LPVO` |
 | `Scope_Mini_Flex_100x` |
@@ -6049,6 +6492,7 @@ Values: **329**
 | `Scope_PAS_35_300x` |
 | `Scope_Piggyback_Reflex` |
 | `Scope_PVQ_31_400x` |
+| `Scope_QMK_171A_300x` |
 | `Scope_R_MR_100x` |
 | `Scope_R_VPS_1000x` |
 | `Scope_R4T_200x` |
@@ -6063,17 +6507,19 @@ Values: **329**
 | `Scope_ST_Prism_500x` |
 | `Scope_SU_123_150x` |
 | `Scope_SU_230_LPVO` |
+| `Scope_TH_RDS_100x` |
 | `Scope_TS_HD_600x` |
 | `Top_120_mW_Blue` |
 | `Top_5_mW_Green` |
 | `Top_5_mW_Red` |
 | `Top_50_mW_Blue` |
 | `Top_50_mW_Green` |
+| `Top_50_MW_Violet` |
 
 ### Weapons
 
 List type: `Weapons`
-Values: **57**
+Values: **61**
 
 | Value |
 | --- |
@@ -6081,6 +6527,7 @@ Values: **57**
 | `AssaultRifle_B36A4` |
 | `AssaultRifle_KORD_6P67` |
 | `AssaultRifle_L85A3` |
+| `AssaultRifle_M16A4` |
 | `AssaultRifle_M433` |
 | `AssaultRifle_NVO_228E` |
 | `AssaultRifle_SOR_556_Mk2` |
@@ -6109,6 +6556,7 @@ Values: **57**
 | `LMG_M123K` |
 | `LMG_M240L` |
 | `LMG_M250` |
+| `LMG_RPK_74M` |
 | `LMG_RPKM` |
 | `Shotgun__185KS_K` |
 | `Shotgun_DB_12` |
@@ -6123,6 +6571,7 @@ Values: **57**
 | `Sidearm_VZ_61` |
 | `SMG_CZ3A1` |
 | `SMG_KV9` |
+| `SMG_PP_19` |
 | `SMG_PW5A3` |
 | `SMG_PW7A2` |
 | `SMG_SCW_10` |
@@ -6130,6 +6579,7 @@ Values: **57**
 | `SMG_SL9` |
 | `SMG_UMG_40` |
 | `SMG_USG_90` |
+| `Sniper_L115` |
 | `Sniper_M2010_ESR` |
 | `Sniper_Mini_Scout` |
 | `Sniper_PSR` |

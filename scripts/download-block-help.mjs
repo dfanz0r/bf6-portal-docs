@@ -16,7 +16,8 @@ const definitionsFile = '.vitepress/block-definitions.json'
 // files on every build without committing them to git.
 const helpDir = '.cache/blockly-help'
 const manifestFile = path.join(helpDir, 'manifest.json')
-const baseHelpUrl = 'https://portal.battlefield.com/bf6/13979158/assets/blockly/help'
+// Last known site build id — used only if the live build id can't be discovered.
+const fallbackBuildId = '13979158'
 
 const requestHeaders = {
   'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36',
@@ -24,8 +25,28 @@ const requestHeaders = {
   'Referer': 'https://portal.battlefield.com/bf6/experiences'
 }
 
+// The help files live under a per-deploy build id
+// (portal.battlefield.com/bf6/<buildId>/assets/blockly/help). Discover the
+// current id from the app page so help content tracks the live site.
+async function discoverBaseHelpUrl () {
+  try {
+    const res = await fetch('https://portal.battlefield.com/bf6/experiences', { headers: requestHeaders })
+    const html = await res.text()
+    const buildId = html.match(/\bbf6\/(\d+)\//)?.[1]
+    if (buildId) {
+      console.log(`Using portal site build ${buildId} for block help files.`)
+      return `https://portal.battlefield.com/bf6/${buildId}/assets/blockly/help`
+    }
+  } catch {
+    // fall through to the last known build id
+  }
+  console.warn(`Could not discover the current portal build id; using ${fallbackBuildId}.`)
+  return `https://portal.battlefield.com/bf6/${fallbackBuildId}/assets/blockly/help`
+}
+
 async function main () {
   const force = process.argv.includes('--force') || process.argv.includes('-f')
+  const baseHelpUrl = await discoverBaseHelpUrl()
 
   // ── Check for cached files ────────────────────────────────────────────────
   // If help files already exist locally, skip the bulk CDN download.
@@ -39,6 +60,11 @@ async function main () {
       manifest = JSON.parse(await readFile(manifestFile, 'utf8'))
     } catch {
       // manifest is corrupt, fall through to download
+    }
+
+    if (manifest && manifest.$schema !== baseHelpUrl) {
+      console.log('Portal site build changed since the help cache was written — re-downloading.')
+      manifest = null
     }
 
     if (manifest) {

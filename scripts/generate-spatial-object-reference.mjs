@@ -6,33 +6,22 @@ import { join } from 'node:path'
 
 const execFileAsync = promisify(execFile)
 
+// The spatial object reference is generated entirely from the downloaded
+// Portal SDK zip:
+//   - FbExportData/level_info.json   → canonical map list + physics budgets
+//   - FbExportData/asset_types.json  → every placeable object, its metadata,
+//                                      and per-map availability (levelRestrictions;
+//                                      an empty list means the object is
+//                                      available on every map)
+//   - FbExportData/thumbnails/       → object thumbnails
+// Without a cached SDK zip the committed output is left untouched.
+
 const strict = process.argv.includes('--strict')
-const definitionsFile = '.vitepress/block-definitions.json'
 const sdkVersionFile = '.cache/sdk-version.json'
 const sdkCacheRoot = '.cache/portal-sdk'
 const outFile = 'spatial-object-reference.md'
 const dataOutFile = 'public/spatial-object-data.json'
 const thumbnailOutDir = 'public/spatial-thumbnails'
-
-function escapeTable (value) {
-  return String(value ?? '').replace(/\|/g, '\\|').replace(/\n/g, '<br>')
-}
-
-function spatialObjectAnchor (name) {
-  return `spatial-${String(name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`
-}
-
-function formatMapName (runtimeSpawnName) {
-  return runtimeSpawnName.replace(/^RuntimeSpawn_/, '')
-}
-
-function mapLink (listName) {
-  return `[${formatMapName(listName)}](#${spatialObjectAnchor(listName)})`
-}
-
-function constantLookup (asset) {
-  return Object.fromEntries((asset.constants || []).map((constant) => [constant.name, constant.value]))
-}
 
 async function listZipFiles (zipPath) {
   const { stdout } = await execFileAsync('unzip', ['-Z1', zipPath], { maxBuffer: 1024 * 1024 * 50 })
@@ -77,114 +66,74 @@ async function ensureExtractedThumbnails (zipPath, sdkVersion) {
   await writeFile(markerFile, `${sdkVersion}\n`, 'utf8')
 }
 
-async function readSdkSpatialMetadata () {
-  const sdk = await findSdkZip()
-  if (!sdk) {
-    if (strict) throw new Error('Portal SDK zip is required for strict spatial object metadata generation')
-    console.warn('Portal SDK zip unavailable; generating spatial reference without SDK metadata')
-    return { assets: new Map(), thumbnails: new Set(), sdkVersion: null }
-  }
-
-  try {
-    const [assetTypesText, files] = await Promise.all([
-      readZipFile(sdk.zipPath, 'FbExportData/asset_types.json'),
-      listZipFiles(sdk.zipPath)
-    ])
-
-    await ensureExtractedThumbnails(sdk.zipPath, sdk.version)
-
-    const assetTypes = JSON.parse(assetTypesText).AssetTypes || []
-    const assets = new Map()
-
-    for (const asset of assetTypes) {
-      if (!asset.type) continue
-      const constants = constantLookup(asset)
-      assets.set(asset.type, {
-        type: asset.type,
-        directory: asset.directory || '',
-        category: constants.category || '',
-        mesh: constants.mesh || '',
-        physicsCost: constants.physicsCost ?? null,
-        hasInteractables: constants.hasInteractables ?? null,
-        levelRestrictions: asset.levelRestrictions || [],
-        propertyCount: (asset.properties || []).length
-      })
-    }
-
-    const thumbnails = new Set(
-      files
-        .filter((file) => file.startsWith('FbExportData/thumbnails/') && file.toLowerCase().endsWith('.png'))
-        .map((file) => file.replace(/^FbExportData\/thumbnails\//, '').replace(/\.png$/i, ''))
-    )
-
-    return { assets, thumbnails, sdkVersion: sdk.version }
-  } catch (err) {
-    const message = `Failed to read spatial object metadata from SDK: ${err instanceof Error ? err.message : String(err)}`
-    if (strict) throw new Error(message)
-    console.warn(message)
-    return { assets: new Map(), thumbnails: new Set(), sdkVersion: null }
-  }
-}
-
-function metadataForObject (sdkMetadata, objectName) {
-  const asset = sdkMetadata.assets.get(objectName)
-  return {
-    directory: asset?.directory || '',
-    physicsCost: asset?.physicsCost ?? null,
-    hasInteractables: asset?.hasInteractables ?? null,
-    levelRestrictions: asset?.levelRestrictions || [],
-    propertyCount: asset?.propertyCount ?? null,
-    hasThumbnail: sdkMetadata.thumbnails.has(objectName)
-  }
-}
-
-function formatPhysicsCost (value) {
-  return value === null || value === undefined ? '—' : String(value)
-}
-
-function formatBooleanish (value) {
-  if (value === null || value === undefined || value === '') return '—'
-  return value ? 'Yes' : 'No'
-}
-
-function thumbnailStatus (hasThumbnail) {
-  return hasThumbnail ? 'Yes' : '—'
+function constantLookup (asset) {
+  return Object.fromEntries((asset.constants || []).map((constant) => [constant.name, constant.value]))
 }
 
 async function main () {
-  const raw = await readFile(definitionsFile, 'utf8')
-  const data = JSON.parse(raw)
-  const sdkMetadata = await readSdkSpatialMetadata()
+  const sdk = await findSdkZip()
+  if (!sdk) {
+    const message = 'Portal SDK zip unavailable; keeping the existing spatial object reference'
+    if (strict) throw new Error('Portal SDK zip is required to generate the spatial object reference')
+    console.warn(message)
+    return
+  }
 
-  const spatialLists = (data.selectionLists || [])
-    .filter((list) => list.name?.startsWith('RuntimeSpawn_'))
+  const [assetTypesText, levelInfoText, files] = await Promise.all([
+    readZipFile(sdk.zipPath, 'FbExportData/asset_types.json'),
+    readZipFile(sdk.zipPath, 'FbExportData/level_info.json'),
+    listZipFiles(sdk.zipPath)
+  ])
+
+  await ensureExtractedThumbnails(sdk.zipPath, sdk.version)
+
+  const levelInfo = JSON.parse(levelInfoText)
+  const maps = Object.entries(levelInfo)
+    .map(([name, info]) => ({ name, physicsCostMax: info?.budget?.physicsCostMax ?? null }))
+    .sort((a, b) => a.name.localeCompare(b.name))
+  const mapNames = new Set(maps.map((map) => map.name))
+  if (maps.length === 0) throw new Error('level_info.json contained no maps')
+
+  const thumbnails = new Set(
+    files
+      .filter((file) => file.startsWith('FbExportData/thumbnails/') && file.toLowerCase().endsWith('.png'))
+      .map((file) => file.replace(/^FbExportData\/thumbnails\//, '').replace(/\.png$/i, ''))
+  )
+
+  const assetTypes = JSON.parse(assetTypesText).AssetTypes || []
+  const unknownRestrictions = new Set()
+
+  const objects = assetTypes
+    .filter((asset) => asset.type)
+    .map((asset) => {
+      const constants = constantLookup(asset)
+      const restrictions = [...new Set(asset.levelRestrictions || [])].sort()
+      for (const name of restrictions) {
+        if (!mapNames.has(name)) unknownRestrictions.add(name)
+      }
+      return {
+        name: asset.type,
+        directory: asset.directory || '',
+        physicsCost: constants.physicsCost ?? null,
+        hasInteractables: !!constants.hasInteractables,
+        hasThumbnail: thumbnails.has(asset.type),
+        maps: restrictions.filter((name) => mapNames.has(name))
+      }
+    })
     .sort((a, b) => a.name.localeCompare(b.name))
 
-  if (spatialLists.length === 0) {
-    throw new Error('No RuntimeSpawn selection lists found in block definitions')
+  if (objects.length === 0) throw new Error('asset_types.json contained no assets')
+  if (unknownRestrictions.size > 0) {
+    console.warn(`asset_types.json references maps missing from level_info.json (ignored): ${[...unknownRestrictions].sort().join(', ')}`)
   }
 
-  const objectToLists = new Map()
-  let totalEntries = 0
+  await writeFile(dataOutFile, `${JSON.stringify({ sdkVersion: sdk.version, maps, objects })}\n`, 'utf8')
 
-  for (const list of spatialLists) {
-    const values = list.selectionValues || []
-    totalEntries += values.length
+  // ── Build-time statistics ─────────────────────────────────────────────────
 
-    for (const value of values) {
-      if (!value.name) continue
-      if (!objectToLists.has(value.name)) objectToLists.set(value.name, [])
-      objectToLists.get(value.name).push(list.name)
-    }
-  }
-
-  const objectRows = [...objectToLists.entries()]
-    .map(([objectName, listNames]) => ({
-      objectName,
-      listNames: listNames.sort((a, b) => a.localeCompare(b)),
-      metadata: metadataForObject(sdkMetadata, objectName)
-    }))
-    .sort((a, b) => b.listNames.length - a.listNames.length || a.objectName.localeCompare(b.objectName))
+  const mapCountOf = (object) => object.maps.length || maps.length
+  const unrestrictedCount = objects.filter((object) => object.maps.length === 0).length
+  const totalEntries = objects.reduce((sum, object) => sum + mapCountOf(object), 0)
 
   const sharedCountBuckets = new Map()
   const physicsCostBuckets = new Map()
@@ -192,16 +141,23 @@ async function main () {
   let objectsWithInteractables = 0
   let objectsWithThumbnails = 0
 
-  for (const row of objectRows) {
-    const count = row.listNames.length
-    sharedCountBuckets.set(count, (sharedCountBuckets.get(count) || 0) + 1)
-
-    if (row.metadata.physicsCost !== null && row.metadata.physicsCost !== undefined) {
-      objectsWithPhysicsCost++
-      physicsCostBuckets.set(row.metadata.physicsCost, (physicsCostBuckets.get(row.metadata.physicsCost) || 0) + 1)
+  for (const object of objects) {
+    if (object.maps.length > 0) {
+      sharedCountBuckets.set(object.maps.length, (sharedCountBuckets.get(object.maps.length) || 0) + 1)
     }
-    if (row.metadata.hasInteractables) objectsWithInteractables++
-    if (row.metadata.hasThumbnail) objectsWithThumbnails++
+    if (object.physicsCost !== null && object.physicsCost !== undefined) {
+      objectsWithPhysicsCost++
+      physicsCostBuckets.set(object.physicsCost, (physicsCostBuckets.get(object.physicsCost) || 0) + 1)
+    }
+    if (object.hasInteractables) objectsWithInteractables++
+    if (object.hasThumbnail) objectsWithThumbnails++
+  }
+
+  const perMapSpecific = new Map(maps.map((map) => [map.name, 0]))
+  for (const object of objects) {
+    for (const name of object.maps) {
+      perMapSpecific.set(name, perMapSpecific.get(name) + 1)
+    }
   }
 
   const physicsRanges = [
@@ -219,23 +175,14 @@ async function main () {
     { label: '501+', min: 501, max: Infinity, count: 0 }
   ]
 
-  for (const row of objectRows) {
-    const cost = row.metadata.physicsCost
+  for (const object of objects) {
+    const cost = object.physicsCost
     if (cost === null || cost === undefined) continue
     const bucket = physicsRanges.find((range) => cost >= range.min && cost <= range.max)
     if (bucket) bucket.count++
   }
 
-  const browserData = objectRows.map((row) => ({
-    name: row.objectName,
-    physicsCost: row.metadata.physicsCost,
-    directory: row.metadata.directory || '',
-    hasInteractables: !!row.metadata.hasInteractables,
-    hasThumbnail: row.metadata.hasThumbnail,
-    maps: row.listNames.map(formatMapName),
-    listNames: row.listNames
-  }))
-  await writeFile(dataOutFile, `${JSON.stringify(browserData)}\n`, 'utf8')
+  // ── Page generation ───────────────────────────────────────────────────────
 
   const lines = []
   lines.push('---')
@@ -246,7 +193,7 @@ async function main () {
   lines.push('import { computed, onMounted, ref, watch } from \'vue\'')
   lines.push('import { withBase } from \'vitepress\'')
   lines.push('')
-  lines.push('const spatialObjects = ref([])')
+  lines.push('const spatialData = ref({ maps: [], objects: [] })')
   lines.push('const objectFilter = ref(\'\')')
   lines.push('const mapFilter = ref(\'\')')
   lines.push('const costFilter = ref(\'\')')
@@ -259,18 +206,24 @@ async function main () {
   lines.push('const selectedObject = ref(null)')
   lines.push('')
   lines.push('onMounted(async () => {')
-  lines.push('  spatialObjects.value = await fetch(withBase(\'/spatial-object-data.json\')).then((res) => res.json())')
+  lines.push('  spatialData.value = await fetch(withBase(\'/spatial-object-data.json\')).then((res) => res.json())')
   lines.push('})')
   lines.push('')
-  lines.push('const mapOptions = computed(() => [...new Set(spatialObjects.value.flatMap((object) => object.maps))].sort())')
+  lines.push('const spatialObjects = computed(() => spatialData.value.objects)')
+  lines.push('const mapOptions = computed(() => spatialData.value.maps.map((map) => map.name))')
   lines.push('const costOptions = computed(() => [...new Set(spatialObjects.value.map((object) => object.physicsCost).filter((cost) => cost !== null && cost !== undefined))].sort((a, b) => Number(a) - Number(b)))')
   lines.push('const directoryOptions = computed(() => [...new Set(spatialObjects.value.map((object) => object.directory).filter(Boolean))].sort())')
+  lines.push('')
+  lines.push('// An empty maps list means the object is available on every map.')
+  lines.push('function mapCount (object) {')
+  lines.push('  return object.maps.length || mapOptions.value.length')
+  lines.push('}')
   lines.push('')
   lines.push('const filteredObjects = computed(() => {')
   lines.push('  const query = objectFilter.value.trim().toLowerCase()')
   lines.push('  const filtered = spatialObjects.value.filter((object) => {')
   lines.push('    const matchesText = !query || object.name.toLowerCase().includes(query) || object.directory.toLowerCase().includes(query)')
-  lines.push('    const matchesMap = !mapFilter.value || object.maps.includes(mapFilter.value)')
+  lines.push('    const matchesMap = !mapFilter.value || object.maps.length === 0 || object.maps.includes(mapFilter.value)')
   lines.push('    const matchesCost = !costFilter.value || String(object.physicsCost) === costFilter.value')
   lines.push('    const matchesDirectory = !directoryFilter.value || object.directory === directoryFilter.value')
   lines.push('    const matchesThumbnail = !thumbnailFilter.value || (thumbnailFilter.value === \'with\' ? object.hasThumbnail : !object.hasThumbnail)')
@@ -279,7 +232,7 @@ async function main () {
   lines.push('  })')
   lines.push('')
   lines.push('  return [...filtered].sort((a, b) => {')
-  lines.push('    if (sortMode.value === \'map-count\') return b.maps.length - a.maps.length || a.name.localeCompare(b.name)')
+  lines.push('    if (sortMode.value === \'map-count\') return mapCount(b) - mapCount(a) || a.name.localeCompare(b.name)')
   lines.push('    if (sortMode.value === \'physics-cost\') return (Number(b.physicsCost ?? -1) - Number(a.physicsCost ?? -1)) || a.name.localeCompare(b.name)')
   lines.push('    if (sortMode.value === \'directory\') return a.directory.localeCompare(b.directory) || a.name.localeCompare(b.name)')
   lines.push('    return a.name.localeCompare(b.name)')
@@ -322,18 +275,16 @@ async function main () {
   lines.push('')
   lines.push('# Spatial Object Reference')
   lines.push('')
-  lines.push('This page combines all `RuntimeSpawn_*` spatial object lists into one map-aware reference.')
+  lines.push('This page lists every placeable spatial object exported by the Portal SDK, with per-map availability.')
   lines.push('')
-  lines.push('Spatial objects are map-based, but many object names are shared across maps. Use the browser filters to narrow the reference to one map, directory, physics cost, thumbnail availability, interactable objects, or free-text matches.')
+  lines.push('Map availability comes from each object\'s SDK `levelRestrictions`; objects without restrictions are available on **all maps**. Use the browser filters to narrow the reference to one map, directory, physics cost, thumbnail availability, interactable objects, or free-text matches.')
   lines.push('')
-  if (sdkMetadata.sdkVersion) {
-    lines.push(`SDK metadata source: **Portal SDK ${sdkMetadata.sdkVersion}** (` + '`FbExportData/asset_types.json` and `FbExportData/thumbnails/`).')
-    lines.push('')
-  }
+  lines.push(`Source: **Portal SDK ${sdk.version}** (` + '`FbExportData/asset_types.json`, `FbExportData/level_info.json`, and `FbExportData/thumbnails/`).')
+  lines.push('')
 
   lines.push('## Spatial Asset Browser')
   lines.push('')
-  lines.push('This browser is the primary spatial object reference. It contains every unique `RuntimeSpawn_*` object, with filters for map availability and SDK metadata.')
+  lines.push('This browser is the primary spatial object reference. It contains every placeable SDK object, with filters for map availability and SDK metadata.')
   lines.push('')
   lines.push('<div class="spatial-browser">')
   lines.push('  <div class="spatial-browser-controls">')
@@ -396,7 +347,7 @@ async function main () {
   lines.push('      <div v-else class="spatial-card-missing">No thumbnail</div>')
   lines.push('      <strong>{{ object.name }}</strong>')
   lines.push('      <span>{{ object.directory || \'—\' }}</span>')
-  lines.push('      <small>Physics: {{ object.physicsCost ?? \'—\' }} · Maps: {{ object.maps.length }} · Thumbnail: {{ object.hasThumbnail ? \'Yes\' : \'—\' }}</small>')
+  lines.push('      <small>Physics: {{ object.physicsCost ?? \'—\' }} · Maps: {{ object.maps.length || \'All\' }} · Thumbnail: {{ object.hasThumbnail ? \'Yes\' : \'—\' }}</small>')
   lines.push('    </button>')
   lines.push('  </div>')
   lines.push('  <div class="spatial-pagination">')
@@ -413,7 +364,7 @@ async function main () {
   lines.push('    <div class="spatial-preview-meta">')
   lines.push('      <strong>{{ selectedObject.name }}</strong>')
   lines.push('      <span>{{ selectedObject.directory || \'—\' }}</span>')
-  lines.push('      <small>Physics: {{ selectedObject.physicsCost ?? \'—\' }} · Maps: {{ selectedObject.maps.join(\', \') }}</small>')
+  lines.push('      <small>Physics: {{ selectedObject.physicsCost ?? \'—\' }} · Maps: {{ selectedObject.maps.length ? selectedObject.maps.join(\', \') : \'All maps\' }}</small>')
   lines.push('    </div>')
   lines.push('  </div>')
   lines.push('</div>')
@@ -423,10 +374,10 @@ async function main () {
   lines.push('')
   lines.push('| Metric | Count |')
   lines.push('| --- | ---: |')
-  lines.push(`| RuntimeSpawn lists | ${spatialLists.length} |`)
-  lines.push(`| Unique spatial object names | ${objectRows.length} |`)
+  lines.push(`| Maps | ${maps.length} |`)
+  lines.push(`| Unique spatial objects | ${objects.length} |`)
+  lines.push(`| Objects available on all maps | ${unrestrictedCount} |`)
   lines.push(`| Total map/object entries | ${totalEntries} |`)
-  lines.push(`| Objects with SDK metadata | ${objectRows.filter((row) => sdkMetadata.assets.has(row.objectName)).length} |`)
   lines.push(`| Objects with physics cost | ${objectsWithPhysicsCost} |`)
   lines.push(`| Objects flagged with interactables | ${objectsWithInteractables} |`)
   lines.push(`| Objects with SDK thumbnails | ${objectsWithThumbnails} |`)
@@ -434,30 +385,31 @@ async function main () {
 
   lines.push('## Maps')
   lines.push('')
-  lines.push('Object counts by RuntimeSpawn map list. Use these names in the Map filter above to limit the browser to one map.')
+  lines.push('Maps come from the SDK\'s `level_info.json`. Use these names in the Map filter above to limit the browser to one map. "Map-specific objects" counts objects restricted to the map; every map additionally has access to the ' + `${unrestrictedCount.toLocaleString()} unrestricted objects.`)
   lines.push('')
-  lines.push('<div class="spatial-chart spatial-chart-wide">')
-  const mapsByObjectCount = [...spatialLists].sort((a, b) => ((b.selectionValues || []).length) - ((a.selectionValues || []).length))
-  const maxMapObjectCount = Math.max(...spatialLists.map((list) => (list.selectionValues || []).length))
-  for (const list of mapsByObjectCount) {
-    const count = (list.selectionValues || []).length
-    const width = maxMapObjectCount > 0 ? Math.max(2, Math.round((count / maxMapObjectCount) * 100)) : 0
-    const mapName = formatMapName(list.name)
-    lines.push(`  <div class="spatial-chart-row"><span class="spatial-chart-label">${mapName}</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: ${width}%"></span></span><span class="spatial-chart-value">${count.toLocaleString()}</span></div>`)
+  lines.push('| Map | Map-specific objects | Total available | Physics budget |')
+  lines.push('| --- | ---: | ---: | ---: |')
+  for (const map of maps) {
+    const specific = perMapSpecific.get(map.name)
+    const budget = map.physicsCostMax === null ? '—' : map.physicsCostMax.toLocaleString()
+    lines.push(`| ${map.name} | ${specific.toLocaleString()} | ${(specific + unrestrictedCount).toLocaleString()} | ${budget} |`)
   }
-  lines.push('</div>')
   lines.push('')
 
   lines.push('## Sharing Distribution')
   lines.push('')
-  lines.push('This shows how many unique object names appear on a given number of RuntimeSpawn lists. Longer bars mean more objects have that level of cross-map availability.')
+  lines.push('This shows how many objects are available on a given number of maps, based on SDK `levelRestrictions`. Objects without restrictions appear in the "All maps" row.')
   lines.push('')
   lines.push('<div class="spatial-chart">')
-  const sharingRows = [...sharedCountBuckets.entries()].sort((a, b) => Number(a[0]) - Number(b[0]))
-  const maxSharedCount = Math.max(...sharingRows.map(([, objectCount]) => objectCount))
+  const sharingRows = [...sharedCountBuckets.entries()].sort((a, b) => a[0] - b[0])
+  const maxSharedCount = Math.max(unrestrictedCount, ...sharingRows.map(([, objectCount]) => objectCount))
   for (const [count, objectCount] of sharingRows) {
     const width = maxSharedCount > 0 ? Math.max(2, Math.round((objectCount / maxSharedCount) * 100)) : 0
-    lines.push(`  <div class="spatial-chart-row"><span class="spatial-chart-label">${count} ${Number(count) === 1 ? 'map' : 'maps'}</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: ${width}%"></span></span><span class="spatial-chart-value">${objectCount.toLocaleString()}</span></div>`)
+    lines.push(`  <div class="spatial-chart-row"><span class="spatial-chart-label">${count} ${count === 1 ? 'map' : 'maps'}</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: ${width}%"></span></span><span class="spatial-chart-value">${objectCount.toLocaleString()}</span></div>`)
+  }
+  if (unrestrictedCount > 0) {
+    const width = Math.max(2, Math.round((unrestrictedCount / maxSharedCount) * 100))
+    lines.push(`  <div class="spatial-chart-row"><span class="spatial-chart-label">All maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: ${width}%"></span></span><span class="spatial-chart-value">${unrestrictedCount.toLocaleString()}</span></div>`)
   }
   lines.push('</div>')
   lines.push('')
@@ -479,11 +431,11 @@ async function main () {
 
   lines.push('## Reference Data')
   lines.push('')
-  lines.push('The browser above is generated from `public/spatial-object-data.json`, which contains every unique spatial object plus its maps, SDK directory, physics cost, interactable flag, and thumbnail availability. Use the browser filters instead of separate per-map tables so the same object can be discovered across shared maps without duplicating thousands of rows.')
+  lines.push('The browser above is generated from `public/spatial-object-data.json`, which contains the SDK map list (with physics budgets) plus every placeable object with its restricted-map list, SDK directory, physics cost, interactable flag, and thumbnail availability. An object with no restricted maps is available everywhere.')
   lines.push('')
 
   await writeFile(outFile, lines.join('\n'), 'utf8')
-  console.log(`Generated ${outFile}`)
+  console.log(`Generated ${outFile} from SDK ${sdk.version} (${objects.length} objects, ${maps.length} maps)`)
 }
 
 main().catch((err) => {

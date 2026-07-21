@@ -173,7 +173,7 @@ watch(apiFilter, () => nextTick(applyApiFilter))
 
 # TypeScript API Reference
 
-SDK version: **1.3.2.0**
+SDK version: **1.4.1.0**
 
 This page is generated from the SDK's `code/types/mod/index.d.ts` and `code/modlib/index.ts` files.
 
@@ -186,11 +186,11 @@ This page is generated from the SDK's `code/types/mod/index.d.ts` and `code/modl
 
 | Category | Count |
 | --- | ---: |
-| event handlers | 70 |
-| mod functions | 390 |
-| mod function overloads | 523 |
-| mod types | 39 |
-| mod enums | 70 |
+| event handlers | 74 |
+| mod functions | 415 |
+| mod function overloads | 549 |
+| mod types | 40 |
+| mod enums | 75 |
 | modlib functions | 31 |
 | modlib classes | 2 |
 
@@ -1288,10 +1288,73 @@ EnableWorldIconText(worldIcon: WorldIcon, enableText: boolean): void
 
 #### GetWorldIcon
 
-Returns the world icon object corresponding to the provided id.
+Returns the WorldIcon corresponding to the provided id.
 
 ```ts
-GetWorldIcon(worldIconNumber: number): WorldIcon
+GetWorldIcon(objId: number): WorldIcon
+```
+
+#### MoveObject
+
+Move the Object provided, Euler rotation optional
+
+```ts
+MoveObject(
+  object: | Bomb | EmplacementSpawner | FixedCamera | InteractPoint | LootSpawner | MCOM | SFX | SpatialObject | Spawner | VehicleSpawner | VL7Cloud | VO | WorldIcon,
+  positionDelta: Vector
+): void
+```
+
+```ts
+MoveObject(
+  object: | Bomb | EmplacementSpawner | FixedCamera | InteractPoint | LootSpawner | MCOM | SFX | SpatialObject | Spawner | VehicleSpawner | VL7Cloud | VO | WorldIcon,
+  positionDelta: Vector,
+  rotationDelta: Vector
+): void
+```
+
+#### RotateObject
+
+Rotate the Object provided using Euler angles
+
+```ts
+RotateObject(
+  arg0: | Bomb | EmplacementSpawner | FixedCamera | InteractPoint | LootSpawner | MCOM | SFX | SpatialObject | Spawner | VehicleSpawner | VL7Cloud | VO | WorldIcon,
+  rotationDelta: Vector
+): void
+```
+
+#### SetBombWorldIconGlobalVisibility
+
+Sets the world Icon global visibility, if set to enabled all teams can see the bomb carrier Icon, if set to disabled only the attacking team can.
+
+```ts
+SetBombWorldIconGlobalVisibility(bomb: Bomb, Enabled: boolean): void
+```
+
+#### SetObjectTransform
+
+Sets the transform of the Object provided
+
+```ts
+SetObjectTransform(
+  object: | Bomb | EmplacementSpawner | FixedCamera | InteractPoint | LootSpawner | MCOM | SFX | SpatialObject | Spawner | VehicleSpawner | VL7Cloud | VO | WorldIcon,
+  transform: Transform
+): void
+```
+
+#### SetObjectTransformOverTime
+
+Sets the transform of the Object provided over the time provided. Options to loop indefinitely and reverse
+
+```ts
+SetObjectTransformOverTime(
+  object: | Bomb | EmplacementSpawner | FixedCamera | InteractPoint | LootSpawner | MCOM | SFX | SpatialObject | Spawner | VehicleSpawner | VL7Cloud | VO | WorldIcon,
+  transform: Transform,
+  timeInSeconds: number,
+  shouldLoop: boolean,
+  shouldReverse: boolean
+): void
 ```
 
 #### SetWorldIconColor
@@ -1324,7 +1387,7 @@ SetWorldIconOwner(worldIcon: WorldIcon, newPlayerOwner: Player): void
 
 #### SetWorldIconPosition
 
-Changes the location of a world icon.
+@deprecated The method should not be used
 
 ```ts
 SetWorldIconPosition(worldIcon: WorldIcon, newPosition: Vector): void
@@ -1336,6 +1399,14 @@ Changes the text appearing above a world icon.
 
 ```ts
 SetWorldIconText(worldIcon: WorldIcon, newText: Message): void
+```
+
+#### StopActiveMovementForObject
+
+Stops the Over Time movement for the provided Object if one is active
+
+```ts
+StopActiveMovementForObject( object: | Bomb | EmplacementSpawner | FixedCamera | InteractPoint | LootSpawner | MCOM | SFX | SpatialObject | Spawner | VehicleSpawner | VL7Cloud | VO | WorldIcon ): void
 ```
 
 :::
@@ -2110,6 +2181,14 @@ Returns the target player magazine ammo of the provided inventory slots.
 GetInventoryMagazineAmmo(player: Player, inventorySlots: InventorySlots): number
 ```
 
+#### GetPlayer
+
+Returns the Player corresponding to the provided id.
+
+```ts
+GetPlayer(objId: number): Player
+```
+
 #### GetPlayerDeaths
 
 Returns the total amount of deaths for the target player.
@@ -2128,7 +2207,7 @@ GetPlayerKills(player: Player): number
 
 #### GetPlayerVehicleSeat
 
-Returns the seat index number for the target player if they are in a vehicle, otherwise returns -1.
+Returns the seat index number for the target player if they are in a vehicle.
 
 ```ts
 GetPlayerVehicleSeat(player: Player): number
@@ -2156,6 +2235,14 @@ Returns the vehicle used by a player.
 
 ```ts
 GetVehicleFromPlayer(player: Player): Vehicle
+```
+
+#### GiveBombToPlayer
+
+Gives the Bomb to the chosen Player.
+
+```ts
+GiveBombToPlayer(player: Player, bomb: Bomb): void
 ```
 
 #### HasEquipment
@@ -2294,6 +2381,14 @@ SetCameraTypeForPlayer(player: Player, cameraType: Cameras): void
 SetCameraTypeForPlayer(player: Player, cameraType: Cameras, cameraIndex: number): void
 ```
 
+#### SetFreeCameraCollisionForPlayer
+
+Set whether collision is enabled for the Free Camera. (Default true)
+
+```ts
+SetFreeCameraCollisionForPlayer(player: Player, enabled: boolean): void
+```
+
 #### SetGameModeScore
 
 Sets the gamemode score of the provided Player or Team.
@@ -2360,6 +2455,19 @@ SetSpectatingFiltersForPlayer(
   group: SpectatingGroup,
   ownSquadOnly: boolean,
   ownTeamOnly: boolean
+): void
+```
+
+#### SetThirdPersonCameraPositionForPlayer
+
+Set the FollowDistance, FollowHeight, and ShoulderOffset for the Third Person Camera. (Default 2.5, 0.2, 0.6)
+
+```ts
+SetThirdPersonCameraPositionForPlayer(
+  player: Player,
+  followDistance: number,
+  followHeight: number,
+  shoulderOffset: number
 ): void
 ```
 
@@ -2466,6 +2574,14 @@ Returns an array of all vehicles within a game.
 AllVehicles(): Array
 ```
 
+#### ApplyImpulse
+
+Apply impulse  with given world position, direction and magnitude
+
+```ts
+ApplyImpulse(vehicle: Vehicle, worldPosition: Vector, direction: Vector, magnitude: number): void
+```
+
 #### CompareVehicleName
 
 Returns a boolean indicating if the target vehicle has the same name as the provided vehicle or if it is the same type as the provided vehicle type.
@@ -2532,10 +2648,10 @@ GetAllPlayersInVehicle(vehicle: Vehicle): Array
 
 #### GetEmplacementSpawner
 
-Returns the emplacement spawner object corresponding to the provided id.
+Returns the EmplacementSpawner corresponding to the provided id.
 
 ```ts
-GetEmplacementSpawner(number: number): EmplacementSpawner
+GetEmplacementSpawner(objId: number): EmplacementSpawner
 ```
 
 #### GetPlayerFromVehicleSeat
@@ -2544,6 +2660,14 @@ Returns the player currently occupying the provided seat index number of the pro
 
 ```ts
 GetPlayerFromVehicleSeat(vehicle: Vehicle, number: number): Player
+```
+
+#### GetVehicle
+
+Returns the Vehicle corresponding to the provided id.
+
+```ts
+GetVehicle(objId: number): Vehicle
 ```
 
 #### GetVehicleSeatCount
@@ -2556,10 +2680,10 @@ GetVehicleSeatCount(vehicle: Vehicle): number
 
 #### GetVehicleSpawner
 
-Returns the vehicle spawner object corresponding to the provided id.
+Returns the VehicleSpawner corresponding to the provided id.
 
 ```ts
-GetVehicleSpawner(number: number): VehicleSpawner
+GetVehicleSpawner(objId: number): VehicleSpawner
 ```
 
 #### GetVehicleState
@@ -2825,6 +2949,29 @@ Teleport(vehicle: Vehicle, destination: Vector, orientation: number): void
 
 ::: details Toggle
 
+#### ApplyAreaImpulseAndDamage
+
+Apply impulse and damage to objects within set radius of given point. Impulse direction from center point, unless specified with ImpulseDirection
+
+```ts
+ApplyAreaImpulseAndDamage(
+  center: Vector,
+  radius: number,
+  impulseStrength: number,
+  damageAmount: number
+): void
+```
+
+```ts
+ApplyAreaImpulseAndDamage(
+  center: Vector,
+  radius: number,
+  impulseStrength: number,
+  damageAmount: number,
+  impulseDirection: Vector
+): void
+```
+
 #### GetGolmudTrainLocation
 
 Returns the World Position of the Golmud Moving Train. (Only on Golmud Railway map)
@@ -2873,25 +3020,13 @@ Returns the spatial object corresponding to the provided id.
 GetSpatialObject(spatialObjectNumber: number): SpatialObject
 ```
 
-#### MoveObject
-
-Move the Object provided, Euler rotation optional
-
-```ts
-MoveObject(object: mod.Object, positionDelta: Vector): void
-```
-
-```ts
-MoveObject(object: mod.Object, positionDelta: Vector, rotationDelta: Vector): void
-```
-
 #### MoveObjectOverTime
 
 Moves the Object by the delta position and rotation over the time provided. Options to loop indefinitely and reverse
 
 ```ts
 MoveObjectOverTime(
-  object: mod.Object,
+  object: | Bomb | EmplacementSpawner | FixedCamera | InteractPoint | LootSpawner | MCOM | SFX | SpatialObject | Spawner | VehicleSpawner | VL7Cloud | VO | WorldIcon,
   positionDelta: Vector,
   rotationDelta: Vector,
   timeInSeconds: number,
@@ -2906,7 +3041,7 @@ Orbits the Object around the provided transform over time. Optional orbitAxis ot
 
 ```ts
 OrbitObjectOverTime(
-  object: mod.Object,
+  object: | Bomb | EmplacementSpawner | FixedCamera | InteractPoint | LootSpawner | MCOM | SFX | SpatialObject | Spawner | VehicleSpawner | VL7Cloud | VO | WorldIcon,
   orbitTransform: Transform,
   timeInSeconds: number,
   radius: number,
@@ -2918,7 +3053,7 @@ OrbitObjectOverTime(
 
 ```ts
 OrbitObjectOverTime(
-  object: mod.Object,
+  object: | Bomb | EmplacementSpawner | FixedCamera | InteractPoint | LootSpawner | MCOM | SFX | SpatialObject | Spawner | VehicleSpawner | VL7Cloud | VO | WorldIcon,
   orbitTransform: Transform,
   timeInSeconds: number,
   radius: number,
@@ -2937,42 +3072,16 @@ Request the system to evaluate if a straight line between two points is interupt
 RayCast(start: Vector, stop: Vector): void
 ```
 
-#### RotateObject
+#### SetThirdPersonCameraPositionForAll
 
-Rotate the Object provided using Euler angles
-
-```ts
-RotateObject(object: mod.Object, rotationDelta: Vector): void
-```
-
-#### SetObjectTransform
-
-Sets the transform of the Object provided
+Set the FollowDistance, FollowHeight, and ShoulderOffset for the Third Person Camera. (Default 2.5, 0.2, 0.6)
 
 ```ts
-SetObjectTransform(object: mod.Object, transform: Transform): void
-```
-
-#### SetObjectTransformOverTime
-
-Sets the transform of the Object provided over the time provided. Options to loop indefinitely and reverse
-
-```ts
-SetObjectTransformOverTime(
-  object: mod.Object,
-  transform: Transform,
-  timeInSeconds: number,
-  shouldLoop: boolean,
-  shouldReverse: boolean
+SetThirdPersonCameraPositionForAll(
+  followDistance: number,
+  followHeight: number,
+  shoulderOffset: number
 ): void
-```
-
-#### StopActiveMovementForObject
-
-Stops the Over Time movement for the provided Object if one is active
-
-```ts
-StopActiveMovementForObject(object: mod.Object): void
 ```
 
 :::
@@ -3031,18 +3140,18 @@ EnableInteractPoint(interactPoint: InteractPoint, enable: boolean): void
 
 #### GetAreaTrigger
 
-Returns the area trigger object corresponding to the provided id.
+Returns the AreaTrigger corresponding to the provided id.
 
 ```ts
-GetAreaTrigger(areaTriggerNumber: number): AreaTrigger
+GetAreaTrigger(objId: number): AreaTrigger
 ```
 
 #### GetCapturePoint
 
-Returns the capture point corresponding to the provided id.
+Returns the CapturePoint corresponding to the provided id.
 
 ```ts
-GetCapturePoint(id: number): CapturePoint
+GetCapturePoint(objId: number): CapturePoint
 ```
 
 #### GetCaptureProgress
@@ -3063,34 +3172,34 @@ GetCurrentOwnerTeam(capturePoint: CapturePoint): Team
 
 #### GetHQ
 
-Returns the HQ object corresponding to the provided id.
+Returns the HQ corresponding to the provided id.
 
 ```ts
-GetHQ(number: number): HQ
+GetHQ(objId: number): HQ
 ```
 
 #### GetInteractPoint
 
-Returns the interact point object corresponding to the provided id.
+Returns the InteractPoint corresponding to the provided id.
 
 ```ts
-GetInteractPoint(interactPointNumber: number): InteractPoint
+GetInteractPoint(objId: number): InteractPoint
 ```
 
 #### GetLootSpawner
 
-Returns the loot spawner object corresponding to the provided id.
+Returns the LootSpawner corresponding to the provided id.
 
 ```ts
-GetLootSpawner(number: number): LootSpawner
+GetLootSpawner(objId: number): LootSpawner
 ```
 
 #### GetMCOM
 
-Returns the MCOM object corresponding to the provided id.
+Returns the MCOM corresponding to the provided id.
 
 ```ts
-GetMCOM(number: number): MCOM
+GetMCOM(objId: number): MCOM
 ```
 
 #### GetOwnerProgressTeam
@@ -3119,34 +3228,34 @@ GetPreviousOwnerTeam(capturePoint: CapturePoint): Team
 
 #### GetRingOfFire
 
-Returns the ring of fire object corresponding to the provided id.
+Returns the RingOfFire corresponding to the provided id.
 
 ```ts
-GetRingOfFire(number: number): RingOfFire
+GetRingOfFire(objId: number): RingOfFire
 ```
 
 #### GetSector
 
-Returns the sector object corresponding to the provided id.
+Returns the Sector corresponding to the provided id.
 
 ```ts
-GetSector(number: number): Sector
+GetSector(objId: number): Sector
 ```
 
 #### GetVL7Cloud
 
-Returns the VL7Cloud object corresponding to the provided id.
+Returns the VL7Cloud corresponding to the provided id.
 
 ```ts
-GetVL7Cloud(vl7CloudId: number): VL7Cloud
+GetVL7Cloud(objId: number): VL7Cloud
 ```
 
 #### GetWaypointPath
 
-Returns the waypoint path object corresponding to the provided id.
+Returns the WaypointPath corresponding to the provided id.
 
 ```ts
-GetWaypointPath(waypointPathNumber: number): WaypointPath
+GetWaypointPath(objId: number): WaypointPath
 ```
 
 #### GolmudTrainSendMoveCommand
@@ -3203,6 +3312,14 @@ Sets the capture time multiplier for target capture point to the provided number
 
 ```ts
 SetMaxCaptureMultiplier(capturePoint: CapturePoint, multiplier: number): void
+```
+
+#### SetMCOMArmType
+
+Sets the MCOM arm type, if set to default anyone on the opposing team can arm it, otherwise only the bomb carrier can.
+
+```ts
+SetMCOMArmType(mcom: MCOM, mcomarmtype: MCOMArmType): void
 ```
 
 #### SetMCOMFuseTime
@@ -3276,20 +3393,36 @@ SpawnLoot(lootSpawner: LootSpawner, armor: ArmorTypes): void
 
 ::: details Toggle
 
-#### GetSpawner
+#### ForceBombSpawn
 
-Returns the spawner object corresponding to the provided id.
+Forces the bomb to spawn at the original location.
 
 ```ts
-GetSpawner(number: number): Spawner
+ForceBombSpawn(bomb: Bomb): void
+```
+
+#### ForceBombUnspawn
+
+Forces the bomb to unspawn.
+
+```ts
+ForceBombUnspawn(bomb: Bomb): void
+```
+
+#### GetSpawner
+
+Returns the Spawner corresponding to the provided id.
+
+```ts
+GetSpawner(objId: number): Spawner
 ```
 
 #### GetSpawnPoint
 
-Returns the spawn point object corresponding to the provided id.
+Returns the SpawnPoint corresponding to the provided id.
 
 ```ts
-GetSpawnPoint(number: number): SpawnPoint
+GetSpawnPoint(objId: number): SpawnPoint
 ```
 
 #### SetSpawnMode
@@ -3314,7 +3447,7 @@ Spawns an object at runtime. Returns an object id if the object supports it, oth
 
 ```ts
 SpawnObject(
-  prefabEnum: | RuntimeSpawn_Common | RuntimeSpawn_Abbasid | RuntimeSpawn_Aftermath | RuntimeSpawn_Badlands | RuntimeSpawn_Battery | RuntimeSpawn_Capstone | RuntimeSpawn_Contaminated | RuntimeSpawn_Dumbo | RuntimeSpawn_Eastwood | RuntimeSpawn_FireStorm | RuntimeSpawn_Limestone | RuntimeSpawn_Outskirts | RuntimeSpawn_Subsurface | RuntimeSpawn_Tungsten | RuntimeSpawn_Granite_Downtown | RuntimeSpawn_Granite_Marina | RuntimeSpawn_Granite_MilitaryRnD | RuntimeSpawn_Granite_MilitaryStorage | RuntimeSpawn_Granite_ResidentialNorth | RuntimeSpawn_Granite_TechCenter | RuntimeSpawn_Granite_Underground | RuntimeSpawn_Sand | RuntimeSpawn_GolmudRailway,
+  prefabEnum: | RuntimeSpawn_Common | RuntimeSpawn_Abbasid | RuntimeSpawn_Aftermath | RuntimeSpawn_Badlands | RuntimeSpawn_Battery | RuntimeSpawn_Capstone | RuntimeSpawn_Contaminated | RuntimeSpawn_Dumbo | RuntimeSpawn_Eastwood | RuntimeSpawn_FireStorm | RuntimeSpawn_Limestone | RuntimeSpawn_Outskirts | RuntimeSpawn_Subsurface | RuntimeSpawn_Tungsten | RuntimeSpawn_Granite_Downtown | RuntimeSpawn_Granite_Marina | RuntimeSpawn_Granite_MilitaryRnD | RuntimeSpawn_Granite_MilitaryStorage | RuntimeSpawn_Granite_ResidentialNorth | RuntimeSpawn_Granite_TechCenter | RuntimeSpawn_Granite_Underground | RuntimeSpawn_Sand | RuntimeSpawn_GolmudRailway | RuntimeSpawn_Plaza,
   position: Vector,
   rotation: Vector,
   scale: Vector
@@ -3323,7 +3456,7 @@ SpawnObject(
 
 ```ts
 SpawnObject(
-  prefabEnum: | RuntimeSpawn_Common | RuntimeSpawn_Abbasid | RuntimeSpawn_Aftermath | RuntimeSpawn_Badlands | RuntimeSpawn_Battery | RuntimeSpawn_Capstone | RuntimeSpawn_Contaminated | RuntimeSpawn_Dumbo | RuntimeSpawn_Eastwood | RuntimeSpawn_FireStorm | RuntimeSpawn_Limestone | RuntimeSpawn_Outskirts | RuntimeSpawn_Subsurface | RuntimeSpawn_Tungsten | RuntimeSpawn_Granite_Downtown | RuntimeSpawn_Granite_Marina | RuntimeSpawn_Granite_MilitaryRnD | RuntimeSpawn_Granite_MilitaryStorage | RuntimeSpawn_Granite_ResidentialNorth | RuntimeSpawn_Granite_TechCenter | RuntimeSpawn_Granite_Underground | RuntimeSpawn_Sand | RuntimeSpawn_GolmudRailway,
+  prefabEnum: | RuntimeSpawn_Common | RuntimeSpawn_Abbasid | RuntimeSpawn_Aftermath | RuntimeSpawn_Badlands | RuntimeSpawn_Battery | RuntimeSpawn_Capstone | RuntimeSpawn_Contaminated | RuntimeSpawn_Dumbo | RuntimeSpawn_Eastwood | RuntimeSpawn_FireStorm | RuntimeSpawn_Limestone | RuntimeSpawn_Outskirts | RuntimeSpawn_Subsurface | RuntimeSpawn_Tungsten | RuntimeSpawn_Granite_Downtown | RuntimeSpawn_Granite_Marina | RuntimeSpawn_Granite_MilitaryRnD | RuntimeSpawn_Granite_MilitaryStorage | RuntimeSpawn_Granite_ResidentialNorth | RuntimeSpawn_Granite_TechCenter | RuntimeSpawn_Granite_Underground | RuntimeSpawn_Sand | RuntimeSpawn_GolmudRailway | RuntimeSpawn_Plaza,
   position: Vector,
   rotation: Vector
 ): Any
@@ -3369,26 +3502,26 @@ EnableVFX(vfx: VFX, enable: boolean): void
 
 #### GetSFX
 
-Returns the SFX object corresponding to the provided id.
+Returns the SFX corresponding to the provided id.
 
 ```ts
-GetSFX(number: number): SFX
+GetSFX(objId: number): SFX
 ```
 
 #### GetVFX
 
-Returns the VFX object corresponding to the provided id.
+Returns the VFX corresponding to the provided id.
 
 ```ts
-GetVFX(vfxNumber: number): VFX
+GetVFX(objId: number): VFX
 ```
 
 #### GetVO
 
-Returns the VO object corresponding to the provided id.
+Returns the VO corresponding to the provided id.
 
 ```ts
-GetVO(number: number): VO
+GetVO(objId: number): VO
 ```
 
 #### LoadMusic
@@ -3401,7 +3534,7 @@ LoadMusic(musicPackage: MusicPackages): void
 
 #### MoveVFX
 
-Move a VFX to a new coordinate. May have become redundant with the creation of the universal MoveObject action.
+Move a VFX to a new coordinate.
 
 ```ts
 MoveVFX(vfxID: VFX, position: Vector, rotation: Vector): void
@@ -3671,6 +3804,22 @@ Returns true if the provided team is using soldiers from the specified faction.
 IsFaction(team: Team, factions: Factions): boolean
 ```
 
+#### SetBombTeam
+
+Changes the Team that can pick-up the bomb.
+
+```ts
+SetBombTeam(bomb: Bomb, team: Team): void
+```
+
+#### SetGameModeInitialScore
+
+Sets the Initial Score for teams.
+
+```ts
+SetGameModeInitialScore(team: Team, initialscore: number): void
+```
+
 #### SetGameModeScore
 
 Sets the gamemode score of the provided Player or Team.
@@ -3749,6 +3898,14 @@ Enables of disables friendly fire.
 SetFriendlyFire(enableFriendlyFire: boolean): void
 ```
 
+#### SetGameModeCriteria
+
+Sets the type of criteria used to check the score for winning teams.
+
+```ts
+SetGameModeCriteria(criteria: ScoreCriteria): void
+```
+
 #### SetGameModeTargetScore
 
 Sets the gamemode target score used to determine victory.
@@ -3763,6 +3920,14 @@ Sets the duration of the game in seconds.
 
 ```ts
 SetGameModeTimeLimit(newTimeLimit: number): void
+```
+
+#### SetHUDTicker
+
+Sets the type of HUD ticker to use.
+
+```ts
+SetHUDTicker(ticker: GameModeTicker): void
 ```
 
 #### SetSpectatingFiltersForAll
@@ -4465,6 +4630,22 @@ Returns a string containing the concatenation of two strings.
 Concat(string0: string, string1: string): string
 ```
 
+#### ForceBombDrop
+
+Forces the bomb drop to be dropped from its carrier.
+
+```ts
+ForceBombDrop(bomb: Bomb): void
+```
+
+#### ForceBombReset
+
+Force resets the bomb to its initial location.
+
+```ts
+ForceBombReset(bomb: Bomb): void
+```
+
 #### GetArgument
 
 Get argument of subroutine at given index.
@@ -4473,12 +4654,36 @@ Get argument of subroutine at given index.
 GetArgument(subroutineArgIndex: number): Any
 ```
 
-#### GetFixedCamera
+#### GetBomb
 
-Returns a Fixed Camera.
+Returns the Bomb corresponding to the provided id.
 
 ```ts
-GetFixedCamera(number: number): FixedCamera
+GetBomb(objId: number): Bomb
+```
+
+#### GetFixedCamera
+
+Returns the FixedCamera corresponding to the provided id.
+
+```ts
+GetFixedCamera(objId: number): FixedCamera
+```
+
+#### GetPortalAverageFrameTime
+
+Return the average  Portal processing frame time
+
+```ts
+GetPortalAverageFrameTime(): number
+```
+
+#### GetServerAverageFrameTime
+
+Return average Server side frame time
+
+```ts
+GetServerAverageFrameTime(): number
 ```
 
 #### GetTargetScore
@@ -4513,6 +4718,22 @@ Returns true if the provided value is equal to the specified type.
 IsType(value: Any, type: Types): boolean
 ```
 
+#### IsUndefined
+
+Returns whether a value is undefined, such as when a function cannot return a valid value.
+
+```ts
+IsUndefined(value: Any): boolean
+```
+
+#### IsValid
+
+Returns whether a value is defined and if object reference is valid for object values.
+
+```ts
+IsValid(value: Any): boolean
+```
+
 #### JsAction
 
 Calls a javascript action function.
@@ -4535,6 +4756,22 @@ Sends Portal Log to the admin client of the current session when hosting via "Ho
 
 ```ts
 SendPortalLogToAdmin(): void
+```
+
+#### SetBombDropFuseTime
+
+Sets the fuse time for when the bomb is dropped to the ground before it blows up.
+
+```ts
+SetBombDropFuseTime(bomb: Bomb, dropfusetime: number): void
+```
+
+#### SetFreeCameraCollisionForAll
+
+Set whether collision is enabled for the Free Camera. (Default true)
+
+```ts
+SetFreeCameraCollisionForAll(enabled: boolean): void
 ```
 
 #### Wait
@@ -4611,6 +4848,30 @@ This will trigger when an AI Soldier finishes following a waypoint.
 OnAIWaypointIdleSucceeded(eventPlayer: mod.Player): void
 ```
 
+#### OnBombDropped
+
+This will trigger when a player drops the bomb.
+
+```ts
+OnBombDropped(eventBomb: mod.Bomb, eventPlayer: mod.Player): void
+```
+
+#### OnBombPickedUp
+
+This will trigger when a player picks up a bomb.
+
+```ts
+OnBombPickedUp(eventBomb: mod.Bomb, eventPlayer: mod.Player): void
+```
+
+#### OnBombStateChanged
+
+This will trigger when a bomb changes state.
+
+```ts
+OnBombStateChanged(eventBomb: mod.Bomb, eventBombState: mod.BombState): void
+```
+
 #### OnCapturePointCaptured
 
 This will trigger when a team takes control of a CapturePoint.
@@ -4655,6 +4916,12 @@ OnGameModeStarted(): void
 
 ```ts
 OngoingAreaTrigger(eventAreaTrigger: mod.AreaTrigger): void
+```
+
+#### OngoingBomb
+
+```ts
+OngoingBomb(eventBomb: mod.Bomb): void
 ```
 
 #### OngoingCapturePoint
@@ -5107,6 +5374,7 @@ These are opaque SDK handles. You generally only need the type name when reading
 
 - `AreaTrigger`
 - `Array`
+- `Bomb`
 - `CapturePoint`
 - `DamageType`
 - `DeathType`
@@ -5149,6 +5417,7 @@ These are opaque SDK handles. You generally only need the type name when reading
 `Object` is a generic SDK object handle. It can refer to any of these Portal object types:
 
 - `AreaTrigger`
+- `Bomb`
 - `CapturePoint`
 - `EmplacementSpawner`
 - `FixedCamera`
@@ -5229,6 +5498,26 @@ enum ArmorTypes {
 </details>
 
 <details>
+<summary><strong>BombState</strong> (10 values)</summary>
+
+```ts
+enum BombState {
+  Carried,
+  Defusing,
+  Dropped,
+  Inactive,
+  ObjectiveCompleted,
+  Planted,
+  Planting,
+  Resetting,
+  Spawned,
+  Unspawned,
+}
+```
+
+</details>
+
+<details>
 <summary><strong>Cameras</strong> (4 values)</summary>
 
 ```ts
@@ -5270,7 +5559,7 @@ enum Factions {
 </details>
 
 <details>
-<summary><strong>Gadgets</strong> (61 values)</summary>
+<summary><strong>Gadgets</strong> (62 values)</summary>
 
 ```ts
 enum Gadgets {
@@ -5283,6 +5572,7 @@ enum Gadgets {
   CallIn_UAV_Overwatch,
   CallIn_Weapon_Drop,
   Class_Adrenaline_Injector,
+  Class_Handheld_Jammer,
   Class_Motion_Sensor,
   Class_Repair_Tool,
   Class_Supply_Bag,
@@ -5335,6 +5625,18 @@ enum Gadgets {
   Throwable_Smoke_Grenade,
   Throwable_Stun_Grenade,
   Throwable_Throwing_Knife,
+}
+```
+
+</details>
+
+<details>
+<summary><strong>GameModeTicker</strong> (2 values)</summary>
+
+```ts
+enum GameModeTicker {
+  None,
+  Ticker_Conquest,
 }
 ```
 
@@ -5400,7 +5702,7 @@ enum InventorySlots {
 </details>
 
 <details>
-<summary><strong>Maps</strong> (22 values)</summary>
+<summary><strong>Maps</strong> (23 values)</summary>
 
 ```ts
 enum Maps {
@@ -5423,9 +5725,22 @@ enum Maps {
   Granite_Underground,
   Limestone,
   Outskirts,
+  Plaza,
   Sand,
   Subsurface,
   Tungsten,
+}
+```
+
+</details>
+
+<details>
+<summary><strong>MCOMArmType</strong> (2 values)</summary>
+
+```ts
+enum MCOMArmType {
+  Bomb,
+  Default,
 }
 ```
 
@@ -5672,7 +5987,7 @@ This is a map-based spatial object enum. See [Spatial Object Reference](/spatial
 </details>
 
 <details>
-<summary><strong>RuntimeSpawn_Common</strong> (1471 values)</summary>
+<summary><strong>RuntimeSpawn_Common</strong> (1473 values)</summary>
 
 This is a map-based spatial object enum. See [Spatial Object Reference](/spatial-object-reference#spatial-runtimespawn-common) for the full combined map-aware reference.
 
@@ -5777,6 +6092,13 @@ This is a map-based spatial object enum. See [Spatial Object Reference](/spatial
 </details>
 
 <details>
+<summary><strong>RuntimeSpawn_Plaza</strong> (1376 values)</summary>
+
+This is a map-based spatial object enum. See [Spatial Object Reference](/spatial-object-reference#spatial-runtimespawn-plaza) for the full combined map-aware reference.
+
+</details>
+
+<details>
 <summary><strong>RuntimeSpawn_Sand</strong> (1346 values)</summary>
 
 This is a map-based spatial object enum. See [Spatial Object Reference](/spatial-object-reference#spatial-runtimespawn-sand) for the full combined map-aware reference.
@@ -5807,6 +6129,18 @@ enum ScoreboardType {
   DefaultFFA,
   NotSet,
   Off,
+}
+```
+
+</details>
+
+<details>
+<summary><strong>ScoreCriteria</strong> (2 values)</summary>
+
+```ts
+enum ScoreCriteria {
+  HighestProgress,
+  LowestProgress,
 }
 ```
 
@@ -5854,15 +6188,17 @@ enum SoldierEffects {
 </details>
 
 <details>
-<summary><strong>SoldierStateBool</strong> (21 values)</summary>
+<summary><strong>SoldierStateBool</strong> (23 values)</summary>
 
 ```ts
 enum SoldierStateBool {
+  HasBomb,
   IsAISoldier,
   IsAlive,
   IsBeingRevived,
   IsCrouching,
   IsDead,
+  IsDiving,
   IsFiring,
   IsInAir,
   IsInteracting,
@@ -5981,12 +6317,13 @@ enum StationaryEmplacements {
 </details>
 
 <details>
-<summary><strong>Types</strong> (112 values)</summary>
+<summary><strong>Types</strong> (118 values)</summary>
 
 ```ts
 enum Types {
   AreaTrigger,
   Array,
+  Bomb,
   Boolean,
   CapturePoint,
   DamageType,
@@ -5994,15 +6331,18 @@ enum Types {
   EmplacementSpawner,
   Enum_AiInput,
   Enum_AmmoTypes,
+  Enum_BombState,
   Enum_Cameras,
   Enum_CustomNotificationSlots,
   Enum_Factions,
   Enum_Gadgets,
+  Enum_GameModeTicker,
   Enum_GolmudTrainMoveCommands,
   Enum_GolmudTrainStopReason,
   Enum_GolmudTrainVariants,
   Enum_InventorySlots,
   Enum_Maps,
+  Enum_MCOMArmType,
   Enum_MoveSpeed,
   Enum_MusicEvents,
   Enum_MusicPackages,
@@ -6032,10 +6372,12 @@ enum Types {
   Enum_RuntimeSpawn_Granite_Underground,
   Enum_RuntimeSpawn_Limestone,
   Enum_RuntimeSpawn_Outskirts,
+  Enum_RuntimeSpawn_Plaza,
   Enum_RuntimeSpawn_Sand,
   Enum_RuntimeSpawn_Subsurface,
   Enum_RuntimeSpawn_Tungsten,
   Enum_ScoreboardType,
+  Enum_ScoreCriteria,
   Enum_ScreenEffects,
   Enum_SoldierClass,
   Enum_SoldierEffects,
@@ -6343,7 +6685,7 @@ enum VoiceOverFlags {
 </details>
 
 <details>
-<summary><strong>WeaponAttachments</strong> (329 values)</summary>
+<summary><strong>WeaponAttachments</strong> (371 values)</summary>
 
 ```ts
 enum WeaponAttachments {
@@ -6355,6 +6697,9 @@ enum WeaponAttachments {
   Ammo_Match_Grade,
   Ammo_Polymer_Case,
   Ammo_Slugs,
+  Ammo_Subsonic,
+  Ammo_Subsonic_Frangible,
+  Ammo_Subsonic_HP,
   Ammo_Synthetic_Tip,
   Ammo_Tungsten_Core,
   Barrel_10_Factory,
@@ -6384,6 +6729,7 @@ enum WeaponAttachments {
   Barrel_145_Factory,
   Barrel_145_Standard,
   Barrel_16_Custom,
+  Barrel_16_Dissipator,
   Barrel_16_Factory,
   Barrel_16_Pencil,
   Barrel_16_Rifle,
@@ -6396,16 +6742,22 @@ enum WeaponAttachments {
   Barrel_17_Cut,
   Barrel_17_Factory,
   Barrel_17_Fluted,
+  Barrel_18_Cryogenic,
   Barrel_18_Custom,
   Barrel_18_EBR,
   Barrel_18_Extended,
+  Barrel_18_Govt,
+  Barrel_18_Pencil,
+  Barrel_18_SPR,
   Barrel_18_US_LB,
   Barrel_180mm_Prototype,
   Barrel_180mm_Standard,
   Barrel_185_Factory,
   Barrel_189_Factory,
   Barrel_189_Prototype,
+  Barrel_20_Custom_Covert,
   Barrel_20_Factory,
+  Barrel_20_HBAR,
   Barrel_20_LE,
   Barrel_20_Lima,
   Barrel_20_Long,
@@ -6420,6 +6772,9 @@ enum WeaponAttachments {
   Barrel_22_E3_Long,
   Barrel_22_Factory,
   Barrel_225mm_Factory,
+  Barrel_238mm_Cryogenic,
+  Barrel_238mm_Factory,
+  Barrel_238mm_Pencil,
   Barrel_24_Bravo,
   Barrel_24_Extended,
   Barrel_24_Fluted,
@@ -6432,6 +6787,8 @@ enum WeaponAttachments {
   Barrel_264mm_Factory,
   Barrel_264mm_Fluted,
   Barrel_264mm_Prototype,
+  Barrel_27_Factory,
+  Barrel_27_Full,
   Barrel_27_MK22,
   Barrel_303mm_LB,
   Barrel_305mm_Custom,
@@ -6439,9 +6796,11 @@ enum WeaponAttachments {
   Barrel_314mm_Factory,
   Barrel_314mm_Fluted,
   Barrel_314mm_Prototype,
+  Barrel_32_Custom,
   Barrel_330mm_Mk3,
   Barrel_349mm_Fluted,
   Barrel_349mm_SB,
+  Barrel_367mm_Civ,
   Barrel_370mm_Compact,
   Barrel_39_Factory,
   Barrel_39_Pencil,
@@ -6522,6 +6881,7 @@ enum WeaponAttachments {
   Bottom_Alloy_Vertical,
   Bottom_Bipod,
   Bottom_Canted_Stubby,
+  Bottom_Canted_Vertical,
   Bottom_Classic_Grip_Pod,
   Bottom_Classic_Vertical,
   Bottom_Compact_Handstop,
@@ -6542,6 +6902,8 @@ enum WeaponAttachments {
   Bottom_Stippled_Stubby,
   Bottom_Underslung_Mount,
   Bottom_VIS_IR_Light,
+  Ergonomic_A3_Receiver,
+  Ergonomic_Aftermarket_Buffer,
   Ergonomic_DLC_Bolt,
   Ergonomic_Improved_Mag_Catch,
   Ergonomic_Magwell_Flare,
@@ -6554,6 +6916,7 @@ enum WeaponAttachments {
   Left_50_mW_Green,
   Left_Flashlight,
   Left_Range_Finder,
+  Left_Taclight__Aimed,
   Left_VIS_IR_Light,
   Magazine_100rnd_Belt_Box,
   Magazine_100rnd_Belt_Pouch,
@@ -6576,6 +6939,7 @@ enum WeaponAttachments {
   Magazine_27rnd_Magazine,
   Magazine_30rnd_Fast_Mag,
   Magazine_30rnd_Magazine,
+  Magazine_35rnd_Magazine,
   Magazine_36rnd_Magazine,
   Magazine_4_Shell_Tube,
   Magazine_40rnd_Fast_Mag,
@@ -6589,6 +6953,7 @@ enum WeaponAttachments {
   Magazine_50rnd_Belt_Pouch,
   Magazine_50rnd_Loose_Belt,
   Magazine_50rnd_Magazine,
+  Magazine_53rnd_Drum,
   Magazine_5rnd_Fast_Mag,
   Magazine_5rnd_Magazine,
   Magazine_6_Shell_Tube,
@@ -6599,15 +6964,23 @@ enum WeaponAttachments {
   Magazine_7_Shell_Tube,
   Magazine_75rnd_Belt_Box,
   Magazine_75rnd_Drum,
+  Magazine_7rnd_Fast_Mag,
   Magazine_7rnd_Magazine,
   Magazine_8rnd_Fast_Mag,
   Magazine_8rnd_Magazine,
   Magazine_8rnd_Moon_Clip,
   Magazine_8rnd_Speedloader,
+  Magazine_95rnd_Drum,
   Muzzle_Compensated_Brake,
+  Muzzle_Compensator,
   Muzzle_CQB_Suppressor,
   Muzzle_Double_port_Brake,
+  Muzzle_Double_Port_Brake,
+  Muzzle_Flash_Comp,
   Muzzle_Flash_Hider,
+  Muzzle_Hybrid_Suppressor_K,
+  Muzzle_Hybrid_Suppressor_L,
+  Muzzle_Hybrid_Suppressor_S,
   Muzzle_Lightened_Suppressor,
   Muzzle_Linear_Comp,
   Muzzle_Long_Suppressor,
@@ -6621,11 +6994,14 @@ enum WeaponAttachments {
   Right_5_mW_Red,
   Right_50_mW_Blue,
   Right_50_mW_Green,
+  Right_50_MW_Violet,
   Right_Flashlight,
   Right_Laser_Light_Combo_Green,
   Right_Laser_Light_Combo_Red,
   Right_Range_Finder,
+  Right_Taclight__Aimed,
   Right_VIS_IR_Light,
+  Scope_1P86_LPVO,
   Scope_1p87_150x,
   Scope_1p88_Variable,
   Scope_2Pro_125x,
@@ -6639,14 +7015,19 @@ enum WeaponAttachments {
   Scope_Baker_300x,
   Scope_BF_2M_250x,
   Scope_Canted_Iron_Sights,
+  Scope_Canted_Reflex,
+  Scope_Carry_Handle_Irons,
   Scope_CCO_200x,
   Scope_CQ_RDS_125x,
   Scope_CQB_Sights,
   Scope_DVO_LPVO,
+  Scope_Flip_Up_Irons,
   Scope_GRIM_150x,
   Scope_Iron_Sights,
   Scope_LDS_450x,
   Scope_LERT_800x,
+  Scope_M145_MGO_350x,
+  Scope_Magnifier,
   Scope_Mars_F_LPVO,
   Scope_MC_CO_LPVO,
   Scope_Mini_Flex_100x,
@@ -6656,6 +7037,7 @@ enum WeaponAttachments {
   Scope_PAS_35_300x,
   Scope_Piggyback_Reflex,
   Scope_PVQ_31_400x,
+  Scope_QMK_171A_300x,
   Scope_R_MR_100x,
   Scope_R_VPS_1000x,
   Scope_R4T_200x,
@@ -6670,19 +7052,21 @@ enum WeaponAttachments {
   Scope_ST_Prism_500x,
   Scope_SU_123_150x,
   Scope_SU_230_LPVO,
+  Scope_TH_RDS_100x,
   Scope_TS_HD_600x,
   Top_120_mW_Blue,
   Top_5_mW_Green,
   Top_5_mW_Red,
   Top_50_mW_Blue,
   Top_50_mW_Green,
+  Top_50_MW_Violet,
 }
 ```
 
 </details>
 
 <details>
-<summary><strong>Weapons</strong> (57 values)</summary>
+<summary><strong>Weapons</strong> (61 values)</summary>
 
 ```ts
 enum Weapons {
@@ -6690,6 +7074,7 @@ enum Weapons {
   AssaultRifle_B36A4,
   AssaultRifle_KORD_6P67,
   AssaultRifle_L85A3,
+  AssaultRifle_M16A4,
   AssaultRifle_M433,
   AssaultRifle_NVO_228E,
   AssaultRifle_SOR_556_Mk2,
@@ -6718,6 +7103,7 @@ enum Weapons {
   LMG_M123K,
   LMG_M240L,
   LMG_M250,
+  LMG_RPK_74M,
   LMG_RPKM,
   Shotgun__185KS_K,
   Shotgun_DB_12,
@@ -6732,6 +7118,7 @@ enum Weapons {
   Sidearm_VZ_61,
   SMG_CZ3A1,
   SMG_KV9,
+  SMG_PP_19,
   SMG_PW5A3,
   SMG_PW7A2,
   SMG_SCW_10,
@@ -6739,6 +7126,7 @@ enum Weapons {
   SMG_SL9,
   SMG_UMG_40,
   SMG_USG_90,
+  Sniper_L115,
   Sniper_M2010_ESR,
   Sniper_Mini_Scout,
   Sniper_PSR,

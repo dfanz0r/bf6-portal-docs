@@ -6,7 +6,7 @@ outline: [2, 3]
 import { computed, onMounted, ref, watch } from 'vue'
 import { withBase } from 'vitepress'
 
-const spatialObjects = ref([])
+const spatialData = ref({ maps: [], objects: [] })
 const objectFilter = ref('')
 const mapFilter = ref('')
 const costFilter = ref('')
@@ -19,18 +19,24 @@ const currentPage = ref(1)
 const selectedObject = ref(null)
 
 onMounted(async () => {
-  spatialObjects.value = await fetch(withBase('/spatial-object-data.json')).then((res) => res.json())
+  spatialData.value = await fetch(withBase('/spatial-object-data.json')).then((res) => res.json())
 })
 
-const mapOptions = computed(() => [...new Set(spatialObjects.value.flatMap((object) => object.maps))].sort())
+const spatialObjects = computed(() => spatialData.value.objects)
+const mapOptions = computed(() => spatialData.value.maps.map((map) => map.name))
 const costOptions = computed(() => [...new Set(spatialObjects.value.map((object) => object.physicsCost).filter((cost) => cost !== null && cost !== undefined))].sort((a, b) => Number(a) - Number(b)))
 const directoryOptions = computed(() => [...new Set(spatialObjects.value.map((object) => object.directory).filter(Boolean))].sort())
+
+// An empty maps list means the object is available on every map.
+function mapCount (object) {
+  return object.maps.length || mapOptions.value.length
+}
 
 const filteredObjects = computed(() => {
   const query = objectFilter.value.trim().toLowerCase()
   const filtered = spatialObjects.value.filter((object) => {
     const matchesText = !query || object.name.toLowerCase().includes(query) || object.directory.toLowerCase().includes(query)
-    const matchesMap = !mapFilter.value || object.maps.includes(mapFilter.value)
+    const matchesMap = !mapFilter.value || object.maps.length === 0 || object.maps.includes(mapFilter.value)
     const matchesCost = !costFilter.value || String(object.physicsCost) === costFilter.value
     const matchesDirectory = !directoryFilter.value || object.directory === directoryFilter.value
     const matchesThumbnail = !thumbnailFilter.value || (thumbnailFilter.value === 'with' ? object.hasThumbnail : !object.hasThumbnail)
@@ -39,7 +45,7 @@ const filteredObjects = computed(() => {
   })
 
   return [...filtered].sort((a, b) => {
-    if (sortMode.value === 'map-count') return b.maps.length - a.maps.length || a.name.localeCompare(b.name)
+    if (sortMode.value === 'map-count') return mapCount(b) - mapCount(a) || a.name.localeCompare(b.name)
     if (sortMode.value === 'physics-cost') return (Number(b.physicsCost ?? -1) - Number(a.physicsCost ?? -1)) || a.name.localeCompare(b.name)
     if (sortMode.value === 'directory') return a.directory.localeCompare(b.directory) || a.name.localeCompare(b.name)
     return a.name.localeCompare(b.name)
@@ -82,15 +88,15 @@ function closePreview () {
 
 # Spatial Object Reference
 
-This page combines all `RuntimeSpawn_*` spatial object lists into one map-aware reference.
+This page lists every placeable spatial object exported by the Portal SDK, with per-map availability.
 
-Spatial objects are map-based, but many object names are shared across maps. Use the browser filters to narrow the reference to one map, directory, physics cost, thumbnail availability, interactable objects, or free-text matches.
+Map availability comes from each object's SDK `levelRestrictions`; objects without restrictions are available on **all maps**. Use the browser filters to narrow the reference to one map, directory, physics cost, thumbnail availability, interactable objects, or free-text matches.
 
-SDK metadata source: **Portal SDK 1.3.2.0** (`FbExportData/asset_types.json` and `FbExportData/thumbnails/`).
+Source: **Portal SDK 1.4.1.0** (`FbExportData/asset_types.json`, `FbExportData/level_info.json`, and `FbExportData/thumbnails/`).
 
 ## Spatial Asset Browser
 
-This browser is the primary spatial object reference. It contains every unique `RuntimeSpawn_*` object, with filters for map availability and SDK metadata.
+This browser is the primary spatial object reference. It contains every placeable SDK object, with filters for map availability and SDK metadata.
 
 <div class="spatial-browser">
   <div class="spatial-browser-controls">
@@ -153,7 +159,7 @@ This browser is the primary spatial object reference. It contains every unique `
       <div v-else class="spatial-card-missing">No thumbnail</div>
       <strong>{{ object.name }}</strong>
       <span>{{ object.directory || '—' }}</span>
-      <small>Physics: {{ object.physicsCost ?? '—' }} · Maps: {{ object.maps.length }} · Thumbnail: {{ object.hasThumbnail ? 'Yes' : '—' }}</small>
+      <small>Physics: {{ object.physicsCost ?? '—' }} · Maps: {{ object.maps.length || 'All' }} · Thumbnail: {{ object.hasThumbnail ? 'Yes' : '—' }}</small>
     </button>
   </div>
   <div class="spatial-pagination">
@@ -170,7 +176,7 @@ This browser is the primary spatial object reference. It contains every unique `
     <div class="spatial-preview-meta">
       <strong>{{ selectedObject.name }}</strong>
       <span>{{ selectedObject.directory || '—' }}</span>
-      <small>Physics: {{ selectedObject.physicsCost ?? '—' }} · Maps: {{ selectedObject.maps.join(', ') }}</small>
+      <small>Physics: {{ selectedObject.physicsCost ?? '—' }} · Maps: {{ selectedObject.maps.length ? selectedObject.maps.join(', ') : 'All maps' }}</small>
     </div>
   </div>
 </div>
@@ -179,70 +185,73 @@ This browser is the primary spatial object reference. It contains every unique `
 
 | Metric | Count |
 | --- | ---: |
-| RuntimeSpawn lists | 23 |
-| Unique spatial object names | 10393 |
-| Total map/object entries | 25980 |
-| Objects with SDK metadata | 10392 |
+| Maps | 24 |
+| Unique spatial objects | 10886 |
+| Objects available on all maps | 1512 |
+| Total map/object entries | 63677 |
 | Objects with physics cost | 3064 |
-| Objects flagged with interactables | 346 |
-| Objects with SDK thumbnails | 9014 |
+| Objects flagged with interactables | 366 |
+| Objects with SDK thumbnails | 9468 |
 
 ## Maps
 
-Object counts by RuntimeSpawn map list. Use these names in the Map filter above to limit the browser to one map.
+Maps come from the SDK's `level_info.json`. Use these names in the Map filter above to limit the browser to one map. "Map-specific objects" counts objects restricted to the map; every map additionally has access to the 1,512 unrestricted objects.
 
-<div class="spatial-chart spatial-chart-wide">
-  <div class="spatial-chart-row"><span class="spatial-chart-label">Dumbo</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 100%"></span></span><span class="spatial-chart-value">1,499</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">Aftermath</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 100%"></span></span><span class="spatial-chart-value">1,496</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">Common</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 98%"></span></span><span class="spatial-chart-value">1,471</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">Granite_Downtown</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 97%"></span></span><span class="spatial-chart-value">1,456</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">Granite_Underground</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 95%"></span></span><span class="spatial-chart-value">1,430</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">Granite_Marina</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 95%"></span></span><span class="spatial-chart-value">1,417</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">Abbasid</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 90%"></span></span><span class="spatial-chart-value">1,346</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">Contaminated</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 90%"></span></span><span class="spatial-chart-value">1,346</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">Sand</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 90%"></span></span><span class="spatial-chart-value">1,346</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">Battery</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 82%"></span></span><span class="spatial-chart-value">1,232</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">GolmudRailway</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 79%"></span></span><span class="spatial-chart-value">1,189</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">Granite_MilitaryStorage</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 75%"></span></span><span class="spatial-chart-value">1,128</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">Granite_MilitaryRnD</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 71%"></span></span><span class="spatial-chart-value">1,064</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">Subsurface</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 65%"></span></span><span class="spatial-chart-value">980</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">Eastwood</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 63%"></span></span><span class="spatial-chart-value">944</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">Limestone</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 62%"></span></span><span class="spatial-chart-value">927</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">Granite_ResidentialNorth</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 61%"></span></span><span class="spatial-chart-value">909</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">Badlands</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 59%"></span></span><span class="spatial-chart-value">891</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">Tungsten</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 59%"></span></span><span class="spatial-chart-value">877</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">Outskirts</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 56%"></span></span><span class="spatial-chart-value">842</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">Granite_TechCenter</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 56%"></span></span><span class="spatial-chart-value">834</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">FireStorm</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 50%"></span></span><span class="spatial-chart-value">746</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">Capstone</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 41%"></span></span><span class="spatial-chart-value">610</span></div>
-</div>
+| Map | Map-specific objects | Total available | Physics budget |
+| --- | ---: | ---: | ---: |
+| MP_Abbasid | 1,346 | 2,858 | 100,000 |
+| MP_Aftermath | 1,496 | 3,008 | 100,000 |
+| MP_Aftermath_Portal | 1,496 | 3,008 | 100,000 |
+| MP_Badlands | 891 | 2,403 | 100,000 |
+| MP_Battery | 1,232 | 2,744 | 100,000 |
+| MP_Capstone | 610 | 2,122 | 100,000 |
+| MP_Contaminated | 1,347 | 2,859 | 100,000 |
+| MP_Dumbo | 1,499 | 3,011 | 100,000 |
+| MP_Eastwood | 944 | 2,456 | 100,000 |
+| MP_FireStorm | 746 | 2,258 | 100,000 |
+| MP_GolmudRailway | 1,190 | 2,702 | 0 |
+| MP_Granite_ClubHouse_Portal | 911 | 2,423 | 100,000 |
+| MP_Granite_MainStreet_Portal | 1,457 | 2,969 | 100,000 |
+| MP_Granite_Marina_Portal | 1,418 | 2,930 | 100,000 |
+| MP_Granite_MilitaryRnD_Portal | 1,064 | 2,576 | 100,000 |
+| MP_Granite_MilitaryStorage_Portal | 1,129 | 2,641 | 100,000 |
+| MP_Granite_TechCampus_Portal | 835 | 2,347 | 100,000 |
+| MP_Granite_Underground_Portal | 1,430 | 2,942 | 0 |
+| MP_Limestone | 927 | 2,439 | 100,000 |
+| MP_Outskirts | 842 | 2,354 | 100,000 |
+| MP_Plaza | 1,376 | 2,888 | 0 |
+| MP_Portal_Sand | 1,346 | 2,858 | 100,000 |
+| MP_Subsurface | 980 | 2,492 | 0 |
+| MP_Tungsten | 877 | 2,389 | 100,000 |
 
 ## Sharing Distribution
 
-This shows how many unique object names appear on a given number of RuntimeSpawn lists. Longer bars mean more objects have that level of cross-map availability.
+This shows how many objects are available on a given number of maps, based on SDK `levelRestrictions`. Objects without restrictions appear in the "All maps" row.
 
 <div class="spatial-chart">
-  <div class="spatial-chart-row"><span class="spatial-chart-label">1 map</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 100%"></span></span><span class="spatial-chart-value">5,693</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">2 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 34%"></span></span><span class="spatial-chart-value">1,928</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">3 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 14%"></span></span><span class="spatial-chart-value">817</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">4 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 8%"></span></span><span class="spatial-chart-value">479</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">5 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 7%"></span></span><span class="spatial-chart-value">385</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">6 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 4%"></span></span><span class="spatial-chart-value">246</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">7 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 3%"></span></span><span class="spatial-chart-value">186</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">8 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 3%"></span></span><span class="spatial-chart-value">149</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">9 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 2%"></span></span><span class="spatial-chart-value">130</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">10 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 2%"></span></span><span class="spatial-chart-value">80</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">11 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 2%"></span></span><span class="spatial-chart-value">50</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">12 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 2%"></span></span><span class="spatial-chart-value">59</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">13 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 2%"></span></span><span class="spatial-chart-value">42</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">14 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 2%"></span></span><span class="spatial-chart-value">41</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">15 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 2%"></span></span><span class="spatial-chart-value">31</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">16 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 2%"></span></span><span class="spatial-chart-value">28</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">17 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 2%"></span></span><span class="spatial-chart-value">15</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">18 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 2%"></span></span><span class="spatial-chart-value">13</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">19 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 2%"></span></span><span class="spatial-chart-value">4</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">20 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 2%"></span></span><span class="spatial-chart-value">14</span></div>
-  <div class="spatial-chart-row"><span class="spatial-chart-label">21 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 2%"></span></span><span class="spatial-chart-value">3</span></div>
+  <div class="spatial-chart-row"><span class="spatial-chart-label">1 map</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 100%"></span></span><span class="spatial-chart-value">4,265</span></div>
+  <div class="spatial-chart-row"><span class="spatial-chart-label">2 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 42%"></span></span><span class="spatial-chart-value">1,794</span></div>
+  <div class="spatial-chart-row"><span class="spatial-chart-label">3 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 26%"></span></span><span class="spatial-chart-value">1,108</span></div>
+  <div class="spatial-chart-row"><span class="spatial-chart-label">4 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 13%"></span></span><span class="spatial-chart-value">546</span></div>
+  <div class="spatial-chart-row"><span class="spatial-chart-label">5 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 9%"></span></span><span class="spatial-chart-value">378</span></div>
+  <div class="spatial-chart-row"><span class="spatial-chart-label">6 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 7%"></span></span><span class="spatial-chart-value">287</span></div>
+  <div class="spatial-chart-row"><span class="spatial-chart-label">7 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 5%"></span></span><span class="spatial-chart-value">224</span></div>
+  <div class="spatial-chart-row"><span class="spatial-chart-label">8 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 4%"></span></span><span class="spatial-chart-value">154</span></div>
+  <div class="spatial-chart-row"><span class="spatial-chart-label">9 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 3%"></span></span><span class="spatial-chart-value">146</span></div>
+  <div class="spatial-chart-row"><span class="spatial-chart-label">10 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 2%"></span></span><span class="spatial-chart-value">97</span></div>
+  <div class="spatial-chart-row"><span class="spatial-chart-label">11 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 2%"></span></span><span class="spatial-chart-value">84</span></div>
+  <div class="spatial-chart-row"><span class="spatial-chart-label">12 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 2%"></span></span><span class="spatial-chart-value">47</span></div>
+  <div class="spatial-chart-row"><span class="spatial-chart-label">13 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 2%"></span></span><span class="spatial-chart-value">50</span></div>
+  <div class="spatial-chart-row"><span class="spatial-chart-label">14 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 2%"></span></span><span class="spatial-chart-value">44</span></div>
+  <div class="spatial-chart-row"><span class="spatial-chart-label">15 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 2%"></span></span><span class="spatial-chart-value">38</span></div>
+  <div class="spatial-chart-row"><span class="spatial-chart-label">16 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 2%"></span></span><span class="spatial-chart-value">27</span></div>
+  <div class="spatial-chart-row"><span class="spatial-chart-label">17 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 2%"></span></span><span class="spatial-chart-value">33</span></div>
+  <div class="spatial-chart-row"><span class="spatial-chart-label">18 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 2%"></span></span><span class="spatial-chart-value">16</span></div>
+  <div class="spatial-chart-row"><span class="spatial-chart-label">19 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 2%"></span></span><span class="spatial-chart-value">14</span></div>
+  <div class="spatial-chart-row"><span class="spatial-chart-label">20 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 2%"></span></span><span class="spatial-chart-value">5</span></div>
+  <div class="spatial-chart-row"><span class="spatial-chart-label">21 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 2%"></span></span><span class="spatial-chart-value">13</span></div>
+  <div class="spatial-chart-row"><span class="spatial-chart-label">22 maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 2%"></span></span><span class="spatial-chart-value">4</span></div>
+  <div class="spatial-chart-row"><span class="spatial-chart-label">All maps</span><span class="spatial-chart-track"><span class="spatial-chart-bar" style="width: 35%"></span></span><span class="spatial-chart-value">1,512</span></div>
 </div>
 
 ## Physics Cost Distribution
@@ -266,4 +275,4 @@ Physics cost comes from the SDK asset metadata when present. This graph groups c
 
 ## Reference Data
 
-The browser above is generated from `public/spatial-object-data.json`, which contains every unique spatial object plus its maps, SDK directory, physics cost, interactable flag, and thumbnail availability. Use the browser filters instead of separate per-map tables so the same object can be discovered across shared maps without duplicating thousands of rows.
+The browser above is generated from `public/spatial-object-data.json`, which contains the SDK map list (with physics budgets) plus every placeable object with its restricted-map list, SDK directory, physics cost, interactable flag, and thumbnail availability. An object with no restricted maps is available everywhere.
