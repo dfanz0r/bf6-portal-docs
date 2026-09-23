@@ -300,9 +300,24 @@ sequenceDiagram
   `RayCast(from, to)`. The two kinds don't block each other, and every player has their own slot.
 - **The first cast in a tick wins.** Any further cast into the same slot that tick is **silently dropped**: no hit
   event, no miss event, no error.
+- **A slot's limit covers the whole tick, both stages.** Pre-Update and Post-Update count as the same tick, so if you
+  cast in Pre-Update and then cast into the **same** slot again from `OnRayCastHit` in Post-Update, the second cast
+  is dropped. A follow-up cast into a **different** slot (another player, or the global overload) works, and its
+  result arrives next tick.
 - **Results arrive in the order the rays were cast.**
 - **A ray cast in Pre-Update gets its result in Post-Update of the same tick.** A ray cast in Post-Update (for
   example from `OnRayCastHit` or `OnPlayerDied`) gets its result in the next tick's Pre-Update.
+
+Chaining rays from their own results, for one player:
+
+| Tick | Stage | What happens |
+|---|---|---|
+| N | Pre-Update | `OngoingGlobal` casts ray A for player X |
+| N | Post-Update | `OnRayCastHit(A)` runs. Casting for player X again here is **dropped** (same slot, same tick). Cast into another slot, or wait a tick |
+| N+1 | Pre-Update | player X's slot is free again: cast ray B |
+| N+1 | Post-Update | `OnRayCastHit(B)` runs |
+
+So one player can get at most one ray result per tick, however you chain them.
 - **The global overload reports an invalid player** in `OnRayCastHit` / `OnRayCastMissed` (`GetObjId` returns `-1`).
 - **Dead, undeployed or invalid players get no result.**
 
