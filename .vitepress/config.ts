@@ -1,7 +1,9 @@
 import { defineConfig } from 'vitepress'
+import { withMermaid } from 'vitepress-plugin-mermaid'
 
 // https://vitepress.dev/reference/site-config
-export default defineConfig({
+// withMermaid renders ```mermaid fenced blocks as diagrams and follows the site's light/dark theme.
+export default withMermaid(defineConfig({
   title: "Portal Docs",
   description: "Battlefield 6 Portal Docs",
   // Keep local reference material and project notes from becoming site pages.
@@ -44,6 +46,7 @@ export default defineConfig({
           { text: 'Scripting', link: '/scripting' },
           { text: 'Block Code', link: '/block-code' },
           { text: 'TypeScript', link: '/typescript' },
+          { text: 'Event Loop & Timing', link: '/event-loop' },
           { text: 'Optimization', link: '/optimization' }
         ]
       },
@@ -78,5 +81,11 @@ export default defineConfig({
     socialLinks: [
       { icon: 'github', link: 'https://github.com/dfanz0r/bf6-portal-docs' }
     ]
+  },
+
+  // Mermaid sizes each node from the font it measures with. style.css pins diagram labels to this same stack,
+  // otherwise the site's body font is applied after measuring and labels get clipped.
+  mermaid: {
+    fontFamily: 'ui-sans-serif, system-ui, "Segoe UI", Roboto, Arial, sans-serif'
   }
-})
+}))

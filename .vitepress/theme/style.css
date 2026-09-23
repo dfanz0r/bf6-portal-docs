@@ -395,3 +395,20 @@ h4, h5, h6,
     min-width: 0;
   }
 }
+
+/* Mermaid diagrams: Mermaid measures each label in the font set in config.ts (mermaid.fontFamily) and wraps labels
+   in <p>. The body-font rule above would restyle those <p>s after measuring and clip the text, so keep the
+   diagram's own font and spacing inside it. */
+.vp-doc .mermaid p,
+.vp-doc .mermaid span,
+.vp-doc .mermaid div {
+  font-family: ui-sans-serif, system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.vp-doc .mermaid {
+  display: flex;
+  justify-content: center;
+  margin: 24px 0;
+}
