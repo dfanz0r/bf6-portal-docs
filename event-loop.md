@@ -121,12 +121,25 @@ that type**, in this order:
 
 ## How events are delivered
 
-Every `On…` event goes through a queue:
+Every `On…` event goes through a queue, and each stage works from a **snapshot** of it:
 
 1. Something happens in the game, or your script calls an action that causes it.
 2. The event and its arguments are **queued**.
-3. At the next Pre-Update or Post-Update, whichever comes first, the handlers run **in the order the events
-   happened**.
+3. At the **start** of each Pre-Update and Post-Update, the engine takes everything queued so far. Only that batch
+   is delivered in that stage, **in the order the events happened**.
+4. Anything raised **while a stage is running** (by your handlers, by actions they call, or by the game) goes into
+   the queue for the **next** stage's snapshot, never the current one.
+
+What this means in practice:
+
+- **Events never cascade within a stage.** If `OnPlayerDied` calls an action that raises another event, that event
+  runs in the next stage at the earliest, after every other event already in this stage's batch.
+- **Chains move one stage at a time.** An action in Pre-Update produces its event in Post-Update; an action taken in
+  that Post-Update handler produces its event in the next tick's Pre-Update, and so on.
+- **The snapshot order is the delivery order.** Within a stage, handlers run strictly in the order the events were
+  raised, whatever their type.
+- **Promise continuations are the exception.** Code after an `await` on something your handler just resolved runs
+  immediately after that handler, in the same stage; it isn't queued like an event.
 
 Which stage an event lands in depends on **when it was raised**:
 
