@@ -1,27 +1,20 @@
 # Event Loop & Timing
 
 This page explains **when** your Portal script runs: the order handlers are called in each server tick, when events
-arrive, how `await mod.Wait()` behaves, and how `RayCast` results come back.
-
-It applies to both TypeScript and block code. Both run on the same event loop.
-
-::: info How we know this
-Everything here comes from two sources that agree with each other: analysis of the game's own code and data (update
-1.4.3.0), and in-game test scripts that log what actually happens. Points marked **Confirmed in game** were observed
-directly. Points marked **From engine analysis** were read from the game but not separately tested.
-:::
+arrive, how `await mod.Wait()` behaves, and how `RayCast` results come back. It applies to both TypeScript and block
+code.
 
 ## The short version
 
-- The server runs in **ticks**: normally **30 per second**. An experience can run at 60 per second only if the game's
-  developers have granted it 60 Hz, and only while its scripts are fast enough to stay within the time budget.
+- The server runs in **ticks**, normally **30 per second**. Experiences granted 60 Hz by the game's developers run at
+  60 per second, as long as their scripts stay within the time budget.
 - Your script gets **two turns per tick**: a **Pre-Update** before the game simulates the world, and a
   **Post-Update** after it.
 - **Pre-Update** runs `OngoingGlobal`, then every `Ongoing…` handler, then finished `Wait` timers, then queued `On…`
   events.
-- **Post-Update** runs only queued `On…` events: the ones raised since Pre-Update.
-- **Events never run in the middle of your code.** Calling an action that causes an event (killing a player,
-  seating them in a vehicle, casting a ray) queues the event. Your handler runs later.
+- **Post-Update** runs only the `On…` events raised since Pre-Update.
+- **Events never run in the middle of your code.** An action that causes an event (killing a player, seating them in
+  a vehicle, casting a ray) queues the event, and your handler runs later.
 
 ## One tick, step by step
 
@@ -53,37 +46,58 @@ flowchart TB
     POST --> NEXT(["Next tick"])
 ```
 
-After **every single handler call** (each `Ongoing…` call, each event, each timer), any promise continuations your
-code queued run immediately, before the next handler. So code after an `await` on something that is already
-resolved runs right away, not on a later tick.
-
-::: tip Engine names
-Internally these are Frostbite's `PreSim` and `PostSim` update passes. The script entity registers for both, every
-tick. **From engine analysis.**
-:::
+After every handler call (each `Ongoing…` call, each event, each timer), any promise continuations your code queued
+run immediately, before the next handler.
 
 ## Script startup
 
 ```mermaid
-flowchart LR
-    A["Script loads"] --> B["Top-level code runs once"]
-    B --> C["Exported handlers are<br/>looked up by name"]
-    C --> D["First tick:<br/>OngoingGlobal, …"]
+flowchart TB
+    A["Top-level code runs once"] --> B["Exported handlers are<br/>looked up by name"]
+    B --> C["Spatial data (your placed objects)<br/>is loaded and handed to the game to spawn"]
+    C --> D["First tick: OngoingGlobal<br/>(the first handler to run)"]
+    D --> E["Following ticks: each placed object<br/>finishes spawning and registers,<br/>then starts appearing in its Ongoing… handler"]
 ```
 
-- **Top-level code runs before any handler.** It is the place for one-time setup. **Confirmed in game.**
+- **Top-level code runs before anything else.** Use it for one-time setup that doesn't touch the map.
+- **`OngoingGlobal` is the first handler to run after top-level code**, on the first tick. Nothing runs in between.
 - **Handlers are found once, by exact name, right after top-level code finishes.** A misspelled handler
-  (`OnPlayerDeploy` instead of `OnPlayerDeployed`) is never called, and there is no error. **From engine analysis.**
-- **Events you have no handler for cost nothing.** The engine does not even queue them. **From engine analysis.**
-- Map objects can exist at load time but not be ready yet. Capture point and HQ positions read `(0,0,0)` during
-  top-level code and become real just before their `Ongoing…` handlers start running. Treat the first `Ongoing…` call
-  for a type as its "ready" signal. **Confirmed in game.**
-- `OnPlayerJoinGame` can fire **before** `OnGameModeStarted`. **Confirmed in game.**
+  (`OnPlayerDeploy` instead of `OnPlayerDeployed`) is never called, and there is no error.
+- **Events you have no handler for cost nothing.** They aren't even queued.
+- `OnPlayerJoinGame` can fire **before** `OnGameModeStarted`.
+
+### When placed objects are ready
+
+The objects you place in the map editor (capture points, HQs, spawners, area triggers, world icons, …) are not
+loaded until **after** your top-level code has run, and they then take several ticks to spawn. Each object becomes
+usable by your script the moment it finishes spawning and registers itself. From then on:
+
+- it gets its first `Ongoing…` call, and is included in that handler every tick after;
+- `mod.GetCapturePoint(id)` (and the other `Get…(id)` functions) return the live object.
+
+Before that, a `Get…(id)` call still gives you a handle (a handle is just the id), but it doesn't point at a spawned
+object yet, and reads like position come back as `(0,0,0)`. How long spawning takes depends on the map and on how
+much you placed. Don't use position as a readiness test: spawners, vehicle spawners and interact points report
+`(0,0,0)` from `GetObjectPosition` even once they're ready. The first `Ongoing…` call is the reliable signal.
+
+So don't use placed objects in top-level code. Set them up when their first `Ongoing…` call arrives, or wait for it:
+
+```ts
+const readyCapturePoints = new Set<number>();
+
+export function OngoingCapturePoint(cp: mod.CapturePoint) {
+    const id = mod.GetObjId(cp);
+    if (!readyCapturePoints.has(id)) {
+        readyCapturePoints.add(id);
+        setupCapturePoint(cp); // first call: this capture point is spawned and ready
+    }
+}
+```
 
 ## Ongoing handler order
 
 Every tick, `OngoingGlobal` runs first. Then each `Ongoing…` handler you export runs **once for every live object of
-that type**, and the types always run in this order:
+that type**, in this order:
 
 | # | Handler | # | Handler |
 |---|---|---|---|
@@ -98,39 +112,34 @@ that type**, and the types always run in this order:
 | 9 | `OngoingSpawner` | 19 | `OngoingBomb` |
 | 10 | `OngoingHQ` | 20 | `OngoingBlockingSphere` |
 
-Positions 1–18 are **Confirmed in game**. `OngoingBomb` and `OngoingBlockingSphere` (added with BlockingSphere in
-update 1.4.3.0) are placed by **engine analysis**. The order comes from the game's object registry, not from the
-alphabetical order in the SDK's type file.
-
-- **All of a type runs before the next type starts.** Every `OngoingPlayer` call finishes before the first
-  `OngoingTeam` call.
-- **The order of objects within a type is not reliable.** It is not by object ID and can change as objects come and
+- **Each type finishes before the next starts.** Every `OngoingPlayer` call happens before the first `OngoingTeam`
+  call.
+- **Objects within a type come in no particular order.** It isn't by object ID, and it changes as objects come and
   go. If you need a stable order, collect the objects and sort them yourself.
-- **New objects can show up in `Ongoing…` before their spawn events.** A newly spawned AI soldier appeared in
-  `OngoingPlayer` a tick before `OnSpawnerSpawned`, `OnPlayerDeployed` and `OnPlayerJoinGame` fired for it.
-  **Confirmed in game.**
+- **New objects show up in `Ongoing…` before their spawn events.** A newly spawned AI soldier appears in
+  `OngoingPlayer` a tick before `OnSpawnerSpawned`, `OnPlayerDeployed` and `OnPlayerJoinGame` fire for it.
 
 ## How events are delivered
 
 Every `On…` event goes through a queue:
 
-1. Something happens in the game (or your script calls an action that causes it).
+1. Something happens in the game, or your script calls an action that causes it.
 2. The event and its arguments are **queued**.
-3. At the start of the next Pre-Update or Post-Update, whichever comes first, the queue is handed to your script and
-   the handlers run **in the order the events happened**.
+3. At the next Pre-Update or Post-Update, whichever comes first, the handlers run **in the order the events
+   happened**.
 
-Which stage an event lands in depends on **when the game raised it**:
+Which stage an event lands in depends on **when it was raised**:
 
 | Raised during… | Delivered in… |
 |---|---|
-| Your Pre-Update code (e.g. an action you called from `OngoingGlobal`) | Post-Update of the **same** tick |
+| Your Pre-Update code (e.g. an action called from `OngoingGlobal`) | Post-Update of the **same** tick |
 | The Simulation (deaths, capture-point entry, vehicle seats, …) | Post-Update of the **same** tick |
 | Your Post-Update code | Pre-Update of the **next** tick, after the `Ongoing…` handlers and timers |
 | Other game systems after Post-Update | Pre-Update of the **next** tick |
 
-In our tests the following landed in each stage (**Confirmed in game**):
+Common examples:
 
-| Usually delivered in Pre-Update | Usually delivered in Post-Update |
+| Delivered in Pre-Update | Delivered in Post-Update |
 |---|---|
 | `OnSpawnerSpawned` | `OnPlayerDied` |
 | `OnAIMoveToRunning`, `OnAIMoveToFailed` | `OnPlayerEnterCapturePoint` |
@@ -141,15 +150,14 @@ In our tests the following landed in each stage (**Confirmed in game**):
 
 - **An action never calls your handler immediately.** After `mod.ForcePlayerToSeat(...)` returns, the player is
   seated, but `OnPlayerEnterVehicleSeat` runs later. Do the follow-up work in the handler, not on the next line.
-- **Some actions take several ticks to produce their events.** `SpawnAIFromAISpawner` produced `OnSpawnerSpawned`,
-  `OnPlayerDeployed` and `OnPlayerJoinGame` on later ticks, not the same one. **Confirmed in game.**
-- **Event order between different events can vary by cause.** For example `OnPlayerDamaged` and `OnMandown` can
-  arrive **after** `OnPlayerDied` for AI deaths. Do not assume a fixed damage → mandown → death sequence.
-  **Confirmed in game.**
+- **Some actions take several ticks to produce their events.** `SpawnAIFromAISpawner` produces `OnSpawnerSpawned`,
+  `OnPlayerDeployed` and `OnPlayerJoinGame` on later ticks.
+- **The order of related events varies by cause.** `OnPlayerDamaged` and `OnMandown` can arrive **after**
+  `OnPlayerDied` for AI deaths, so don't rely on a fixed damage → mandown → death sequence.
 - **Arguments are a snapshot from when the event happened.** By the time your handler runs, the player may have left
   or died. Check `mod.IsPlayerValid(player)` before acting on a player from an event.
-- **Numbers in event arguments are single-precision.** Whole numbers are exact up to 16,777,216. **From engine
-  analysis.**
+- **Numbers in event arguments are single-precision floats.** Decimals arrive slightly off: `0.1` comes through as
+  `0.10000000149011612`. Don't compare them with `===`; round them, or compare within a small tolerance.
 
 ## Wait and async code
 
@@ -164,27 +172,109 @@ async function countdown(): Promise<void> {
 }
 ```
 
-How it behaves:
+### Timers vs. promises
+
+An `await` resumes when its promise resolves. The code after it runs right after the handler that resolved the
+promise finishes, before the next handler.
+
+- **`mod.Wait()` is a timer.** The engine resolves it in the timer step of Pre-Update once its time is up, never
+  during Post-Update. It is the built-in way to wait for time.
+- **A promise you resolve yourself continues wherever you resolve it.** Resolve it from an event or `Ongoing…`
+  handler on a later tick and the awaiting code continues on that tick, in that handler's stage. This is how you wait
+  for game state instead of time.
+- **An already-resolved promise doesn't delay anything.** Awaiting an async helper that never waits continues right
+  after the current handler, in the same tick.
+
+```ts
+const deployWaiters = new Map<number, () => void>();
+
+function waitForDeploy(player: mod.Player): Promise<void> {
+    return new Promise((resolve) => deployWaiters.set(mod.GetObjId(player), resolve));
+}
+
+export function OnPlayerDeployed(player: mod.Player) {
+    const id = mod.GetObjId(player);
+    deployWaiters.get(id)?.(); // anything awaiting waitForDeploy(player) continues right after this handler
+    deployWaiters.delete(id);
+}
+
+async function respawnFlow(player: mod.Player): Promise<void> {
+    await waitForDeploy(player); // may take many ticks
+    await mod.Wait(0.5);         // then a timer: continues in a later Pre-Update
+    // ...
+}
+```
+
+### How Wait behaves
 
 - **Timers are checked once per tick, in Pre-Update**, after the `Ongoing…` handlers and before queued events. A wait
-  can't finish between ticks, so its real resolution is one tick (about 33 ms at 30 Hz, 17 ms at 60 Hz).
-- **`await mod.Wait(0)` means "continue next tick".** Your code resumes in the next tick's Pre-Update, after that tick's
-  `Ongoing…` handlers. **Confirmed in game.**
-- **A `Wait` started while timers are being processed always waits at least until the next tick,** even
-  `Wait(0)`. **Confirmed in game.**
-- **An `async` function runs normally until its first `await`.** Calling `void doThing()` executes `doThing` up to its
-  first `await` right there, then returns. **Confirmed in game.**
-- **When several waits finish on the same tick, their order is not guaranteed.** In practice the most recently
-  started one tends to resume first, but this changes as timers are added and removed. If two waits must run in
-  order, chain them in one async function. **Confirmed in game / engine analysis.**
-- **Code after `await` runs right after the timer fires**, before the next timer is processed. So a long chain of
-  `await`-free work after a wait adds to that tick's cost.
+  can't finish between ticks, so its resolution is one tick (about 33 ms at 30 Hz, 17 ms at 60 Hz).
+- **`await mod.Wait(0)` means "continue next tick".** Your code resumes in the next tick's Pre-Update, after that
+  tick's `Ongoing…` handlers.
+- **A `Wait` started while timers are being processed always waits until at least the next tick,** even `Wait(0)`.
+- **An `async` function runs normally until its first `await`.** Calling `void doThing()` runs `doThing` up to its
+  first `await` right away, then returns.
+- **Waits that finish on the same tick have no guaranteed order.** The most recently started one usually resumes
+  first. If two waits must run in order, chain them in one async function.
+- **Code after `await` runs as soon as its timer fires**, before the next timer is processed, so heavy work after a
+  wait adds to that tick's cost.
 - **`modlib.WaitUntil(delay, cond)` checks its condition every 0.2 seconds** (every 6 ticks at 30 Hz), so it can react
   up to 0.2 s late. For per-tick checks, loop on `await mod.Wait(0)` or use an `Ongoing…` handler.
 
+## Sync vs. async handlers
+
+The engine calls your handler and ignores whatever it returns. An `async` handler returns a promise, and the engine
+drops it without waiting for it. As far as the engine is concerned, the handler is finished at its first `await` that
+doesn't resolve immediately. Everything after that runs later, when that promise resolves, mixed in with other
+handlers and later ticks.
+
+- **Default to plain (sync) handlers.** Only make a handler `async` if it actually waits. An `async` handler with no
+  `await` behaves the same as a sync one, but creates a promise on every call for nothing.
+- **Never make an `Ongoing…` handler async and wait inside it.** It is called every tick for every object, so each
+  waiting call leaves another copy suspended. The copies overlap, memory keeps growing, and the server eventually
+  stops the script. For timed work, start one async loop from `OnGameModeStarted` instead.
+- **Code after an `await` runs in a later tick or stage than the handler started in.** Other events, including ones
+  for the same player, may have run in between, so re-check your state before acting on it.
+- **Re-check players after every `await`.** A `mod.Player` handle is just the player's id number. When a player
+  leaves, a player who joins later can be given the same id, and then the old handle (or a stored id) points at the
+  new player, and `mod.IsPlayerValid` returns `true` for it. Neither a handle nor an id can tell you it's still the
+  same person, so track each player's lifetime with `OnPlayerJoinGame` / `OnPlayerLeaveGame` and check it after
+  every `await`, as in the example below.
+- **Errors are logged either way.** A throw in a sync handler, or an uncaught error in an async one, is written to
+  the Portal log with its stack trace, and the script keeps running.
+
+The pattern that works well: keep the handler sync, hand anything that needs to wait to its own async function, and
+give each player a session token that is replaced when they leave, so waiting code can tell whether it is still
+dealing with the same person.
+
+```ts
+const sessions = new Map<number, object>(); // player id -> token for whoever holds that id now
+
+export function OnPlayerJoinGame(player: mod.Player) {
+    sessions.set(mod.GetObjId(player), {});
+}
+
+export function OnPlayerLeaveGame(playerId: number) {
+    sessions.delete(playerId);
+}
+
+export function OnPlayerDeployed(player: mod.Player) {
+    setupPlayer(player);        // runs now, in order with other events
+    void introSequence(player); // the waiting part runs on its own
+}
+
+async function introSequence(player: mod.Player): Promise<void> {
+    const id = mod.GetObjId(player);
+    const session = sessions.get(id);
+    await mod.Wait(3);
+    if (sessions.get(id) !== session || !mod.IsPlayerValid(player)) return; // left, or someone else has the id now
+    // ...
+}
+```
+
 ## RayCast
 
-`mod.RayCast` does not return a result. The ray is cast immediately, and the answer arrives later as an
+`mod.RayCast` doesn't return a result. The ray is cast immediately, and the answer arrives later as an
 `OnRayCastHit` or `OnRayCastMissed` event.
 
 ```mermaid
@@ -206,18 +296,15 @@ sequenceDiagram
     G->>S: OnRayCastHit(playerB, …)
 ```
 
-The rules (**Confirmed in game** on 1.4.3.0):
-
 - **One raycast per player per tick** with `RayCast(player, from, to)`, plus **one global raycast per tick** with
-  `RayCast(from, to)`. The two kinds don't block each other, and every player has their own slot (tested with 41
-  players at once).
+  `RayCast(from, to)`. The two kinds don't block each other, and every player has their own slot.
 - **The first cast in a tick wins.** Any further cast into the same slot that tick is **silently dropped**: no hit
   event, no miss event, no error.
 - **Results arrive in the order the rays were cast.**
 - **A ray cast in Pre-Update gets its result in Post-Update of the same tick.** A ray cast in Post-Update (for
   example from `OnRayCastHit` or `OnPlayerDied`) gets its result in the next tick's Pre-Update.
 - **The global overload reports an invalid player** in `OnRayCastHit` / `OnRayCastMissed` (`GetObjId` returns `-1`).
-- **Dead, undeployed or invalid players get no result at all.**
+- **Dead, undeployed or invalid players get no result.**
 
 ::: tip Casting several rays for one player
 Spread them across ticks:
@@ -235,27 +322,26 @@ pending cast for that player.
 
 ## Performance
 
-- **`Ongoing…` handlers are the most expensive place to put code.** At 30 ticks per second, `OngoingPlayer`
-  with 64 players runs roughly **1,900 times per second** (3,800 at 60 Hz). Keep it small, and move rarely-changing work to events or
-  timers.
+- **`Ongoing…` handlers are the most expensive place to put code.** At 30 ticks per second, `OngoingPlayer` with 64
+  players runs about **1,900 times per second** (3,800 at 60 Hz). Keep it small, and move rarely-changing work to
+  events or timers.
 - **Unused handlers are free.** Don't export empty `Ongoing…` handlers "just in case".
-- **The server can stop scripts that go over its budgets.** The engine has watchdogs for script **time** and for
-  script **memory growth**. Their limits are configured on the server, not in the game files, so we can't tell you
-  the exact numbers. A script that goes over one is **disabled for the rest of the match**. **From engine
-  analysis.**
+- **The server stops scripts that go over their time or memory budget,** and they stay disabled for the rest of the
+  match.
   - Keep per-tick work light, and spread heavy work across ticks with `await mod.Wait(0)`.
-  - Don't let data grow without bound (ever-growing arrays, maps or logs). The memory check measures how much the
-    script's memory has grown since it started, and runs at the end of every script tick.
+  - Don't let data grow without bound (ever-growing arrays, maps or logs). Memory use is checked every tick.
 - See [Optimization](/optimization) for general guidance.
 
 ## Quick reference
 
 | Question | Answer |
 |---|---|
-| How often does `OngoingGlobal` run? | Once per tick: normally 30 times per second, 60 for experiences granted 60 Hz |
+| How often does `OngoingGlobal` run? | Once per tick: 30 times per second, or 60 for experiences granted 60 Hz |
 | What runs first each tick? | `OngoingGlobal`, then the other `Ongoing…` handlers in the table order |
 | Does calling an action run its event handler immediately? | No. Events are always queued |
 | When does code after `await mod.Wait(0)` run? | Next tick, in Pre-Update, after the `Ongoing…` handlers |
+| Does any other `await` delay my code? | Only until its promise resolves. An already-resolved one continues in the same tick; one you resolve from a later handler continues there |
+| Should my event handlers be `async`? | Only if they wait. Keep them sync by default, and never wait inside an `Ongoing…` handler |
 | Can I rely on the order of players in `OngoingPlayer`? | No |
 | Can I cast two rays for one player in one tick? | No. Only the first counts; the rest are dropped |
 | Is an event's player still valid when my handler runs? | Not guaranteed. Check `mod.IsPlayerValid` |
