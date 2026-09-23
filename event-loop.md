@@ -121,14 +121,14 @@ that type**, in this order:
 
 ## How events are delivered
 
-Every `On…` event goes through a queue, and each stage works from a **snapshot** of it:
+Every `On…` event goes through a queue, and each stage delivers **one batch** from it:
 
 1. Something happens in the game, or your script calls an action that causes it.
 2. The event and its arguments are **queued**.
-3. At the **start** of each Pre-Update and Post-Update, the engine takes everything queued so far. Only that batch
-   is delivered in that stage, **in the order the events happened**.
-4. Anything raised **while a stage is running** (by your handlers, by actions they call, or by the game) goes into
-   the queue for the **next** stage's snapshot, never the current one.
+3. At the **start** of each Pre-Update and Post-Update, the engine takes everything queued so far as that stage's
+   batch, and delivers it **in the order the events happened**.
+4. Anything raised **while a stage is running** (by your handlers, by actions they call, or by the game) waits in
+   the queue for the **next** stage's batch, never the current one.
 
 What this means in practice:
 
@@ -136,7 +136,7 @@ What this means in practice:
   runs in the next stage at the earliest, after every other event already in this stage's batch.
 - **Chains move one stage at a time.** An action in Pre-Update produces its event in Post-Update; an action taken in
   that Post-Update handler produces its event in the next tick's Pre-Update, and so on.
-- **The snapshot order is the delivery order.** Within a stage, handlers run strictly in the order the events were
+- **A batch runs in the order it was raised.** Within a stage, handlers run strictly in the order the events were
   raised, whatever their type.
 - **Promise continuations are the exception.** Code after an `await` on something your handler just resolved runs
   immediately after that handler, in the same stage; it isn't queued like an event.
@@ -167,7 +167,7 @@ Common examples:
   `OnPlayerDeployed` and `OnPlayerJoinGame` on later ticks.
 - **The order of related events varies by cause.** `OnPlayerDamaged` and `OnMandown` can arrive **after**
   `OnPlayerDied` for AI deaths, so don't rely on a fixed damage → mandown → death sequence.
-- **Arguments are a snapshot from when the event happened.** By the time your handler runs, the player may have left
+- **Arguments are captured when the event happens.** By the time your handler runs, the player may have left
   or died. Check `mod.IsPlayerValid(player)` before acting on a player from an event.
 - **Numbers in event arguments are single-precision floats.** Decimals arrive slightly off: `0.1` comes through as
   `0.10000000149011612`. Don't compare them with `===`; round them, or compare within a small tolerance.
