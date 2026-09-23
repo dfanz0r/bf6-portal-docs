@@ -173,7 +173,7 @@ watch(apiFilter, () => nextTick(applyApiFilter))
 
 # TypeScript API Reference
 
-SDK version: **1.4.1.0**
+SDK version: **1.4.3.0**
 
 This page is generated from the SDK's `code/types/mod/index.d.ts` and `code/modlib/index.ts` files.
 
@@ -186,11 +186,11 @@ This page is generated from the SDK's `code/types/mod/index.d.ts` and `code/modl
 
 | Category | Count |
 | --- | ---: |
-| event handlers | 74 |
-| mod functions | 415 |
-| mod function overloads | 549 |
-| mod types | 40 |
-| mod enums | 75 |
+| event handlers | 79 |
+| mod functions | 431 |
+| mod function overloads | 570 |
+| mod types | 41 |
+| mod enums | 83 |
 | modlib functions | 31 |
 | modlib classes | 2 |
 
@@ -1300,14 +1300,14 @@ Move the Object provided, Euler rotation optional
 
 ```ts
 MoveObject(
-  object: | Bomb | EmplacementSpawner | FixedCamera | InteractPoint | LootSpawner | MCOM | SFX | SpatialObject | Spawner | VehicleSpawner | VL7Cloud | VO | WorldIcon,
+  object: | Bomb | EmplacementSpawner | FixedCamera | InteractPoint | LootSpawner | MCOM | SFX | SpatialObject | Spawner | VehicleSpawner | VL7Cloud | VO | WorldIcon | BlockingSphere | Player,
   positionDelta: Vector
 ): void
 ```
 
 ```ts
 MoveObject(
-  object: | Bomb | EmplacementSpawner | FixedCamera | InteractPoint | LootSpawner | MCOM | SFX | SpatialObject | Spawner | VehicleSpawner | VL7Cloud | VO | WorldIcon,
+  object: | Bomb | EmplacementSpawner | FixedCamera | InteractPoint | LootSpawner | MCOM | SFX | SpatialObject | Spawner | VehicleSpawner | VL7Cloud | VO | WorldIcon | BlockingSphere | Player,
   positionDelta: Vector,
   rotationDelta: Vector
 ): void
@@ -1319,7 +1319,7 @@ Rotate the Object provided using Euler angles
 
 ```ts
 RotateObject(
-  arg0: | Bomb | EmplacementSpawner | FixedCamera | InteractPoint | LootSpawner | MCOM | SFX | SpatialObject | Spawner | VehicleSpawner | VL7Cloud | VO | WorldIcon,
+  arg0: | Bomb | EmplacementSpawner | FixedCamera | InteractPoint | LootSpawner | MCOM | SFX | SpatialObject | Spawner | VehicleSpawner | VL7Cloud | VO | WorldIcon | BlockingSphere | Player,
   rotationDelta: Vector
 ): void
 ```
@@ -1338,7 +1338,7 @@ Sets the transform of the Object provided
 
 ```ts
 SetObjectTransform(
-  object: | Bomb | EmplacementSpawner | FixedCamera | InteractPoint | LootSpawner | MCOM | SFX | SpatialObject | Spawner | VehicleSpawner | VL7Cloud | VO | WorldIcon,
+  object: | Bomb | EmplacementSpawner | FixedCamera | InteractPoint | LootSpawner | MCOM | SFX | SpatialObject | Spawner | VehicleSpawner | VL7Cloud | VO | WorldIcon | BlockingSphere | Player,
   transform: Transform
 ): void
 ```
@@ -1349,7 +1349,7 @@ Sets the transform of the Object provided over the time provided. Options to loo
 
 ```ts
 SetObjectTransformOverTime(
-  object: | Bomb | EmplacementSpawner | FixedCamera | InteractPoint | LootSpawner | MCOM | SFX | SpatialObject | Spawner | VehicleSpawner | VL7Cloud | VO | WorldIcon,
+  object: | Bomb | EmplacementSpawner | FixedCamera | InteractPoint | LootSpawner | MCOM | SFX | SpatialObject | Spawner | VehicleSpawner | VL7Cloud | VO | WorldIcon | BlockingSphere | Player,
   transform: Transform,
   timeInSeconds: number,
   shouldLoop: boolean,
@@ -1406,7 +1406,7 @@ SetWorldIconText(worldIcon: WorldIcon, newText: Message): void
 Stops the Over Time movement for the provided Object if one is active
 
 ```ts
-StopActiveMovementForObject( object: | Bomb | EmplacementSpawner | FixedCamera | InteractPoint | LootSpawner | MCOM | SFX | SpatialObject | Spawner | VehicleSpawner | VL7Cloud | VO | WorldIcon ): void
+StopActiveMovementForObject( object: | Bomb | EmplacementSpawner | FixedCamera | InteractPoint | LootSpawner | MCOM | SFX | SpatialObject | Spawner | VehicleSpawner | VL7Cloud | VO | WorldIcon | BlockingSphere | Player ): void
 ```
 
 :::
@@ -2397,6 +2397,10 @@ Sets the gamemode score of the provided Player or Team.
 SetGameModeScore(player: Player, newScore: number): void
 ```
 
+```ts
+SetGameModeScore(player: Player, newScore: number, gameStageType: GameStageType): void
+```
+
 #### SetInventoryAmmo
 
 Sets the target player loaded ammo for the provided inventory slot.
@@ -2411,6 +2415,14 @@ Sets the target player magazine ammo for the provided inventory slot.
 
 ```ts
 SetInventoryMagazineAmmo(player: Player, inventorySlots: InventorySlots, magAmmo: number): void
+```
+
+#### SetPlayerBreathTime
+
+Sets the breathing time for the player.
+
+```ts
+SetPlayerBreathTime(player: Player, factor: number): void
 ```
 
 #### SetPlayerIncomingDamageFactor
@@ -3026,7 +3038,7 @@ Moves the Object by the delta position and rotation over the time provided. Opti
 
 ```ts
 MoveObjectOverTime(
-  object: | Bomb | EmplacementSpawner | FixedCamera | InteractPoint | LootSpawner | MCOM | SFX | SpatialObject | Spawner | VehicleSpawner | VL7Cloud | VO | WorldIcon,
+  object: | Bomb | EmplacementSpawner | FixedCamera | InteractPoint | LootSpawner | MCOM | SFX | SpatialObject | Spawner | VehicleSpawner | VL7Cloud | VO | WorldIcon | BlockingSphere | Player,
   positionDelta: Vector,
   rotationDelta: Vector,
   timeInSeconds: number,
@@ -3041,7 +3053,7 @@ Orbits the Object around the provided transform over time. Optional orbitAxis ot
 
 ```ts
 OrbitObjectOverTime(
-  object: | Bomb | EmplacementSpawner | FixedCamera | InteractPoint | LootSpawner | MCOM | SFX | SpatialObject | Spawner | VehicleSpawner | VL7Cloud | VO | WorldIcon,
+  object: | Bomb | EmplacementSpawner | FixedCamera | InteractPoint | LootSpawner | MCOM | SFX | SpatialObject | Spawner | VehicleSpawner | VL7Cloud | VO | WorldIcon | BlockingSphere | Player,
   orbitTransform: Transform,
   timeInSeconds: number,
   radius: number,
@@ -3053,7 +3065,7 @@ OrbitObjectOverTime(
 
 ```ts
 OrbitObjectOverTime(
-  object: | Bomb | EmplacementSpawner | FixedCamera | InteractPoint | LootSpawner | MCOM | SFX | SpatialObject | Spawner | VehicleSpawner | VL7Cloud | VO | WorldIcon,
+  object: | Bomb | EmplacementSpawner | FixedCamera | InteractPoint | LootSpawner | MCOM | SFX | SpatialObject | Spawner | VehicleSpawner | VL7Cloud | VO | WorldIcon | BlockingSphere | Player,
   orbitTransform: Transform,
   timeInSeconds: number,
   radius: number,
@@ -3338,6 +3350,14 @@ Sets the ownership of the MCOM, swapping teams will flip who can plant and defus
 SetMCOMOwner(mcom: MCOM, team: Team): void
 ```
 
+#### SetObjectiveUIEnabled
+
+Enables the HUD UI for an objective (Capture Points and MCOMs)
+
+```ts
+SetObjectiveUIEnabled(objective: CapturePoint | HQ | Sector | MCOM, enabled: boolean): void
+```
+
 #### SetRingOfFireDamageAmount
 
 Sets the damage dealt by the RingOfFire to players caught.
@@ -3447,7 +3467,7 @@ Spawns an object at runtime. Returns an object id if the object supports it, oth
 
 ```ts
 SpawnObject(
-  prefabEnum: | RuntimeSpawn_Common | RuntimeSpawn_Abbasid | RuntimeSpawn_Aftermath | RuntimeSpawn_Badlands | RuntimeSpawn_Battery | RuntimeSpawn_Capstone | RuntimeSpawn_Contaminated | RuntimeSpawn_Dumbo | RuntimeSpawn_Eastwood | RuntimeSpawn_FireStorm | RuntimeSpawn_Limestone | RuntimeSpawn_Outskirts | RuntimeSpawn_Subsurface | RuntimeSpawn_Tungsten | RuntimeSpawn_Granite_Downtown | RuntimeSpawn_Granite_Marina | RuntimeSpawn_Granite_MilitaryRnD | RuntimeSpawn_Granite_MilitaryStorage | RuntimeSpawn_Granite_ResidentialNorth | RuntimeSpawn_Granite_TechCenter | RuntimeSpawn_Granite_Underground | RuntimeSpawn_Sand | RuntimeSpawn_GolmudRailway | RuntimeSpawn_Plaza,
+  prefabEnum: | RuntimeSpawn_Common | RuntimeSpawn_Abbasid | RuntimeSpawn_Aftermath | RuntimeSpawn_Badlands | RuntimeSpawn_Battery | RuntimeSpawn_Capstone | RuntimeSpawn_Contaminated | RuntimeSpawn_Dumbo | RuntimeSpawn_Eastwood | RuntimeSpawn_FireStorm | RuntimeSpawn_Limestone | RuntimeSpawn_Outskirts | RuntimeSpawn_Subsurface | RuntimeSpawn_Tungsten | RuntimeSpawn_Granite_Downtown | RuntimeSpawn_Granite_Marina | RuntimeSpawn_Granite_MilitaryRnD | RuntimeSpawn_Granite_MilitaryStorage | RuntimeSpawn_Granite_ResidentialNorth | RuntimeSpawn_Granite_TechCenter | RuntimeSpawn_Granite_Underground | RuntimeSpawn_Sand | RuntimeSpawn_GolmudRailway | RuntimeSpawn_Plaza | RuntimeSpawn_Isolated | RuntimeSpawn_Ocean | RuntimeSpawn_Atoll,
   position: Vector,
   rotation: Vector,
   scale: Vector
@@ -3456,7 +3476,7 @@ SpawnObject(
 
 ```ts
 SpawnObject(
-  prefabEnum: | RuntimeSpawn_Common | RuntimeSpawn_Abbasid | RuntimeSpawn_Aftermath | RuntimeSpawn_Badlands | RuntimeSpawn_Battery | RuntimeSpawn_Capstone | RuntimeSpawn_Contaminated | RuntimeSpawn_Dumbo | RuntimeSpawn_Eastwood | RuntimeSpawn_FireStorm | RuntimeSpawn_Limestone | RuntimeSpawn_Outskirts | RuntimeSpawn_Subsurface | RuntimeSpawn_Tungsten | RuntimeSpawn_Granite_Downtown | RuntimeSpawn_Granite_Marina | RuntimeSpawn_Granite_MilitaryRnD | RuntimeSpawn_Granite_MilitaryStorage | RuntimeSpawn_Granite_ResidentialNorth | RuntimeSpawn_Granite_TechCenter | RuntimeSpawn_Granite_Underground | RuntimeSpawn_Sand | RuntimeSpawn_GolmudRailway | RuntimeSpawn_Plaza,
+  prefabEnum: | RuntimeSpawn_Common | RuntimeSpawn_Abbasid | RuntimeSpawn_Aftermath | RuntimeSpawn_Badlands | RuntimeSpawn_Battery | RuntimeSpawn_Capstone | RuntimeSpawn_Contaminated | RuntimeSpawn_Dumbo | RuntimeSpawn_Eastwood | RuntimeSpawn_FireStorm | RuntimeSpawn_Limestone | RuntimeSpawn_Outskirts | RuntimeSpawn_Subsurface | RuntimeSpawn_Tungsten | RuntimeSpawn_Granite_Downtown | RuntimeSpawn_Granite_Marina | RuntimeSpawn_Granite_MilitaryRnD | RuntimeSpawn_Granite_MilitaryStorage | RuntimeSpawn_Granite_ResidentialNorth | RuntimeSpawn_Granite_TechCenter | RuntimeSpawn_Granite_Underground | RuntimeSpawn_Sand | RuntimeSpawn_GolmudRailway | RuntimeSpawn_Plaza | RuntimeSpawn_Isolated | RuntimeSpawn_Ocean | RuntimeSpawn_Atoll,
   position: Vector,
   rotation: Vector
 ): Any
@@ -3820,12 +3840,32 @@ Sets the Initial Score for teams.
 SetGameModeInitialScore(team: Team, initialscore: number): void
 ```
 
+```ts
+SetGameModeInitialScore(team: Team, initialscore: number, gameStageType: GameStageType): void
+```
+
 #### SetGameModeScore
 
 Sets the gamemode score of the provided Player or Team.
 
 ```ts
 SetGameModeScore(team: Team, newScore: number): void
+```
+
+```ts
+SetGameModeScore(team: Team, newScore: number, gameStageType: GameStageType): void
+```
+
+#### SetGameModeTargetScore
+
+Sets the gamemode target score used to determine victory.
+
+```ts
+SetGameModeTargetScore(team: Team, newScore: number): void
+```
+
+```ts
+SetGameModeTargetScore(team: Team, newScore: number, gameStageType: GameStageType): void
 ```
 
 #### SetTeam
@@ -4630,6 +4670,14 @@ Returns a string containing the concatenation of two strings.
 Concat(string0: string, string1: string): string
 ```
 
+#### EnableWater
+
+Enables the Water object.
+
+```ts
+EnableWater(enabled: boolean): void
+```
+
 #### ForceBombDrop
 
 Forces the bomb drop to be dropped from its carrier.
@@ -4652,6 +4700,33 @@ Get argument of subroutine at given index.
 
 ```ts
 GetArgument(subroutineArgIndex: number): Any
+```
+
+#### GetBlockingSphere
+
+Returns the BlockingSphere corresponding to the provided id.
+
+```ts
+GetBlockingSphere(objId: number): BlockingSphere
+```
+
+#### GetBlockingSphereBoolParam
+
+Returns the value of the target BlockingSphere boolean parameter.
+
+```ts
+GetBlockingSphereBoolParam(
+  blockingSphere: BlockingSphere,
+  boolParam: BlockingSphereBoolParam
+): boolean
+```
+
+#### GetBlockingSphereRadius
+
+Returns the radius of a BlockingSphere.
+
+```ts
+GetBlockingSphereRadius(blockingSphere: BlockingSphere): number
 ```
 
 #### GetBomb
@@ -4692,6 +4767,38 @@ Returns the gamemode target score needed for victory.
 
 ```ts
 GetTargetScore(): number
+```
+
+#### GetWaterBeaufortScale
+
+Returns the beaufort scale of the Water.
+
+```ts
+GetWaterBeaufortScale(): number
+```
+
+#### GetWaterHeight
+
+Returns the Water height.
+
+```ts
+GetWaterHeight(): number
+```
+
+#### GetWaterIsEnabled
+
+Returns a boolean value based on if water is enabled.
+
+```ts
+GetWaterIsEnabled(): boolean
+```
+
+#### GetWaterWaveAmplitude
+
+Returns the wave amplitude of the Water.
+
+```ts
+GetWaterWaveAmplitude(): number
 ```
 
 #### HasUIWidgetWithName
@@ -4758,6 +4865,34 @@ Sends Portal Log to the admin client of the current session when hosting via "Ho
 SendPortalLogToAdmin(): void
 ```
 
+#### SetAllObjectivesUIEnabled
+
+Enables the HUD UI for all objectives (Capture Points and MCOMs)
+
+```ts
+SetAllObjectivesUIEnabled(enabled: boolean): void
+```
+
+#### SetBlockingSphereBoolParam
+
+Enables or disables different functionalities of a BlockingSphere object. This determines what happens to objects within its radius.
+
+```ts
+SetBlockingSphereBoolParam(
+  blockingSphere: BlockingSphere,
+  parameter: BlockingSphereBoolParam,
+  enabled: boolean
+): void
+```
+
+#### SetBlockingSphereRadius
+
+Sets the radius of a BlockingSphere. This determines the range of influence of all of its enabled functionalities.
+
+```ts
+SetBlockingSphereRadius(blockingSphere: BlockingSphere, newRadius: number): void
+```
+
 #### SetBombDropFuseTime
 
 Sets the fuse time for when the bomb is dropped to the ground before it blows up.
@@ -4772,6 +4907,30 @@ Set whether collision is enabled for the Free Camera. (Default true)
 
 ```ts
 SetFreeCameraCollisionForAll(enabled: boolean): void
+```
+
+#### SetWaterBeaufortScale
+
+Sets the Water beaufort Scale.
+
+```ts
+SetWaterBeaufortScale(beaufortscale: number): void
+```
+
+#### SetWaterLevel
+
+Sets the water height.
+
+```ts
+SetWaterLevel(waterlevel: number): void
+```
+
+#### SetWaterWaveAmplitude
+
+Sets the Water wave amplitude.
+
+```ts
+SetWaterWaveAmplitude(waveamplitude: number): void
 ```
 
 #### Wait
@@ -4916,6 +5075,12 @@ OnGameModeStarted(): void
 
 ```ts
 OngoingAreaTrigger(eventAreaTrigger: mod.AreaTrigger): void
+```
+
+#### OngoingBlockingSphere
+
+```ts
+OngoingBlockingSphere(eventBlockingSphere: mod.BlockingSphere): void
 ```
 
 #### OngoingBomb
@@ -5121,6 +5286,14 @@ This will trigger when a Player earns a kill assist.
 OnPlayerEarnedKillAssist(eventPlayer: mod.Player, eventOtherPlayer: mod.Player): void
 ```
 
+#### OnPlayerEmerged
+
+This will trigger when a player emerges from water.
+
+```ts
+OnPlayerEmerged(eventPlayer: mod.Player): void
+```
+
 #### OnPlayerEnterAreaTrigger
 
 This will trigger when a Player enters an AreaTrigger.
@@ -5135,6 +5308,14 @@ This will trigger when a Player enters a CapturePoint capturing area.
 
 ```ts
 OnPlayerEnterCapturePoint(eventPlayer: mod.Player, eventCapturePoint: mod.CapturePoint): void
+```
+
+#### OnPlayerEnteredWater
+
+This will trigger when a player enters water.
+
+```ts
+OnPlayerEnteredWater(eventPlayer: mod.Player): void
 ```
 
 #### OnPlayerEnterVehicle
@@ -5179,6 +5360,14 @@ This will trigger when a Player exits a CapturePoint capturing area.
 
 ```ts
 OnPlayerExitCapturePoint(eventPlayer: mod.Player, eventCapturePoint: mod.CapturePoint): void
+```
+
+#### OnPlayerExitedWater
+
+This will trigger when a player exits water.
+
+```ts
+OnPlayerExitedWater(eventPlayer: mod.Player): void
 ```
 
 #### OnPlayerExitVehicle
@@ -5231,6 +5420,14 @@ This will trigger when any player leaves the game.
 
 ```ts
 OnPlayerLeaveGame(eventNumber: number): void
+```
+
+#### OnPlayerSubmerged
+
+This will trigger when a player submerges in water.
+
+```ts
+OnPlayerSubmerged(eventPlayer: mod.Player): void
 ```
 
 #### OnPlayerSwitchTeam
@@ -5374,6 +5571,7 @@ These are opaque SDK handles. You generally only need the type name when reading
 
 - `AreaTrigger`
 - `Array`
+- `BlockingSphere`
 - `Bomb`
 - `CapturePoint`
 - `DamageType`
@@ -5417,6 +5615,7 @@ These are opaque SDK handles. You generally only need the type name when reading
 `Object` is a generic SDK object handle. It can refer to any of these Portal object types:
 
 - `AreaTrigger`
+- `BlockingSphere`
 - `Bomb`
 - `CapturePoint`
 - `EmplacementSpawner`
@@ -5498,6 +5697,22 @@ enum ArmorTypes {
 </details>
 
 <details>
+<summary><strong>BlockingSphereBoolParam</strong> (6 values)</summary>
+
+```ts
+enum BlockingSphereBoolParam {
+  BlockLocking,
+  BlockSpotting,
+  IsCloudBlockingVolume,
+  JamIncomingMissiles,
+  RemoveLaserPainting,
+  RemoveTracerDart,
+}
+```
+
+</details>
+
+<details>
 <summary><strong>BombState</strong> (10 values)</summary>
 
 ```ts
@@ -5547,6 +5762,101 @@ enum CustomNotificationSlots {
 </details>
 
 <details>
+<summary><strong>EnumTypes</strong> (85 values)</summary>
+
+```ts
+enum EnumTypes {
+  Enum_AiInput,
+  Enum_AmmoTypes,
+  Enum_ArmorDurability,
+  Enum_ArmorTypes,
+  Enum_AwarenessState,
+  Enum_BlockingSphereBoolParam,
+  Enum_BombState,
+  Enum_Cameras,
+  Enum_CustomNotificationSlots,
+  Enum_EnumTypes,
+  Enum_Factions,
+  Enum_Gadgets,
+  Enum_GameModeTicker,
+  Enum_GameStageType,
+  Enum_GolmudTrainMoveCommands,
+  Enum_GolmudTrainStopReason,
+  Enum_GolmudTrainVariants,
+  Enum_InventorySlots,
+  Enum_Maps,
+  Enum_MCOMArmType,
+  Enum_MoveSpeed,
+  Enum_MusicEvents,
+  Enum_MusicPackages,
+  Enum_MusicParams,
+  Enum_ObjectTypes,
+  Enum_PlayerDamageTypes,
+  Enum_PlayerDeathTypes,
+  Enum_PlayerFilterTypes,
+  Enum_PortalTypes,
+  Enum_RestrictedInputs,
+  Enum_ResupplyTypes,
+  Enum_RuntimeSpawn_Abbasid,
+  Enum_RuntimeSpawn_Aftermath,
+  Enum_RuntimeSpawn_Atoll,
+  Enum_RuntimeSpawn_Badlands,
+  Enum_RuntimeSpawn_Battery,
+  Enum_RuntimeSpawn_Capstone,
+  Enum_RuntimeSpawn_Common,
+  Enum_RuntimeSpawn_Contaminated,
+  Enum_RuntimeSpawn_Dumbo,
+  Enum_RuntimeSpawn_Eastwood,
+  Enum_RuntimeSpawn_FireStorm,
+  Enum_RuntimeSpawn_GolmudRailway,
+  Enum_RuntimeSpawn_Granite_Downtown,
+  Enum_RuntimeSpawn_Granite_Marina,
+  Enum_RuntimeSpawn_Granite_MilitaryRnD,
+  Enum_RuntimeSpawn_Granite_MilitaryStorage,
+  Enum_RuntimeSpawn_Granite_ResidentialNorth,
+  Enum_RuntimeSpawn_Granite_TechCenter,
+  Enum_RuntimeSpawn_Granite_Underground,
+  Enum_RuntimeSpawn_Isolated,
+  Enum_RuntimeSpawn_Limestone,
+  Enum_RuntimeSpawn_Ocean,
+  Enum_RuntimeSpawn_Outskirts,
+  Enum_RuntimeSpawn_Plaza,
+  Enum_RuntimeSpawn_Sand,
+  Enum_RuntimeSpawn_Subsurface,
+  Enum_RuntimeSpawn_Tungsten,
+  Enum_ScoreboardType,
+  Enum_ScoreCriteria,
+  Enum_ScreenEffects,
+  Enum_SoldierClass,
+  Enum_SoldierEffects,
+  Enum_SoldierStateBool,
+  Enum_SoldierStateNumber,
+  Enum_SoldierStateVector,
+  Enum_SpawnModes,
+  Enum_SpectatingGroup,
+  Enum_SpotStatus,
+  Enum_Stance,
+  Enum_StationaryEmplacements,
+  Enum_Types,
+  Enum_UIAnchor,
+  Enum_UIBgFill,
+  Enum_UIButtonEvent,
+  Enum_UIDepth,
+  Enum_UIImageType,
+  Enum_VehicleCategories,
+  Enum_VehicleList,
+  Enum_VehicleStateVector,
+  Enum_VoiceOverEvents2D,
+  Enum_VoiceOverFlags,
+  Enum_WeaponAttachments,
+  Enum_Weapons,
+  Enum_WorldIconImages,
+}
+```
+
+</details>
+
+<details>
 <summary><strong>Factions</strong> (2 values)</summary>
 
 ```ts
@@ -5559,7 +5869,7 @@ enum Factions {
 </details>
 
 <details>
-<summary><strong>Gadgets</strong> (62 values)</summary>
+<summary><strong>Gadgets</strong> (63 values)</summary>
 
 ```ts
 enum Gadgets {
@@ -5598,6 +5908,7 @@ enum Gadgets {
   Mask_Gas,
   Mask_NVG,
   Melee_Combat_Knife,
+  Melee_EOD_Bot_Arm,
   Melee_Hunting_Knife,
   Melee_Ice_Axe,
   Melee_Serrated_Blade,
@@ -5631,12 +5942,26 @@ enum Gadgets {
 </details>
 
 <details>
-<summary><strong>GameModeTicker</strong> (2 values)</summary>
+<summary><strong>GameModeTicker</strong> (4 values)</summary>
 
 ```ts
 enum GameModeTicker {
   None,
+  Ticker_Breakthrough,
   Ticker_Conquest,
+  Ticker_TeamDM,
+}
+```
+
+</details>
+
+<details>
+<summary><strong>GameStageType</strong> (2 values)</summary>
+
+```ts
+enum GameStageType {
+  Phase,
+  Round,
 }
 ```
 
@@ -5702,12 +6027,13 @@ enum InventorySlots {
 </details>
 
 <details>
-<summary><strong>Maps</strong> (23 values)</summary>
+<summary><strong>Maps</strong> (26 values)</summary>
 
 ```ts
 enum Maps {
   Abbasid,
   Aftermath,
+  Atoll,
   Badlands,
   Battery,
   Capstone,
@@ -5723,7 +6049,9 @@ enum Maps {
   Granite_MilitaryStorage,
   Granite_TechCampus,
   Granite_Underground,
+  Isolated,
   Limestone,
+  Ocean,
   Outskirts,
   Plaza,
   Sand,
@@ -5858,6 +6186,45 @@ enum MusicParams {
 </details>
 
 <details>
+<summary><strong>ObjectTypes</strong> (29 values)</summary>
+
+```ts
+enum ObjectTypes {
+  AreaTrigger,
+  BlockingSphere,
+  Bomb,
+  CapturePoint,
+  EmplacementSpawner,
+  FixedCamera,
+  HQ,
+  InteractPoint,
+  LootMissionObjectManager,
+  LootSpawner,
+  MapSpecificFeature,
+  MCOM,
+  Player,
+  RingOfFire,
+  ScreenEffect,
+  Sector,
+  SFX,
+  SpatialObject,
+  Spawner,
+  SpawnPoint,
+  Team,
+  Vehicle,
+  VehicleSpawner,
+  VFX,
+  VL7Cloud,
+  VO,
+  Water,
+  WaypointPath,
+  WorldIcon,
+}
+```
+
+</details>
+
+<details>
 <summary><strong>PlayerDamageTypes</strong> (6 values)</summary>
 
 ```ts
@@ -5903,6 +6270,62 @@ enum PlayerFilterTypes {
   Player,
   Squad,
   TeamId,
+}
+```
+
+</details>
+
+<details>
+<summary><strong>PortalTypes</strong> (46 values)</summary>
+
+```ts
+enum PortalTypes {
+  AreaTrigger,
+  Array,
+  BlockingSphere,
+  Bomb,
+  Boolean,
+  CapturePoint,
+  DamageType,
+  DeathType,
+  EmplacementSpawner,
+  FixedCamera,
+  HQ,
+  InteractPoint,
+  LootMissionObjectManager,
+  LootSpawner,
+  MapSpecificFeature,
+  MCOM,
+  Message,
+  Number,
+  Object,
+  Player,
+  PortalEnum,
+  RingOfFire,
+  ScoreboardType,
+  ScreenEffect,
+  Sector,
+  SFX,
+  SpatialObject,
+  Spawner,
+  SpawnPoint,
+  Squad,
+  String,
+  Team,
+  Transform,
+  UIWidget,
+  Variable,
+  Vector,
+  Vehicle,
+  VehicleSpawner,
+  VFX,
+  VL7Cloud,
+  VO,
+  Water,
+  WaypointPath,
+  WeaponPackage,
+  WeaponUnlock,
+  WorldIcon,
 }
 ```
 
@@ -5966,6 +6389,13 @@ This is a map-based spatial object enum. See [Spatial Object Reference](/spatial
 </details>
 
 <details>
+<summary><strong>RuntimeSpawn_Atoll</strong> (712 values)</summary>
+
+This is a map-based spatial object enum. See [Spatial Object Reference](/spatial-object-reference#spatial-runtimespawn-atoll) for the full combined map-aware reference.
+
+</details>
+
+<details>
 <summary><strong>RuntimeSpawn_Badlands</strong> (891 values)</summary>
 
 This is a map-based spatial object enum. See [Spatial Object Reference](/spatial-object-reference#spatial-runtimespawn-badlands) for the full combined map-aware reference.
@@ -5987,7 +6417,7 @@ This is a map-based spatial object enum. See [Spatial Object Reference](/spatial
 </details>
 
 <details>
-<summary><strong>RuntimeSpawn_Common</strong> (1473 values)</summary>
+<summary><strong>RuntimeSpawn_Common</strong> (1468 values)</summary>
 
 This is a map-based spatial object enum. See [Spatial Object Reference](/spatial-object-reference#spatial-runtimespawn-common) for the full combined map-aware reference.
 
@@ -6078,9 +6508,23 @@ This is a map-based spatial object enum. See [Spatial Object Reference](/spatial
 </details>
 
 <details>
+<summary><strong>RuntimeSpawn_Isolated</strong> (876 values)</summary>
+
+This is a map-based spatial object enum. See [Spatial Object Reference](/spatial-object-reference#spatial-runtimespawn-isolated) for the full combined map-aware reference.
+
+</details>
+
+<details>
 <summary><strong>RuntimeSpawn_Limestone</strong> (927 values)</summary>
 
 This is a map-based spatial object enum. See [Spatial Object Reference](/spatial-object-reference#spatial-runtimespawn-limestone) for the full combined map-aware reference.
+
+</details>
+
+<details>
+<summary><strong>RuntimeSpawn_Ocean</strong> (2142 values)</summary>
+
+This is a map-based spatial object enum. See [Spatial Object Reference](/spatial-object-reference#spatial-runtimespawn-ocean) for the full combined map-aware reference.
 
 </details>
 
@@ -6317,12 +6761,13 @@ enum StationaryEmplacements {
 </details>
 
 <details>
-<summary><strong>Types</strong> (118 values)</summary>
+<summary><strong>Types</strong> (128 values)</summary>
 
 ```ts
 enum Types {
   AreaTrigger,
   Array,
+  BlockingSphere,
   Bomb,
   Boolean,
   CapturePoint,
@@ -6331,12 +6776,15 @@ enum Types {
   EmplacementSpawner,
   Enum_AiInput,
   Enum_AmmoTypes,
+  Enum_BlockingSphereBoolParam,
   Enum_BombState,
   Enum_Cameras,
   Enum_CustomNotificationSlots,
+  Enum_EnumTypes,
   Enum_Factions,
   Enum_Gadgets,
   Enum_GameModeTicker,
+  Enum_GameStageType,
   Enum_GolmudTrainMoveCommands,
   Enum_GolmudTrainStopReason,
   Enum_GolmudTrainVariants,
@@ -6347,13 +6795,16 @@ enum Types {
   Enum_MusicEvents,
   Enum_MusicPackages,
   Enum_MusicParams,
+  Enum_ObjectTypes,
   Enum_PlayerDamageTypes,
   Enum_PlayerDeathTypes,
   Enum_PlayerFilterTypes,
+  Enum_PortalTypes,
   Enum_RestrictedInputs,
   Enum_ResupplyTypes,
   Enum_RuntimeSpawn_Abbasid,
   Enum_RuntimeSpawn_Aftermath,
+  Enum_RuntimeSpawn_Atoll,
   Enum_RuntimeSpawn_Badlands,
   Enum_RuntimeSpawn_Battery,
   Enum_RuntimeSpawn_Capstone,
@@ -6370,7 +6821,9 @@ enum Types {
   Enum_RuntimeSpawn_Granite_ResidentialNorth,
   Enum_RuntimeSpawn_Granite_TechCenter,
   Enum_RuntimeSpawn_Granite_Underground,
+  Enum_RuntimeSpawn_Isolated,
   Enum_RuntimeSpawn_Limestone,
+  Enum_RuntimeSpawn_Ocean,
   Enum_RuntimeSpawn_Outskirts,
   Enum_RuntimeSpawn_Plaza,
   Enum_RuntimeSpawn_Sand,
@@ -6435,6 +6888,7 @@ enum Types {
   VFX,
   VL7Cloud,
   VO,
+  Water,
   WaypointPath,
   WeaponPackage,
   WeaponUnlock,
@@ -6546,7 +7000,7 @@ enum VehicleCategories {
 </details>
 
 <details>
-<summary><strong>VehicleList</strong> (26 values)</summary>
+<summary><strong>VehicleList</strong> (32 values)</summary>
 
 ```ts
 enum VehicleList {
@@ -6560,8 +7014,12 @@ enum VehicleList {
   DirtBike,
   DirtBike_Pax,
   Eurocopter,
+  F_74A_Seacat,
+  F_74A_Seacat_Pax,
   F16,
   F22,
+  FA_81F_Super_Spectre,
+  FA_81F_Super_Spectre_Pax,
   Flyer60,
   Gepard,
   GolfCart,
@@ -6571,6 +7029,8 @@ enum VehicleList {
   Marauder,
   Marauder_Pax,
   Quadbike,
+  RCB_90_Patrol_Boat,
+  RCB_90_Patrol_Boat_Pax,
   RHIB,
   SU57,
   UH60,

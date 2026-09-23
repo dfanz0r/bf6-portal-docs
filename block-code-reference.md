@@ -1106,7 +1106,7 @@ Returns True if the provided Map is the name of the current map.
 
 ##### SpawnObject
 
-Spawns an object at runtime. Returns an object id if the object supports it, otherwise -1
+Spawns an object at runtime. Returns the spawned object if successful, otherwise returns undefined.
 
 | Signature | Return Type |
 | --- | --- |
@@ -2274,6 +2274,8 @@ _Note: If no players are alive when this block is called, the returned Player wi
 
 ##### GetPlayer
 
+Returns the Player object corresponding to the provided id.
+
 | Signature | Return Type |
 | --- | --- |
 | `(objId: Number)` | Player |
@@ -2866,6 +2868,8 @@ Returns a Boolean indicating if the target Vehicle has the same name as the prov
 | `(vehicle: Vehicle, vehicleList: Vehicle List)` | Boolean |
 
 ##### GetVehicle
+
+Returns the Vehicle object corresponding to the provided id.
 
 | Signature | Return Type |
 | --- | --- |
