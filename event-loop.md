@@ -15,6 +15,8 @@ code.
 - **Post-Update** runs only the `On…` events raised since Pre-Update.
 - **Events never run in the middle of your code.** An action that causes an event (killing a player, seating them in
   a vehicle, casting a ray) queues the event, and your handler runs later.
+- **Block code runs before TypeScript.** In an experience that uses both, the block rules take their turn first in
+  each stage, then TypeScript. See [Block code and TypeScript together](#block-code-and-typescript-together).
 
 ## One tick, step by step
 
@@ -24,6 +26,7 @@ flowchart TB
 
     subgraph PRE["① Pre-Update · your script's main turn"]
         direction TB
+        B1["Block rules<br/>Ongoing rules, then event rules<br/>and rules continuing after a Wait"] --> G
         G["OngoingGlobal()"] --> O["Ongoing handlers<br/>one call per live object,<br/>one type after another"]
         O --> W["Finished Wait() timers<br/>code after await resumes here"]
         W --> E1["Queued On… events<br/>oldest first"]
@@ -40,6 +43,7 @@ flowchart TB
 
     subgraph POST["③ Post-Update · events only"]
         direction TB
+        B2["Block event rules"] --> E2
         E2["Queued On… events<br/>raised since Pre-Update"]
     end
 
@@ -47,7 +51,8 @@ flowchart TB
 ```
 
 After every handler call (each `Ongoing…` call, each event, each timer), any promise continuations your code queued
-run immediately, before the next handler.
+run immediately, before the next handler. Experiences without block code skip the block steps; experiences without
+TypeScript skip the rest.
 
 ## Script startup
 
@@ -171,6 +176,78 @@ Common examples:
   or died. Check `mod.IsPlayerValid(player)` before acting on a player from an event.
 - **Numbers in event arguments are single-precision floats.** Decimals arrive slightly off: `0.1` comes through as
   `0.10000000149011612`. Don't compare them with `===`; round them, or compare within a small tolerance.
+
+## Block code and TypeScript together
+
+An experience can use block code and TypeScript at the same time. They run as two separate parts of the same
+script, one after the other, in every stage:
+
+| Stage | First | Then |
+|---|---|---|
+| Pre-Update | Block rules: Ongoing rules, then event rules and rules continuing after a `Wait` | TypeScript: `OngoingGlobal`, `Ongoing…` handlers, `Wait` timers, `On…` events |
+| Post-Update | Block event rules | TypeScript `On…` events |
+
+- **Both get the same events.** At the start of each stage, the batch of queued events goes to the block rules and
+  to TypeScript. Block rules handle theirs first.
+- **Neither sees what the other raises in the same stage.** An event caused by a block action waits for the next
+  stage's batch, where both get it, just like an event caused by TypeScript.
+- **Block code can't see TypeScript's changes from the same stage.** Anything TypeScript does in a stage happens
+  after the block rules for that stage have run, so block rules see it the next time they run.
+- **Block `Wait`s finish in Pre-Update**, like `mod.Wait()` in TypeScript. A block rule that is waiting never
+  continues during Post-Update.
+- **Chase Variable blocks update first.** Variables being chased (`ChaseVariableAtRate`, `ChaseVariableOverTime`)
+  advance at the very start of Pre-Update, before any block rule or TypeScript handler reads them.
+
+### Calling TypeScript from blocks
+
+Two blocks call a function exported from your TypeScript:
+
+| Block | Use |
+|---|---|
+| `JsAction(name, arg0, arg1)` | Call a function as an action. Its return value is ignored |
+| `JsValue(name, arg0, arg1)` | Call a function and use what it returns as a value |
+
+```ts
+// JsAction("main.Announce", "Round over", 5)
+export function Announce(text: string, seconds: number) {
+    console.log(`${text} (${seconds}s)`);
+}
+
+// JsValue("main.TicketsFor", 1, 0): the second argument is unused, but the block always passes two
+export function TicketsFor(teamId: number, _unused: unknown): number {
+    return mod.GetGameModeScore(mod.GetTeam(teamId));
+}
+```
+
+- **Name the function `main.` plus its export name**, like `main.Announce`. The function must be exported. `main`
+  is not case-sensitive. Any other prefix calls a function from `modlib` instead (`modlib.ParseUI`).
+- **The call runs immediately**, in the middle of the block rule, before the block's next action. So TypeScript code
+  called this way runs during the block part of the stage, before TypeScript's own handlers for that stage.
+- **Every call passes exactly two arguments.** Give the function two parameters, even if it only uses one.
+- **`JsValue` can return a number, a boolean, a string, or any `mod` value** (a player, a vector, a `mod` array, …).
+  Numbers come back as single-precision floats. Anything else (`undefined`, `null`, a plain object, a JavaScript
+  array) gives the block an empty value.
+- **Return lists as `mod` arrays.** Build them with `mod.EmptyArray()` and `mod.AppendToArray()`; a JavaScript array
+  doesn't convert.
+
+```ts
+// JsValue("main.MissionList", 0, 0) returns a list block code can loop over
+export function MissionList(_a: unknown, _b: unknown) {
+    let list = mod.EmptyArray();
+    for (const name of ["Attack A", "Defend B", "Capture C"]) {
+        list = mod.AppendToArray(list, name);
+    }
+    return list;
+}
+```
+
+- **Errors don't stop the block rule.** If the function throws, the error is written to the Portal log with its
+  stack trace, the block rule carries on, and `JsValue` gives an empty value.
+- **Don't call `async` functions from blocks.** The function runs until its first `await`, and the block moves on.
+  The rest never runs inside the block: it continues later, after TypeScript's next handler call. A `JsValue` on an
+  `async` function gets a promise, which can't be converted, so the block gets an empty value.
+- **TypeScript can't call block rules.** There is no TypeScript function that runs a block rule or subroutine. To
+  signal block code, change something a block rule checks: a variable, or the game state.
 
 ## Wait and async code
 
@@ -373,6 +450,9 @@ pending cast for that player.
 | Can I rely on the order of players in `OngoingPlayer`? | No |
 | Can I cast two rays for one player in one tick? | No. Only the first counts; the rest are dropped |
 | Is an event's player still valid when my handler runs? | Not guaranteed. Check `mod.IsPlayerValid` |
+| Do block rules or TypeScript handlers run first? | Block rules, in both stages |
+| When does a function called with `JsAction` / `JsValue` run? | Immediately, inside the block rule |
+| Can TypeScript call a block rule? | No. Signal it through a variable or game state it checks |
 
 ## Related pages
 

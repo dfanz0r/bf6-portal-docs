@@ -25,6 +25,13 @@ For the broader scripting overview, see [Scripting](/scripting).
 - Naming and grouping conventions
 - How to debug broken logic
 
+## Mixing with TypeScript
+
+Block code and TypeScript can be used in the same experience. Block rules run first in every stage, then
+TypeScript, and blocks can call exported TypeScript functions with `JsAction` and `JsValue`. See
+[Block code and TypeScript together](/event-loop#block-code-and-typescript-together) for the order and the rules for
+calling between them.
+
 ## Rules of thumb
 
 - Keep graphs small when possible
